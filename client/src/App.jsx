@@ -28,17 +28,20 @@ function App() {
     }, []);
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+      <div
+          role={"button"}
+          tabIndex={0}
+          id={"game-field"}
+          onKeyDown={(event) => {
+              handleKeyDown(event)
+          }}
+          onKeyUp={(event) => {
+              handleKeyUp(event)
+          }}
+      >
+          <div id={"player"}></div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+
   )
 }
 
