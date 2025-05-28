@@ -5,11 +5,21 @@
   position: relative;
 }
 
-#player {
-  width: 20px;
-  height: 20px;
-  background-color: black;
+.player {
+  /*width: 20px;*/
+  /*height: 20px;*/
   position: absolute;
-  left: 200px;
-  top: 200px;
 }
+
+.player:focus {
+  outline: none;
+}
+
+#player-1 {
+  background-color: red;
+}
+
+#player-2 {
+  background-color: blue;
+}
+
