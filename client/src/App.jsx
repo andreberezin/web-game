@@ -19,6 +19,12 @@ function App() {
             console.log('Connected to server with ID:', socket.id);
         });
 
+        socket.on('backend', (data) => {
+            //console.log(data);
+        })
+
+        player.insertPlayer();
+
         function renderLoop(timestamp) {
 
             // update game
