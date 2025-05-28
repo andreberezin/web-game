@@ -1,14 +1,13 @@
-import {useEffect, useRef} from 'react'
+import {useEffect} from 'react'
 import './App.css'
 import { io } from 'socket.io-client';
+import { Player } from './components/Player.js';
 
 function App() {
-    let start;
-    const arrowUp = useRef(false);
-    const arrowDown = useRef(false);
-    const arrowRight = useRef(false);
-    const arrowLeft = useRef(false);
-    const keyPressStart = useRef(0);
+
+    const id = "player-2"
+
+    let player = new Player({x: 200, y: 200}, id);
 
     useEffect(() => {
         console.log('Connecting to socket...');
@@ -27,53 +26,9 @@ function App() {
 
         function renderLoop(timestamp) {
 
-            // update game
+            player.update(timestamp)
 
-            const player = document.getElementById("player");
-            const position = player.getBoundingClientRect();
-            //position.y = position.y + 40;
-            //player.style.top = `${position.y}px`;
-            /*
-            1. start = alguspunkt, nt 2000 ms
-            2. elapsed = uus timestamp - vana timestamp, nt uus timestamp 2100ms, vana timestamp 2000ms 2100- 2000 = 100ms ehk 0.1 sec
-            3. shift = 0.00000001
-            4. player.style.top = liigu 0.00000001x px
-            5. uus timestamp = 2200 ms,
-             */
-            if (arrowUp.current === true) {
-                if (start === undefined) {
-                    start = timestamp;
-                }
-                const elapsed = timestamp - start;
-                const shift = Math.min(0.001 * elapsed, 10);
-                player.style.top = `${position.y - shift}px`;
-            }
-            if (arrowLeft.current === true) {
-                if (start === undefined) {
-                    start = timestamp;
-                }
-                const elapsed = timestamp - start;
-                const shift = Math.min(0.001 * elapsed, 10);
-                player.style.left = `${position.x - shift}px`;
-            }
-            if (arrowRight.current === true) {
-                if (start === undefined) {
-                    start = timestamp;
-                }
-                const elapsed = timestamp - start;
-                const shift = Math.min(0.001 * elapsed, 10);
-                player.style.left = `${position.x + shift}px`;
-            }
-            if (arrowDown.current === true) {
-                if (start === undefined) {
-                    start = timestamp;
-                }
-                const elapsed = timestamp - start;
-                const shift = Math.min(0.001 * elapsed, 10);
-                player.style.top = `${position.y + shift}px`;
-            }
-
-            // player.style.top = `${shift}px`;
+            socket.emit("player data", player.position);
 
             requestAnimationFrame(renderLoop)
         }
@@ -85,65 +40,14 @@ function App() {
         };
     }, []);
 
-    const handleKeyDown = ((event) => {
-        keyPressStart.current = Date.now();
-
-        switch(event.key) {
-            case "ArrowUp": {
-                arrowUp.current = true;
-                break;
-            }
-            case "ArrowDown": {
-                arrowDown.current = true;
-                break;
-            }
-            case "ArrowLeft": {
-                arrowLeft.current = true;
-                break;
-            }
-            case "ArrowRight": {
-                arrowRight.current = true;
-                break;
-            }
-        }
-    })
-
-    const handleKeyUp = ((event) => {
-        switch(event.key) {
-            case "ArrowUp": {
-                arrowUp.current = false;
-                break;
-            }
-            case "ArrowDown": {
-                arrowDown.current = false;
-                break;
-            }
-            case "ArrowLeft": {
-                arrowLeft.current = false;
-                break;
-            }
-            case "ArrowRight": {
-                arrowRight.current = false;
-                break;
-            }
-        }
-    })
-
   return (
-      <div
-          role={"button"}
-          tabIndex={0}
-          id={"game-field"}
-          onKeyDown={(event) => {
-              handleKeyDown(event)
-          }}
-          onKeyUp={(event) => {
-              handleKeyUp(event)
-          }}
-      >
-          <div id={"player"}></div>
+      <div id={"game-field"} onClick={() => {
+          const playerElement = document.getElementById(id)
+          if (playerElement) {
+              playerElement.focus();
+          }
+      }}>
       </div>
-
   )
 }
 
