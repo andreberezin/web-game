@@ -1,4 +1,4 @@
-const { io } = require('./bin/www');
+const { io } = require('./server.js');
 
 let playerInput = {
     arrowUp: false,
