@@ -11,7 +11,7 @@ async function startTunnel() {
         const url = await ngrok.connect({
             port: 3000,
             hostname: 'just-panda-musical.ngrok-free.app',
-            region: 'us', // or 'eu' for Europe
+            region: 'eu',
         });
 
         console.log('🚀 Tunnel created successfully!');

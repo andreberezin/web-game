@@ -10,7 +10,7 @@ const port = process.env.BACKEND_PORT || 3000;
 
 // CORS
 app.use(cors({
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://just-panda-musical.ngrok-free.app'],
     credentials: true,
 }));
 
@@ -18,7 +18,7 @@ app.use(express.json());
 
 // Socket.io
 const io = new Server(server, {
-    cors: { origin: 'http://localhost:5173' }
+    cors: { origin: ['http://localhost:5173', 'https://just-panda-musical.ngrok-free.app'] }
 });
 
 io.on('connection', (socket) => {
