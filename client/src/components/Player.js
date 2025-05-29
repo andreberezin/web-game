@@ -1,24 +1,29 @@
 export class Player {
 	#pos = {
 		x: 0,
-		y: 0
+		y: 0,
 	};
     #id = "player-1";
+    #shift = null;
     start;
     #element = null;
-    arrow = {
-        up: false,
-        down: false,
-        right: false,
-        left: false,
+    #maxPosition = {
+        x: 0,
+        y: 0,
+    }
+    playerInput = {
+        arrowUp: false,
+        arrowDown: false,
+        arrowRight: false,
+        arrowLeft: false,
     }
     styles = {
         width: "20px",
         height: "20px",
     }
 
-	constructor(pos, id) {
-		this.#pos = pos;
+	constructor(id) {
+		// this.#pos = pos;
         this.#id = id
 	}
 
@@ -26,8 +31,24 @@ export class Player {
 
 	}
 
-    get position() {
+    get getPosition() {
         return this.#pos;
+    }
+
+    get getShift() {
+        return this.#shift;
+    }
+
+    get getMaxPosition() {
+        return this.#maxPosition;
+    }
+
+    setShift(data) {
+        this.#shift = data;
+    }
+
+    setPosition(pos) {
+        this.#pos = pos;
     }
 
     #clamp(min, val, max) {
@@ -40,27 +61,29 @@ export class Player {
             this.start = timestamp;
         }
 
+        this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
+        this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+
         const elapsed = timestamp - this.start;
-        const shift = Math.min(0.001 * elapsed, 10);
+        this.#shift = Math.min(0.001 * elapsed, 10);
 
-        if (this.arrow.up === true) {
-            this.#pos.y = this.#clamp(0, this.#pos.y - shift, window.innerHeight - this.#element.offsetHeight)
-            // this.#pos.y = this.#pos.y - shift;
-        }
-        if (this.arrow.down === true) {
-            this.#pos.y = this.#clamp(0, this.#pos.y + shift, window.innerHeight - this.#element.offsetHeight)
-            // this.#pos.y = this.#pos.y + shift;
-        }
-        if (this.arrow.left === true) {
-            this.#pos.x = this.#clamp(0, this.#pos.x - shift,window.innerWidth - this.#element.offsetWidth)
-            // this.#pos.x = this.#pos.x - shift;
-        }
-        if (this.arrow.right === true) {
-            this.#pos.x = this.#clamp(0, this.#pos.x + shift, window.innerWidth - this.#element.offsetWidth)
-            // this.#pos.x = this.#pos.x + shift;
-        }
+        // this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
+        // this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
 
-        if (this.arrow.down === false && this.arrow.up === false && this.arrow.right === false && this.arrow.left === false) {
+        // if (this.playerInput.arrowUp === true) {
+        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
+        // }
+        // if (this.playerInput.arrowDown === true) {
+        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
+        // }
+        // if (this.playerInput.arrowLeft === true) {
+        //     this.#pos.x = this.#clamp(0, this.#pos.x,maxPosition)
+        // }
+        // if (this.playerInput.arrowRight === true) {
+        //     this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
+        // }
+
+        if (this.playerInput.arrowDown === false && this.playerInput.arrowUp === false && this.playerInput.arrowRight === false && this.playerInput.arrowLeft === false) {
             this.start = undefined;
         }
 
@@ -71,19 +94,19 @@ export class Player {
     handleKeyDown(event) {
         switch(event.key) {
             case "ArrowUp": {
-                this.arrow.up = true;
+                this.playerInput.arrowUp = true;
                 break;
             }
             case "ArrowDown": {
-                this.arrow.down = true;
+                this.playerInput.arrowDown = true;
                 break;
             }
             case "ArrowLeft": {
-                this.arrow.left = true;
+                this.playerInput.arrowLeft = true;
                 break;
             }
             case "ArrowRight": {
-                this.arrow.right = true;
+                this.playerInput.arrowRight = true;
                 break;
             }
         }
@@ -92,19 +115,19 @@ export class Player {
     handleKeyUp(event) {
         switch(event.key) {
             case "ArrowUp": {
-                this.arrow.up = false;
+                this.playerInput.arrowUp = false;
                 break;
             }
             case "ArrowDown": {
-                this.arrow.down = false;
+                this.playerInput.arrowDown = false;
                 break;
             }
             case "ArrowLeft": {
-                this.arrow.left = false;
+                this.playerInput.arrowLeft = false;
                 break;
             }
             case "ArrowRight": {
-                this.arrow.right = false;
+                this.playerInput.arrowRight = false;
                 break;
             }
         }
