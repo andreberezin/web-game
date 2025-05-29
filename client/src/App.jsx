@@ -4,11 +4,12 @@ import { io } from 'socket.io-client';
 import { Player } from './components/Player.js';
 
 function App() {
+    /*const gamestate = {
+        players: {
 
-    const id = "player-2"
-
-    // let player = new Player({x: 200, y: 200}, id);
-    let player = new Player(id);
+        }
+    }*/
+    let players = {}
 
     useEffect(() => {
         console.log('Connecting to socket...');
@@ -19,18 +20,33 @@ function App() {
             console.log('Connected to server with ID:', socket.id);
         });
 
-        player.insertPlayer();
+        socket.emit('createNewPlayer');
 
-        socket.on('backend', (data) => {
+        //player.insertPlayer();
+
+        socket.on('newPlayerCreated', (newPlayer, playerID) => {
             //console.log(data);
-            player.setPosition(data);
+            let player = new Player(playerID);
+            console.log("newPlayer: ", newPlayer)
+            console.log("playerID: ", playerID)
+            player.createPlayerModel(newPlayer);
+            //player.setPosition(data);
+            players[playerID] = player;
+            console.log("players object: ", players)
+            // players.push(player);
         })
 
         function renderLoop(timestamp) {
 
-            player.update(timestamp)
+            for (let key in players) {
+                //console.log(Object.keys(players))
+                //console.log(players)
+                //console.log(players[key])
+                players[key].update(timestamp)
+            }
+            //player.update(timestamp)
 
-            socket.emit("player data", player.playerInput, player.getShift, player.getMaxPosition);
+            //socket.emit("player data", player.playerInput, player.getShift, player.getMaxPosition);
 
             requestAnimationFrame(renderLoop)
         }
@@ -44,10 +60,10 @@ function App() {
 
   return (
       <div id={"game-field"} onClick={() => {
-          const playerElement = document.getElementById(id)
-          if (playerElement) {
-              playerElement.focus();
-          }
+          // const playerElement = document.getElementById(id)
+          // if (playerElement) {
+          //     playerElement.focus();
+          // }
       }}>
       </div>
   )

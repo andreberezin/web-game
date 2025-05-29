@@ -1,5 +1,9 @@
 const { io } = require('./server.js');
 
+const gameState = {
+    players: {}
+}
+
 let playerInput = {
     arrowUp: false,
     arrowDown: false,
@@ -9,7 +13,7 @@ let playerInput = {
 let playerPos = {
     x: 200,
     y: 200
-}
+};
 let playerShift = null;
 let playerMaxPosition = {
     x: 0,
@@ -17,11 +21,25 @@ let playerMaxPosition = {
 };
 
 io.on('connection', (socket) => {
+    socket.on('createNewPlayer', () => {
+        gameState.players[socket.id] = {
+            x: 200,
+            y: 200,
+            //width: 20,
+            //height: 20
+        }
+        io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
+    })
+
     socket.on('player data', (input, shift, maxPosition) => {
         //console.log("Player data: ", data);
         playerInput = input;
         playerShift = shift;
         playerMaxPosition = maxPosition;
+    });
+
+    socket.on('disconnect', () => {
+        delete gameState.players[socket.id]
     });
 })
 
@@ -32,9 +50,7 @@ function gameLoop() {
 
     updateGame();
 
-    //console.log("game loop is running");
-
-    io.emit('backend', playerPos);
+    //io.emit('state', gameState);
 
     // broadcastGameState();
 

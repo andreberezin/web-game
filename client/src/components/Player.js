@@ -133,7 +133,12 @@ export class Player {
         }
     }
 
-	insertPlayer() {
+	createPlayerModel(playerData) {
+
+        console.log("playerData: ", playerData)
+
+        this.#pos.x = playerData.x
+        this.#pos.y = playerData.y
 
         if (document.getElementById(this.#id) !== null) {
             console.log("Player already exists!");
