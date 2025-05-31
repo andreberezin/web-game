@@ -15,6 +15,9 @@ export default defineConfig({
       '/socket.io': {
         // target: 'http://localhost:3000',
         target: serverTarget,
+        headers : {
+          'ngrok-skip-browser-warning':true
+        },
         ws: true,
         changeOrigin: true,
         secure: false,
