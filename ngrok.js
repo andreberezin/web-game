@@ -10,7 +10,8 @@ async function startTunnel() {
 
         const url = await ngrok.connect({
             port: 3000,
-            hostname: 'just-panda-musical.ngrok-free.app',
+            // hostname: 'just-panda-musical.ngrok-free.app',
+            hostname: 'intimate-upright-sunfish.ngrok-free.app',
             region: 'eu',
         });
 
