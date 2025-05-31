@@ -55,7 +55,9 @@ export class Player {
         return val > max ? max : val < min ? min : val;
     }
 
-    update(timestamp) {
+    update(timestamp, newPlayerData) {
+
+        // console.log("Updating player");
 
         if (this.start === undefined) {
             this.start = timestamp;
@@ -66,6 +68,12 @@ export class Player {
 
         const elapsed = timestamp - this.start;
         this.#shift = Math.min(0.001 * elapsed, 10);
+
+        // console.log("newPlayerData: ", newPlayerData);
+        // console.log("this: ", this);
+
+        this.#pos.y = newPlayerData.y;
+        this.#pos.x = newPlayerData.x;
 
         // this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
         // this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)

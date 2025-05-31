@@ -4,21 +4,21 @@ const gameState = {
     players: {}
 }
 
-let playerInput = {
-    arrowUp: false,
-    arrowDown: false,
-    arrowLeft: false,
-    arrowRight: false,
-};
-let playerPos = {
-    x: 200,
-    y: 200
-};
-let playerShift = null;
-let playerMaxPosition = {
-    x: 0,
-    y: 0,
-};
+// let playerInput = {
+//     arrowUp: false,
+//     arrowDown: false,
+//     arrowLeft: false,
+//     arrowRight: false,
+// };
+// let playerPos = {
+//     x: 200,
+//     y: 200
+// };
+// let playerShift = null;
+// let playerMaxPosition = {
+//     x: 0,
+//     y: 0,
+// };
 
 io.on('connection', (socket) => {
     socket.on('createNewPlayer', () => {
@@ -32,14 +32,31 @@ io.on('connection', (socket) => {
     })
 
     socket.on('player data', (input, shift, maxPosition) => {
+
+        // console.log("gamestate.players: ", gameState.players);
+
+        if (gameState.players[socket.id]) {
+            // console.log("gamestate.players[socket.id].playerInput: ", input);
+            gameState.players[socket.id].playerInput = input;
+            gameState.players[socket.id].playerShift = shift;
+            gameState.players[socket.id].playerMaxPosition = maxPosition;
+        }
+        /*console.log("playerinput: ", gameState.players[socket.id].playerInput)
+        console.log("playershift: ", gameState.players[socket.id].playerShift)
+        console.log("playermaxPos: ", gameState.players[socket.id].playerMaxPosition)*/
+
+        // console.log("player data in backend: ", input, shift, maxPosition);
         //console.log("Player data: ", data);
-        playerInput = input;
-        playerShift = shift;
-        playerMaxPosition = maxPosition;
+        // playerInput = input;
+        // playerShift = shift;
+        // playerMaxPosition = maxPosition;
     });
 
     socket.on('disconnect', () => {
-        delete gameState.players[socket.id]
+        console.log("gamestate.players: ", gameState.players);
+        if (gameState.players[socket.id]) {
+            delete gameState.players[socket.id];
+        }
     });
 })
 
@@ -50,7 +67,8 @@ function gameLoop() {
 
     updateGame();
 
-    //io.emit('state', gameState);
+    // console.log("gameState: ", gameState.players);
+    io.emit('game state', (gameState));
 
     // broadcastGameState();
 
@@ -62,17 +80,32 @@ function clamp(min, val, max) {
 }
 
 function updateGame() {
-    if (playerInput.arrowUp === true) {
-        playerPos.y = clamp(0, playerPos.y - playerShift, playerMaxPosition.y)
-    }
-    if (playerInput.arrowDown === true) {
-        playerPos.y = clamp(0, playerPos.y + playerShift, playerMaxPosition.y)
-    }
-    if (playerInput.arrowLeft === true) {
-        playerPos.x = clamp(0, playerPos.x - playerShift, playerMaxPosition.x)
-    }
-    if (playerInput.arrowRight === true) {
-        playerPos.x = clamp(0, playerPos.x + playerShift, playerMaxPosition.x)
+
+    for (let playerID in gameState.players) {
+        const player = gameState.players[playerID]
+
+        if (player.playerInput) {
+
+            // console.log("player input in updateGame: ", player.playerInput);
+
+            if (player.playerInput.arrowUp === true) {
+                console.log("arrow up true");
+                console.log("player.y: ", player.y);
+                player.y = clamp(0, player.y - player.playerShift, player.playerMaxPosition.y)
+            }
+            if (player.playerInput.arrowDown === true) {
+                console.log("arrow down true");
+                player.y = clamp(0, player.y + player.playerShift, player.playerMaxPosition.y)
+            }
+            if (player.playerInput.arrowLeft === true) {
+                console.log("arrow left true");
+                player.x = clamp(0, player.x - player.playerShift, player.playerMaxPosition.x)
+            }
+            if (player.playerInput.arrowRight === true) {
+                console.log("arrow right true");
+                player.x = clamp(0, player.x + player.playerShift, player.playerMaxPosition.x)
+            }
+        }
     }
 }
 

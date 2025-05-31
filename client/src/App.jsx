@@ -10,6 +10,7 @@ function App() {
         }
     }*/
     let players = {}
+    let myID = null;
 
     useEffect(() => {
         console.log('Connecting to socket...');
@@ -27,26 +28,49 @@ function App() {
         socket.on('newPlayerCreated', (newPlayer, playerID) => {
             //console.log(data);
             let player = new Player(playerID);
-            console.log("newPlayer: ", newPlayer)
-            console.log("playerID: ", playerID)
+            // console.log("player: ", player)
+            // console.log("playerID: ", playerID)
+            myID = playerID;
             player.createPlayerModel(newPlayer);
             //player.setPosition(data);
             players[playerID] = player;
-            console.log("players object: ", players)
+            // console.log("players object: ", players)
             // players.push(player);
         })
 
+        socket.on('game state', (updatedGameState) => {
+            // console.log("updatedGameState:", updatedGameState);
+            players[myID] = updatedGameState.players[myID]
+        })
+
+
         function renderLoop(timestamp) {
 
-            for (let key in players) {
+            //player.update(timestamp)
+
+            // console.log("myID: ", myID);
+            //
+            // console.log("player: ", players);
+
+            for (let playerID in players) {
+                if (playerID && players[playerID] != null) {
+                    // console.log("playerID: ", playerID);
+                    console.log("players[playerID]: ", players[playerID]);
+                    players[playerID].update(timestamp, players[playerID])
+                }
+            }
+
+            if (myID) {
+                //console.log("players[myID].playerInput: ", players[myID].playerInput);
+                socket.emit("player data", players[myID].playerInput, players[myID].getShift, players[myID].getMaxPosition);
+            }
+
+            /*for (let playerID in players) {
                 //console.log(Object.keys(players))
                 //console.log(players)
                 //console.log(players[key])
-                players[key].update(timestamp)
-            }
-            //player.update(timestamp)
-
-            //socket.emit("player data", player.playerInput, player.getShift, player.getMaxPosition);
+                players[playerID].update(timestamp, players[playerID])
+            }*/
 
             requestAnimationFrame(renderLoop)
         }
@@ -60,11 +84,11 @@ function App() {
 
   return (
       <div id={"game-field"} onClick={() => {
-          // const playerElement = document.getElementById(id)
-          // if (playerElement) {
-          //     playerElement.focus();
-          // }
-      }}>
+          if (document.getElementById(myID)) {
+              document.getElementById(myID).focus()
+          }
+      }}
+      >
       </div>
   )
 }

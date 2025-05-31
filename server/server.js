@@ -28,15 +28,6 @@ app.use(express.static('public'));
 
 app.use(express.json());
 
-
-io.on('connection', (socket) => {
-    console.log('🔌 User connected');
-
-    socket.on('disconnect', () => {
-        console.log('🔌 User disconnected');
-    });
-});
-
 // Start server
 server.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
