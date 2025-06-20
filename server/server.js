@@ -1,7 +1,7 @@
-const express = require('express');
-const http = require('http');
-const cors = require('cors');
-const { Server } = require('socket.io');
+import express from 'express';
+import http from 'http';
+import cors from 'cors';
+import { Server } from 'socket.io'
 
 const app = express();
 const server = http.createServer(app);
@@ -33,6 +33,7 @@ server.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
 });
 
-module.exports = { io };
+import {setupGame} from './game.js';
+setupGame(io)
 
-require('./game.js');
+import './game.js';
