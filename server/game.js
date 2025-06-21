@@ -1,4 +1,4 @@
-
+import {Player} from './entities/Player.js'
 
 export function setupGame(io) {
 
@@ -8,12 +8,7 @@ export function setupGame(io) {
 
     io.on('connection', (socket) => {
         socket.on('createNewPlayer', () => {
-            gameState.players[socket.id] = {
-                x: 200,
-                y: 200,
-                //width: 20,
-                //height: 20
-            }
+            gameState.players[socket.id] = new Player(socket.id)
             io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
         })
 
@@ -23,9 +18,9 @@ export function setupGame(io) {
 
             if (gameState.players[socket.id]) {
                 // console.log("gamestate.players[socket.id].playerInput: ", input);
-                gameState.players[socket.id].playerInput = input;
-                gameState.players[socket.id].playerShift = shift;
-                gameState.players[socket.id].playerMaxPosition = maxPosition;
+                gameState.players[socket.id].input = input;
+                gameState.players[socket.id].shift = shift;
+                gameState.players[socket.id].maxPosition = maxPosition;
             }
             /*console.log("playerinput: ", gameState.players[socket.id].playerInput)
 			console.log("playershift: ", gameState.players[socket.id].playerShift)
@@ -70,26 +65,25 @@ export function setupGame(io) {
         for (let playerID in gameState.players) {
             const player = gameState.players[playerID]
 
-            if (player.playerInput) {
-
+            if (player.input) {
                 // console.log("player input in updateGame: ", player.playerInput);
 
-                if (player.playerInput.arrowUp === true) {
+                if (player.input.arrowUp === true) {
                     console.log("arrow up true");
-                    console.log("player.y: ", player.y);
-                    player.y = clamp(0, player.y - player.playerShift, player.playerMaxPosition.y)
+                    console.log("player.pos.y: ", player.pos.y)
+                    player.pos.y = clamp(0, player.pos.y - player.shift, player.maxPosition.y)
                 }
-                if (player.playerInput.arrowDown === true) {
+                if (player.input.arrowDown === true) {
                     console.log("arrow down true");
-                    player.y = clamp(0, player.y + player.playerShift, player.playerMaxPosition.y)
+                    player.pos.y = clamp(0, player.pos.y + player.shift, player.maxPosition.y)
                 }
-                if (player.playerInput.arrowLeft === true) {
+                if (player.input.arrowLeft === true) {
                     console.log("arrow left true");
-                    player.x = clamp(0, player.x - player.playerShift, player.playerMaxPosition.x)
+                    player.pos.x = clamp(0, player.pos.x - player.shift, player.maxPosition.x)
                 }
-                if (player.playerInput.arrowRight === true) {
+                if (player.input.arrowRight === true) {
                     console.log("arrow right true");
-                    player.x = clamp(0, player.x + player.playerShift, player.playerMaxPosition.x)
+                    player.pos.x = clamp(0, player.pos.x + player.shift, player.maxPosition.x)
                 }
             }
         }
