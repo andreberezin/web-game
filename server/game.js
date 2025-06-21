@@ -12,6 +12,10 @@ export function setupGame(io) {
             io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
         })
 
+        socket.on('fetchOtherPlayers', () => {
+            socket.emit('sendOtherPlayers', (gameState.players));
+        })
+
         socket.on('player data', (input, shift, maxPosition) => {
 
             // console.log("gamestate.players: ", gameState.players);
@@ -69,20 +73,20 @@ export function setupGame(io) {
                 // console.log("player input in updateGame: ", player.playerInput);
 
                 if (player.input.arrowUp === true) {
-                    console.log("arrow up true");
-                    console.log("player.pos.y: ", player.pos.y)
+                    //console.log("arrow up true");
+                    //console.log("player.pos.y: ", player.pos.y)
                     player.pos.y = clamp(0, player.pos.y - player.shift, player.maxPosition.y)
                 }
                 if (player.input.arrowDown === true) {
-                    console.log("arrow down true");
+                    //console.log("arrow down true");
                     player.pos.y = clamp(0, player.pos.y + player.shift, player.maxPosition.y)
                 }
                 if (player.input.arrowLeft === true) {
-                    console.log("arrow left true");
+                    //console.log("arrow left true");
                     player.pos.x = clamp(0, player.pos.x - player.shift, player.maxPosition.x)
                 }
                 if (player.input.arrowRight === true) {
-                    console.log("arrow right true");
+                    //console.log("arrow right true");
                     player.pos.x = clamp(0, player.pos.x + player.shift, player.maxPosition.x)
                 }
             }

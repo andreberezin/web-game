@@ -144,7 +144,7 @@ export class Player {
 
 	createPlayerModel(playerData) {
 
-        console.log("playerData: ", playerData)
+        //console.log("playerData: ", playerData)
 
         this.#pos.x = playerData.pos.x;
         this.#pos.y = playerData.pos.y;

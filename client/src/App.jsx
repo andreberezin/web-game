@@ -4,7 +4,7 @@ import { io } from 'socket.io-client';
 import { Player } from './components/Player.js';
 
 function App() {
-    const gamestate = {
+    const gameState = {
         players: {
 
         }
@@ -19,11 +19,25 @@ function App() {
 
         socket.on('connect', () => {
             console.log('Connected to server with ID:', socket.id);
+            socket.emit('createNewPlayer');
+            socket.emit('fetchOtherPlayers');
         });
 
-        socket.emit('createNewPlayer');
+
 
         //player.insertPlayer();
+        socket.on('sendOtherPlayers', (playersData) => {
+            console.log("Creating other players: ", playersData);
+
+            for (const playerID in playersData) {
+
+                if (playerID !== myID) {
+                    let player = new Player(playerID);
+                    player.createPlayerModel(playersData[playerID]);
+                    gameState.players[playerID] = player;
+                }
+            }
+        })
 
         socket.on('newPlayerCreated', (newPlayer, playerID) => {
             // console.log("newPlayer: ", newPlayer);
@@ -34,21 +48,28 @@ function App() {
             player.createPlayerModel(newPlayer);
             // console.log("Player object created: ", player);
             //player.setPosition(data);
-            gamestate.players[playerID] = player;
-            console.log("player object when created: ", gamestate.players[playerID]);
+            gameState.players[playerID] = player;
+            //console.log("player object when created: ", gameState.players[playerID]);
             // console.log("players object: ", players)
             // players.push(player);
         })
 
         socket.on('game state', (updatedGameState) => {
             //console.log(updatedGameState.players[myID].pos);
-            // gamestate.players[myID].setPosition(updatedGameState.players[myID].pos);
-            // gamestate.players[myID].setShift(updatedGameState.players[myID].shift);
+            // gameState.players[myID].setPosition(updatedGameState.players[myID].pos);
+            // gameState.players[myID].setShift(updatedGameState.players[myID].shift);
 
-            for (const playerID in updatedGameState.players) {
-                if (gamestate.players[playerID]) { // ensure the player exists
-                    gamestate.players[playerID].setPosition(updatedGameState.players[playerID].pos);
-                    gamestate.players[playerID].setShift(updatedGameState.players[playerID].shift);
+            for (const playerID in gameState.players) {
+
+                if (!updatedGameState.players[playerID]) {
+                    document.getElementById(playerID).remove();
+                    delete gameState.players[playerID];
+                    continue;
+                }
+
+                if (gameState.players[playerID]) { // ensure the player exists
+                    gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
+                    gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
                 }
             }
         })
@@ -61,17 +82,17 @@ function App() {
             //
             // console.log("player: ", players);
 
-            for (let playerID in gamestate.players) {
-                if (playerID && gamestate.players[playerID] != null) {
+            for (let playerID in gameState.players) {
+                if (playerID && gameState.players[playerID] != null) {
                     // console.log("playerID: ", playerID);
                     //console.log("players[playerID]: ", players[playerID]);
-                    gamestate.players[playerID].update(timestamp, gamestate.players[playerID]);
+                    gameState.players[playerID].update(timestamp, gameState.players[playerID]);
                 }
             }
 
             if (myID) {
                 //console.log("players[myID].playerInput: ", players[myID].playerInput);
-                socket.emit("player data", gamestate.players[myID].input, gamestate.players[myID].getShift, gamestate.players[myID].getMaxPosition);
+                socket.emit("player data", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
             }
 
             /*for (let playerID in players) {
@@ -87,6 +108,10 @@ function App() {
         requestAnimationFrame(renderLoop);
 
         return () => {
+            if (gameState.players) {
+                delete gameState.players;
+                document.getElementById(socket.id).remove();
+            }
             socket.disconnect();
         };
     }, []);
