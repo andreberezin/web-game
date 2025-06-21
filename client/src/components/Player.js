@@ -11,7 +11,7 @@ export class Player {
         x: 0,
         y: 0,
     }
-    playerInput = {
+    input = {
         arrowUp: false,
         arrowDown: false,
         arrowRight: false,
@@ -71,9 +71,10 @@ export class Player {
 
         // console.log("newPlayerData: ", newPlayerData);
         // console.log("this: ", this);
+        //console.log("New player data: ", newPlayerData);
 
-        this.#pos.y = newPlayerData.y;
-        this.#pos.x = newPlayerData.x;
+        this.#pos.y = newPlayerData.#pos.y;
+        this.#pos.x = newPlayerData.#pos.x;
 
         // this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
         // this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
@@ -91,7 +92,7 @@ export class Player {
         //     this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
         // }
 
-        if (this.playerInput.arrowDown === false && this.playerInput.arrowUp === false && this.playerInput.arrowRight === false && this.playerInput.arrowLeft === false) {
+        if (this.input.arrowDown === false && this.input.arrowUp === false && this.input.arrowRight === false && this.input.arrowLeft === false) {
             this.start = undefined;
         }
 
@@ -102,19 +103,19 @@ export class Player {
     handleKeyDown(event) {
         switch(event.key) {
             case "ArrowUp": {
-                this.playerInput.arrowUp = true;
+                this.input.arrowUp = true;
                 break;
             }
             case "ArrowDown": {
-                this.playerInput.arrowDown = true;
+                this.input.arrowDown = true;
                 break;
             }
             case "ArrowLeft": {
-                this.playerInput.arrowLeft = true;
+                this.input.arrowLeft = true;
                 break;
             }
             case "ArrowRight": {
-                this.playerInput.arrowRight = true;
+                this.input.arrowRight = true;
                 break;
             }
         }
@@ -123,19 +124,19 @@ export class Player {
     handleKeyUp(event) {
         switch(event.key) {
             case "ArrowUp": {
-                this.playerInput.arrowUp = false;
+                this.input.arrowUp = false;
                 break;
             }
             case "ArrowDown": {
-                this.playerInput.arrowDown = false;
+                this.input.arrowDown = false;
                 break;
             }
             case "ArrowLeft": {
-                this.playerInput.arrowLeft = false;
+                this.input.arrowLeft = false;
                 break;
             }
             case "ArrowRight": {
-                this.playerInput.arrowRight = false;
+                this.input.arrowRight = false;
                 break;
             }
         }
@@ -145,8 +146,8 @@ export class Player {
 
         console.log("playerData: ", playerData)
 
-        this.#pos.x = playerData.x
-        this.#pos.y = playerData.y
+        this.#pos.x = playerData.pos.x;
+        this.#pos.y = playerData.pos.y;
 
         if (document.getElementById(this.#id) !== null) {
             console.log("Player already exists!");
