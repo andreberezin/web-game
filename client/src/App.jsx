@@ -29,15 +29,22 @@ function App() {
         socket.on('sendOtherPlayers', (playersData) => {
             console.log("Creating other players: ", playersData);
 
+            let i = 1;
             for (const playerID in playersData) {
 
-                if (playerID !== myID) {
+
+                //if (playerID !== myID) {
                     let player = new Player(playerID);
+                    gameState.players[playerID].setName(`player${i}`);
                     player.createPlayerModel(playersData[playerID]);
                     gameState.players[playerID] = player;
-                }
+                    i++;
+                //}
             }
+
+            i = 0;
         })
+
 
         socket.on('newPlayerCreated', (newPlayer, playerID) => {
             // console.log("newPlayer: ", newPlayer);
@@ -45,7 +52,7 @@ function App() {
             // console.log("player: ", player)
             // console.log("playerID: ", playerID)
             myID = playerID;
-            player.createPlayerModel(newPlayer);
+            //player.createPlayerModel(newPlayer);
             // console.log("Player object created: ", player);
             //player.setPosition(data);
             gameState.players[playerID] = player;

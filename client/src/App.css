@@ -16,11 +16,11 @@
   outline: none;
 }
 
-#player-1 {
+.player-1 {
   background-color: red;
 }
 
-#player-2 {
+.player-2 {
   background-color: blue;
 }
 

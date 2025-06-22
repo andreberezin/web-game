@@ -4,6 +4,7 @@ export class Player {
 		y: 0,
 	};
     #id = "player-1";
+    #name = null;
     #shift = null;
     start;
     #element = null;
@@ -41,6 +42,10 @@ export class Player {
 
     get getMaxPosition() {
         return this.#maxPosition;
+    }
+
+    setName(name) {
+        this.#name = name;
     }
 
     setShift(data) {
@@ -157,11 +162,12 @@ export class Player {
         console.log("Creating player: ", this.#id);
 
         const player = document.createElement("div")
-        player.className = "player"
+        player.classList.add("player", playerData.name)
         player.id = `${this.#id}`
         player.style.top = `${this.#pos.y}px`
         player.style.left = `${this.#pos.x}px`
         player.tabIndex = 0;
+        player.textContent = playerData.name;
 
         for (const property in this.styles) {
             player.style[property] = this.styles[property]

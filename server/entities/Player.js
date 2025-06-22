@@ -4,6 +4,7 @@ export class Player {
 		y: 100,
 	};
     id = "player-1";
+    name = null;
     shift = null;
     maxPosition = {
         x: 0,

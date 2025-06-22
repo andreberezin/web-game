@@ -9,7 +9,7 @@
     "server": "cd server && npm run dev",
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "client:grok": "cross-env USE_NGROK=true npm run client",
+    "client:ngrok": "cross-env USE_NGROK=true npm run client",
     "dev:ngrok": "cross-env USE_NGROK=true concurrently \"npm run client\" \"npm run server\" \"node ngrok.js\""
   },
   "keywords": [],
