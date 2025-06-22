@@ -62,8 +62,6 @@ export class Player {
 
     update(timestamp, newPlayerData) {
 
-        // console.log("Updating player");
-
         if (this.start === undefined) {
             this.start = timestamp;
         }
@@ -74,28 +72,8 @@ export class Player {
         const elapsed = timestamp - this.start;
         this.#shift = Math.min(0.001 * elapsed, 10);
 
-        // console.log("newPlayerData: ", newPlayerData);
-        // console.log("this: ", this);
-        //console.log("New player data: ", newPlayerData);
-
         this.#pos.y = newPlayerData.#pos.y;
         this.#pos.x = newPlayerData.#pos.x;
-
-        // this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
-
-        // if (this.playerInput.arrowUp === true) {
-        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // }
-        // if (this.playerInput.arrowDown === true) {
-        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // }
-        // if (this.playerInput.arrowLeft === true) {
-        //     this.#pos.x = this.#clamp(0, this.#pos.x,maxPosition)
-        // }
-        // if (this.playerInput.arrowRight === true) {
-        //     this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
-        // }
 
         if (this.input.arrowDown === false && this.input.arrowUp === false && this.input.arrowRight === false && this.input.arrowLeft === false) {
             this.start = undefined;
@@ -148,8 +126,6 @@ export class Player {
     }
 
 	createPlayerModel(playerData) {
-
-        //console.log("playerData: ", playerData)
 
         this.#pos.x = playerData.pos.x;
         this.#pos.y = playerData.pos.y;

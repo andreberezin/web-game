@@ -18,23 +18,11 @@ export function setupGame(io) {
 
         socket.on('player data', (input, shift, maxPosition) => {
 
-            // console.log("gamestate.players: ", gameState.players);
-
             if (gameState.players[socket.id]) {
-                // console.log("gamestate.players[socket.id].playerInput: ", input);
                 gameState.players[socket.id].input = input;
                 gameState.players[socket.id].shift = shift;
                 gameState.players[socket.id].maxPosition = maxPosition;
             }
-            /*console.log("playerinput: ", gameState.players[socket.id].playerInput)
-			console.log("playershift: ", gameState.players[socket.id].playerShift)
-			console.log("playermaxPos: ", gameState.players[socket.id].playerMaxPosition)*/
-
-            // console.log("player data in backend: ", input, shift, maxPosition);
-            //console.log("Player data: ", data);
-            // playerInput = input;
-            // playerShift = shift;
-            // playerMaxPosition = maxPosition;
         });
 
         socket.on('disconnect', () => {
@@ -48,14 +36,10 @@ export function setupGame(io) {
     const TICK_RATE = 1000/60
 
     function gameLoop() {
-        // processInputQueue();
 
         updateGame();
 
-        // console.log("gameState: ", gameState.players);
         io.emit('game state', (gameState));
-
-        // broadcastGameState();
 
         setTimeout(gameLoop, TICK_RATE);
     }
@@ -70,23 +54,17 @@ export function setupGame(io) {
             const player = gameState.players[playerID]
 
             if (player.input) {
-                // console.log("player input in updateGame: ", player.playerInput);
 
                 if (player.input.arrowUp === true) {
-                    //console.log("arrow up true");
-                    //console.log("player.pos.y: ", player.pos.y)
                     player.pos.y = clamp(0, player.pos.y - player.shift, player.maxPosition.y)
                 }
                 if (player.input.arrowDown === true) {
-                    //console.log("arrow down true");
                     player.pos.y = clamp(0, player.pos.y + player.shift, player.maxPosition.y)
                 }
                 if (player.input.arrowLeft === true) {
-                    //console.log("arrow left true");
                     player.pos.x = clamp(0, player.pos.x - player.shift, player.maxPosition.x)
                 }
                 if (player.input.arrowRight === true) {
-                    //console.log("arrow right true");
                     player.pos.x = clamp(0, player.pos.x + player.shift, player.maxPosition.x)
                 }
             }
@@ -94,6 +72,4 @@ export function setupGame(io) {
     }
 
     gameLoop();
-
-
 }
