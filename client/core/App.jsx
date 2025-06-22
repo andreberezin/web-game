@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
 import './App.css'
 import { io } from 'socket.io-client';
-import { Player } from './components/Player.js';
+import { Player } from '../models/Player.js';
 
 function App() {
     const gameState = {

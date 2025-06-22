@@ -1,4 +1,5 @@
-import {Player} from './entities/Player.js'
+import {Player} from '../models/Player.js'
+import {clamp} from '../utils/clamp.js';
 
 export function setupGame(io) {
 
@@ -43,11 +44,7 @@ export function setupGame(io) {
 
         setTimeout(gameLoop, TICK_RATE);
     }
-
-    function clamp(min, val, max) {
-        return val > max ? max : val < min ? min : val;
-    }
-
+    
     function updateGame() {
 
         for (let playerID in gameState.players) {
