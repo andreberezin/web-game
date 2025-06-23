@@ -82,6 +82,12 @@ export class Player {
             this.start = undefined;
         }
 
+
+        if (!this.#element) {
+            console.error("Element not found, cannot update position for ", this.#id);
+            return;
+        }
+
         this.#element.style.top = `${this.#pos.y}px`
         this.#element.style.left = `${this.#pos.x}px`
     }
@@ -141,12 +147,12 @@ export class Player {
         console.log("Creating player: ", this.#id);
 
         const player = document.createElement("div")
-        player.classList.add("player", playerData.name)
+        player.classList.add("player")
         player.id = `${this.#id}`
         player.style.top = `${this.#pos.y}px`
         player.style.left = `${this.#pos.x}px`
         player.tabIndex = 0;
-        player.textContent = playerData.name;
+        //player.textContent = playerData.name;
 
         for (const property in this.styles) {
             player.style[property] = this.styles[property]

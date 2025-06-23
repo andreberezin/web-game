@@ -29,6 +29,7 @@ export class SocketHandler {
 
 			socket.on('fetchOtherPlayers', () => {
 				socket.emit('sendOtherPlayers', (gameState.players));
+				console.log("sending other players", gameState.players);
 			})
 
 			socket.on('updatePlayerData', (input, shift, maxPosition) => {
@@ -41,8 +42,9 @@ export class SocketHandler {
 			});
 
 			socket.on('disconnect', () => {
-				console.log("gamestate.players: ", gameState.players);
+				//console.log("gamestate.players: ", gameState.players);
 				if (gameState.players[socket.id]) {
+					console.log("Disconnecting player: ", gameState.players[socket.id]);
 					delete gameState.players[socket.id];
 				}
 			});

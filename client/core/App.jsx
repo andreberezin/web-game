@@ -32,13 +32,13 @@ function App() {
             for (const playerID in playersData) {
 
 
-                //if (playerID !== myID) {
+                if (playerID !== myID) {
                     let player = new Player(playerID);
                     //gameState.players[playerID].setName(`player${i}`);
                     player.createPlayerModel(playersData[playerID]);
                     gameState.players[playerID] = player;
                     i++;
-                //}
+                }
             }
 
             i = 0;
@@ -48,7 +48,7 @@ function App() {
         socket.on('newPlayerCreated', (newPlayer, playerID) => {
             let player = new Player(playerID);
             myID = playerID;
-            //player.createPlayerModel(newPlayer);
+            player.createPlayerModel(newPlayer);
             gameState.players[playerID] = player;
         })
 
