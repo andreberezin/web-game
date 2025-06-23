@@ -26,7 +26,7 @@ function App() {
 
         //player.insertPlayer();
         socket.on('sendOtherPlayers', (playersData) => {
-            console.log("Creating other players: ", playersData);
+            //console.log("Creating players: ", playersData);
 
             let i = 1;
             for (const playerID in playersData) {
@@ -34,7 +34,7 @@ function App() {
 
                 //if (playerID !== myID) {
                     let player = new Player(playerID);
-                    gameState.players[playerID].setName(`player${i}`);
+                    //gameState.players[playerID].setName(`player${i}`);
                     player.createPlayerModel(playersData[playerID]);
                     gameState.players[playerID] = player;
                     i++;
@@ -53,6 +53,7 @@ function App() {
         })
 
         socket.on('game state', (updatedGameState) => {
+            //console.log("updated game state in frontend: ", updatedGameState);
             for (const playerID in gameState.players) {
 
                 if (!updatedGameState.players[playerID]) {
@@ -76,8 +77,13 @@ function App() {
                 }
             }
 
+            //console.log("LOOP IS RUNNING");
+
+            //console.log("myID", myID);
+
             if (myID) {
-                socket.emit("player data", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
+                socket.emit("updatePlayerData", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
+                //console.log("input from frontend", gameState.players[myID].input);
             }
 
             requestAnimationFrame(renderLoop)

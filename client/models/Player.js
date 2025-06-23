@@ -66,8 +66,11 @@ export class Player {
             this.start = timestamp;
         }
 
-        this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
-        this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+        //this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
+        //this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+
+        this.#maxPosition.y = 500;
+        this.#maxPosition.x = 500;
 
         const elapsed = timestamp - this.start;
         this.#shift = Math.min(0.001 * elapsed, 10);

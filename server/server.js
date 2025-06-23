@@ -2,7 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io'
-import './core/game.js';
+//import './core/game.js';
 import {GameEngine} from './core/GameEngine.js';
 
 const app = express();
@@ -39,4 +39,4 @@ server.listen(port, () => {
 // setupGame(io)
 const gameEngine = new GameEngine(io);
 gameEngine.createGame(1);
-gameEngine.gameLoop();
+gameEngine.startGameLoop(1);

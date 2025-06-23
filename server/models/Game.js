@@ -7,6 +7,7 @@ export class Game {
 	};
 	#settings = {
 		duration: 60000, // milliseconds = 1 minute
+		maxPlayers: 4,
 	}
 
 	constructor(id, settings) {
@@ -45,4 +46,20 @@ export class Game {
 	set setId(newId) {
 		this.#id = newId;
 	}
+
+	// addPlayer(playerId, player) {
+	// 	if (this.#state.players.hasOwnProperty(playerId)) {
+	// 		console.error("Player: ", playerId, " already exists exist");
+	// 		return;
+	// 	}
+	// 	this.#state.players[playerId] = player;
+	// }
+	//
+	// removePlayer(playerId) {
+	// 	if (!(this.#state.players.hasOwnProperty(playerId))) {
+	// 		console.error("Player: ", playerId, " does not exist");
+	// 		return;
+	// 	}
+	// 	delete this.#state.players[playerId]
+	// }
 }
