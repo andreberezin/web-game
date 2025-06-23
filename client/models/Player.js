@@ -62,43 +62,30 @@ export class Player {
 
     update(timestamp, newPlayerData) {
 
-        // console.log("Updating player");
-
         if (this.start === undefined) {
             this.start = timestamp;
         }
 
-        this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
-        this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+        //this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
+        //this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+
+        this.#maxPosition.y = 500;
+        this.#maxPosition.x = 500;
 
         const elapsed = timestamp - this.start;
         this.#shift = Math.min(0.001 * elapsed, 10);
 
-        // console.log("newPlayerData: ", newPlayerData);
-        // console.log("this: ", this);
-        //console.log("New player data: ", newPlayerData);
-
         this.#pos.y = newPlayerData.#pos.y;
         this.#pos.x = newPlayerData.#pos.x;
 
-        // this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
-
-        // if (this.playerInput.arrowUp === true) {
-        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // }
-        // if (this.playerInput.arrowDown === true) {
-        //     this.#pos.y = this.#clamp(0, this.#pos.y, maxPosition)
-        // }
-        // if (this.playerInput.arrowLeft === true) {
-        //     this.#pos.x = this.#clamp(0, this.#pos.x,maxPosition)
-        // }
-        // if (this.playerInput.arrowRight === true) {
-        //     this.#pos.x = this.#clamp(0, this.#pos.x, maxPosition)
-        // }
-
         if (this.input.arrowDown === false && this.input.arrowUp === false && this.input.arrowRight === false && this.input.arrowLeft === false) {
             this.start = undefined;
+        }
+
+
+        if (!this.#element) {
+            console.error("Element not found, cannot update position for ", this.#id);
+            return;
         }
 
         this.#element.style.top = `${this.#pos.y}px`
@@ -149,8 +136,6 @@ export class Player {
 
 	createPlayerModel(playerData) {
 
-        //console.log("playerData: ", playerData)
-
         this.#pos.x = playerData.pos.x;
         this.#pos.y = playerData.pos.y;
 
@@ -162,12 +147,12 @@ export class Player {
         console.log("Creating player: ", this.#id);
 
         const player = document.createElement("div")
-        player.classList.add("player", playerData.name)
+        player.classList.add("player")
         player.id = `${this.#id}`
         player.style.top = `${this.#pos.y}px`
         player.style.left = `${this.#pos.x}px`
         player.tabIndex = 0;
-        player.textContent = playerData.name;
+        //player.textContent = playerData.name;
 
         for (const property in this.styles) {
             player.style[property] = this.styles[property]

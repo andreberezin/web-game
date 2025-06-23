@@ -1,7 +1,7 @@
 import {useEffect} from 'react'
 import './App.css'
 import { io } from 'socket.io-client';
-import { Player } from './components/Player.js';
+import { Player } from '../models/Player.js';
 
 function App() {
     const gameState = {
@@ -9,7 +9,6 @@ function App() {
 
         }
     }
-    // let players = {}
     let myID = null;
 
     useEffect(() => {
@@ -27,19 +26,19 @@ function App() {
 
         //player.insertPlayer();
         socket.on('sendOtherPlayers', (playersData) => {
-            console.log("Creating other players: ", playersData);
+            //console.log("Creating players: ", playersData);
 
             let i = 1;
             for (const playerID in playersData) {
 
 
-                //if (playerID !== myID) {
+                if (playerID !== myID) {
                     let player = new Player(playerID);
-                    gameState.players[playerID].setName(`player${i}`);
+                    //gameState.players[playerID].setName(`player${i}`);
                     player.createPlayerModel(playersData[playerID]);
                     gameState.players[playerID] = player;
                     i++;
-                //}
+                }
             }
 
             i = 0;
@@ -47,25 +46,14 @@ function App() {
 
 
         socket.on('newPlayerCreated', (newPlayer, playerID) => {
-            // console.log("newPlayer: ", newPlayer);
             let player = new Player(playerID);
-            // console.log("player: ", player)
-            // console.log("playerID: ", playerID)
             myID = playerID;
-            //player.createPlayerModel(newPlayer);
-            // console.log("Player object created: ", player);
-            //player.setPosition(data);
+            player.createPlayerModel(newPlayer);
             gameState.players[playerID] = player;
-            //console.log("player object when created: ", gameState.players[playerID]);
-            // console.log("players object: ", players)
-            // players.push(player);
         })
 
         socket.on('game state', (updatedGameState) => {
-            //console.log(updatedGameState.players[myID].pos);
-            // gameState.players[myID].setPosition(updatedGameState.players[myID].pos);
-            // gameState.players[myID].setShift(updatedGameState.players[myID].shift);
-
+            //console.log("updated game state in frontend: ", updatedGameState);
             for (const playerID in gameState.players) {
 
                 if (!updatedGameState.players[playerID]) {
@@ -83,31 +71,20 @@ function App() {
 
         function renderLoop(timestamp) {
 
-            //player.update(timestamp)
-
-            // console.log("myID: ", myID);
-            //
-            // console.log("player: ", players);
-
             for (let playerID in gameState.players) {
                 if (playerID && gameState.players[playerID] != null) {
-                    // console.log("playerID: ", playerID);
-                    //console.log("players[playerID]: ", players[playerID]);
                     gameState.players[playerID].update(timestamp, gameState.players[playerID]);
                 }
             }
 
-            if (myID) {
-                //console.log("players[myID].playerInput: ", players[myID].playerInput);
-                socket.emit("player data", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
-            }
+            //console.log("LOOP IS RUNNING");
 
-            /*for (let playerID in players) {
-                //console.log(Object.keys(players))
-                //console.log(players)
-                //console.log(players[key])
-                players[playerID].update(timestamp, players[playerID])
-            }*/
+            //console.log("myID", myID);
+
+            if (myID) {
+                socket.emit("updatePlayerData", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
+                //console.log("input from frontend", gameState.players[myID].input);
+            }
 
             requestAnimationFrame(renderLoop)
         }
