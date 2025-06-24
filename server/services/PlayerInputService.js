@@ -1,4 +1,4 @@
-import {clamp} from '../utils/Clamp.js';
+import {clamp} from '../utils/clamp.js';
 
 export class PlayerInputService {
 

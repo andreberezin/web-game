@@ -1,24 +1,17 @@
 import {GameService} from '../services/GameService.js';
 import {PlayerInputService} from '../services/PlayerInputService.js';
-import {SocketHandler} from '../eventHandlers/SocketHandler.js';
+import {SocketHandler} from '../sockets/SocketHandler.js';
 
-export class GameEngine {
+export class GamesManager {
 	#TICK_RATE = 1000/60;
 	#io = null;
 	games = null;
 
-	constructor(io) {
+	constructor(io, gameService, socketHandler) {
 		this.games = new Map();
 		this.#io = io;
-		//this.#TICK_RATE = 1000/60;
-
-		// create dependency
-		const playerInputService = new PlayerInputService();
-
-		// inject dependency to gameService
-		this.gameService = new GameService(playerInputService, this);
-
-		this.socketHandler = new SocketHandler(io, this);
+		this.gameService = gameService;
+		this.socketHandler = socketHandler;
 	}
 
 	startGameLoop(gameId) {
@@ -62,5 +55,4 @@ export class GameEngine {
 			//this.broadcastGameState(game);
 		}
 	}
-
 }

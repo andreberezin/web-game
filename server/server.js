@@ -2,8 +2,7 @@ import express from 'express';
 import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io'
-//import './core/game.js';
-import {GameEngine} from './core/GameEngine.js';
+import {startGameServer} from './core/startGameServer.js';
 
 const app = express();
 const server = http.createServer(app);
@@ -35,8 +34,4 @@ server.listen(port, () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
 });
 
-// import {setupGame} from './core/game.js';
-// setupGame(io)
-const gameEngine = new GameEngine(io);
-gameEngine.createGame(1);
-gameEngine.startGameLoop(1);
+startGameServer(io);

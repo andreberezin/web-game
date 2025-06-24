@@ -2,11 +2,14 @@ import {Game} from '../models/Game.js';
 
 export class GameService {
 
-	constructor(playerInputService, gameEngine) {
+	#gamesManager;
 
-		// store the injected service
+	constructor(playerInputService) {
 		this.playerInputService = playerInputService;
-		this.gameEngine = gameEngine;
+	}
+
+	setGamesManager(gamesManager) {
+		this.#gamesManager = gamesManager;
 	}
 
 	createGame(hostId, settings) {
@@ -21,7 +24,7 @@ export class GameService {
 	}
 
 	addPlayerToGame(gameId, playerId, player) {
-		const game = this.gameEngine.games.get(gameId);
+		const game = this.#gamesManager.games.get(gameId);
 		if (!game) {
 			return { success: false, reason: 'Game not found' };
 		}

@@ -2,19 +2,22 @@ import {Player} from '../models/Player.js';
 
 export class SocketHandler {
 	#io = null;
-	#gameEngine = null;
+	#gamesManager = null;
 	#gameService = null;
 
-	constructor(io, gameEngine) {
+	constructor(io) {
 		this.#io = io;
-		this.#gameEngine = gameEngine;
-		this.#gameService = gameEngine.gameService;
+	}
+
+	setGamesManager(gamesManager) {
+		this.#gamesManager = gamesManager;
+		this.#gameService = this.#gamesManager.gameService;
 	}
 
 	createSocketConnection(gameId) {
-		const game = this.#gameEngine.games.get(gameId);
+		const game = this.#gamesManager.games.get(gameId);
 
-		const gameState = this.#gameEngine.games.get(gameId).getState; // get the correct game's state
+		const gameState = this.#gamesManager.games.get(gameId).getState; // get the correct game's state
 
 		this.#io.on('connection', (socket) => {
 			socket.on('createNewPlayer', () => {
