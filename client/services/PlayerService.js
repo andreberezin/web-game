@@ -1,0 +1,95 @@
+
+export class PlayerService {
+	#clientManager;
+
+	constructor(playerInputService) {
+		this.playerInputService = playerInputService;
+	}
+
+	setClientManager(clientManager) {
+		this.#clientManager = clientManager;
+	}
+
+	updatePlayerModel(timestamp, newPlayerData, playerId) {
+		let player = this.#clientManager.game.state.players[playerId];
+
+		if (player.start === undefined) {
+			player.start = timestamp;
+		}
+
+		//this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
+		//this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
+
+		player.getMaxPosition.y = 500;
+		player.getMaxPosition.x = 500;
+
+		const elapsed = timestamp - player.start;
+		player.shift = Math.min(0.001 * elapsed, 10);
+
+		player.getPosition.y = newPlayerData.pos.y;
+		player.getPosition.x = newPlayerData.pos.x;
+
+		if (player.input.arrowDown === false && player.input.arrowUp === false && player.input.arrowRight === false && player.input.arrowLeft === false) {
+			player.start = undefined;
+		}
+
+
+		if (!player.getElement) {
+			console.error("Element not found, cannot update position for ", player.id);
+			return;
+		}
+
+		player.getElement.style.top = `${player.getPosition.y}px`
+		player.getElement.style.left = `${player.getPosition.x}px`
+	}
+
+
+
+	createPlayerModel(playerData, playerId) {
+		const player = this.#clientManager.game.state.players[playerId];
+
+		player.getPosition.x = playerData.pos.x;
+		player.getPosition.y = playerData.pos.y;
+
+		if (document.getElementById(player.getId) !== null) {
+			console.log("Player already exists!");
+			return;
+		}
+
+		console.log("Creating player: ", player.id);
+
+		const playerElement = document.createElement("div")
+		playerElement.classList.add("player")
+		playerElement.id = `${player.getId}`
+		playerElement.style.top = `${player.getPosition.y}px`
+		playerElement.style.left = `${player.getPosition.x}px`
+		playerElement.tabIndex = 0;
+		//player.textContent = playerData.name;
+
+		for (const property in player.styles) {
+			playerElement.style[property] = player.styles[property]
+		}
+
+		playerElement.addEventListener("keydown", (event) => {
+			this.playerInputService.handleKeyDown(event, player);
+		})
+
+		playerElement.addEventListener("keyup", (event) => {
+			this.playerInputService.handleKeyUp(event, player);
+		})
+
+		player.setElement(playerElement);
+
+		const gameField = document.getElementById("game-field");
+
+		gameField.appendChild(playerElement);
+
+		playerElement.focus();
+	}
+
+
+	removePlayerModel() {
+
+	}
+
+}

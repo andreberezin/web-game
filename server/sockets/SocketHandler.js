@@ -17,23 +17,23 @@ export class SocketHandler {
 	createSocketConnection(gameId) {
 		const game = this.#gamesManager.games.get(gameId);
 
-		const gameState = this.#gamesManager.games.get(gameId).getState; // get the correct game's state
+		const gameState = game.getState; // get the correct game's state
 
 		this.#io.on('connection', (socket) => {
 			socket.on('createNewPlayer', () => {
-				const player = new Player(socket.id)
+				const player = new Player(socket.id);
 				const success = this.#gameService.addPlayerToGame(gameId, socket.id, player);
 
 				//if (success) {
-					this.#io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
+				this.#io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
 				//}
 
-			})
+			});
 
 			socket.on('fetchOtherPlayers', () => {
 				socket.emit('sendOtherPlayers', (gameState.players));
-				console.log("sending other players", gameState.players);
-			})
+				console.log('Sending player data', gameState.players);
+			});
 
 			socket.on('updatePlayerData', (input, shift, maxPosition) => {
 
@@ -47,10 +47,10 @@ export class SocketHandler {
 			socket.on('disconnect', () => {
 				//console.log("gamestate.players: ", gameState.players);
 				if (gameState.players[socket.id]) {
-					console.log("Disconnecting player: ", gameState.players[socket.id]);
+					console.log('Disconnecting player: ', gameState.players[socket.id]);
 					delete gameState.players[socket.id];
 				}
 			});
-		})
+		});
 	}
 }

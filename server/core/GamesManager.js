@@ -43,7 +43,7 @@ export class GamesManager {
 	broadcastGameState(gameId) {
 		const game = this.games.get(gameId);
 		if (game) {
-			this.#io.emit('game state', (this.games.get(gameId).getState));
+			this.#io.emit('UpdateGameState', (this.games.get(gameId).getState));
 			//console.log("input: ", this.games.get(gameId).getState.players);
 		}
 	}
