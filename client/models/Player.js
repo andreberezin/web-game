@@ -28,9 +28,9 @@ export class Player {
         this.#id = id
 	}
 
-	attack() {
-
-	}
+    get getId() {
+        return this.#id;
+    }
 
     get getPosition() {
         return this.#pos;
@@ -38,6 +38,14 @@ export class Player {
 
     get getShift() {
         return this.#shift;
+    }
+
+    get getElement() {
+        return this.#element;
+    }
+
+    setElement(element) {
+        this.#element = element;
     }
 
     get getMaxPosition() {
@@ -55,123 +63,4 @@ export class Player {
     setPosition(pos) {
         this.#pos = pos;
     }
-
-    #clamp(min, val, max) {
-        return val > max ? max : val < min ? min : val;
-    }
-
-    update(timestamp, newPlayerData) {
-
-        if (this.start === undefined) {
-            this.start = timestamp;
-        }
-
-        //this.#maxPosition.y = window.innerHeight - this.#element.offsetHeight
-        //this.#maxPosition.x = window.innerWidth - this.#element.offsetWidth
-
-        this.#maxPosition.y = 500;
-        this.#maxPosition.x = 500;
-
-        const elapsed = timestamp - this.start;
-        this.#shift = Math.min(0.001 * elapsed, 10);
-
-        this.#pos.y = newPlayerData.#pos.y;
-        this.#pos.x = newPlayerData.#pos.x;
-
-        if (this.input.arrowDown === false && this.input.arrowUp === false && this.input.arrowRight === false && this.input.arrowLeft === false) {
-            this.start = undefined;
-        }
-
-
-        if (!this.#element) {
-            console.error("Element not found, cannot update position for ", this.#id);
-            return;
-        }
-
-        this.#element.style.top = `${this.#pos.y}px`
-        this.#element.style.left = `${this.#pos.x}px`
-    }
-
-    handleKeyDown(event) {
-        switch(event.key) {
-            case "ArrowUp": {
-                this.input.arrowUp = true;
-                break;
-            }
-            case "ArrowDown": {
-                this.input.arrowDown = true;
-                break;
-            }
-            case "ArrowLeft": {
-                this.input.arrowLeft = true;
-                break;
-            }
-            case "ArrowRight": {
-                this.input.arrowRight = true;
-                break;
-            }
-        }
-    }
-
-    handleKeyUp(event) {
-        switch(event.key) {
-            case "ArrowUp": {
-                this.input.arrowUp = false;
-                break;
-            }
-            case "ArrowDown": {
-                this.input.arrowDown = false;
-                break;
-            }
-            case "ArrowLeft": {
-                this.input.arrowLeft = false;
-                break;
-            }
-            case "ArrowRight": {
-                this.input.arrowRight = false;
-                break;
-            }
-        }
-    }
-
-	createPlayerModel(playerData) {
-
-        this.#pos.x = playerData.pos.x;
-        this.#pos.y = playerData.pos.y;
-
-        if (document.getElementById(this.#id) !== null) {
-            console.log("Player already exists!");
-            return;
-        }
-
-        console.log("Creating player: ", this.#id);
-
-        const player = document.createElement("div")
-        player.classList.add("player")
-        player.id = `${this.#id}`
-        player.style.top = `${this.#pos.y}px`
-        player.style.left = `${this.#pos.x}px`
-        player.tabIndex = 0;
-        //player.textContent = playerData.name;
-
-        for (const property in this.styles) {
-            player.style[property] = this.styles[property]
-        }
-
-        player.addEventListener("keydown", (event) => {
-            this.handleKeyDown(event);
-        })
-
-        player.addEventListener("keyup", (event) => {
-            this.handleKeyUp(event);
-        })
-
-        this.#element = player;
-
-        const gameField = document.getElementById("game-field");
-
-        gameField.appendChild(player);
-
-        player.focus();
-	}
 }
