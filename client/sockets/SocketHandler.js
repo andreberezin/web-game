@@ -34,12 +34,13 @@ export class SocketHandler {
 
 			let i = 1;
 			for (const playerID in playersData) {
+				//console.log("playersData:", playersData);
 
 				if (playerID !== this.#clientManager.myID) {
 					let player = new Player(playerID);
 					//gameState.players[playerID].setName(`player${i}`);
-					this.#playerService.createPlayerModel(playersData[playerID], playerID);
 					gameState.players[playerID] = player;
+					this.#playerService.createPlayerModel(playersData[playerID], playerID);
 					i++;
 				}
 			}
@@ -51,13 +52,16 @@ export class SocketHandler {
 		this.socket.on('newPlayerCreated', (newPlayer, playerID) => {
 			let player = new Player(playerID);
 			this.#clientManager.myID = playerID;
-			this.#playerService.createPlayerModel(newPlayer, playerID);
 			gameState.players[playerID] = player;
+			this.#playerService.createPlayerModel(newPlayer, playerID);
+			//console.log("gameState:", gameState);
 		})
 
 		this.socket.on('UpdateGameState', (updatedGameState) => {
 			//console.log("updated game state in frontend: ", updatedGameState);
 
+			//console.log("updatedGameState: ", updatedGameState);
+			//console.log("gamestate players: ", gameState.players)
 			if (gameState.players) {
 
 			}

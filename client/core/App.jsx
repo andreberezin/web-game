@@ -130,9 +130,9 @@ function App() {
 
   return (
       <div id={"game-field"} onClick={() => {
-          if (document.getElementById(myID)) {
-              document.getElementById(myID).focus()
-          }
+          // if (document.getElementById()) {
+          //     document.getElementById(myID).focus()
+          // }
       }}
       >
       </div>

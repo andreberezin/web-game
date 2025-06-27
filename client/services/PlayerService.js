@@ -24,10 +24,11 @@ export class PlayerService {
 		player.getMaxPosition.x = 500;
 
 		const elapsed = timestamp - player.start;
-		player.shift = Math.min(0.001 * elapsed, 10);
+		const newShiftValue = Math.min(0.001 * elapsed, 10);
+		player.setShift(newShiftValue);
 
-		player.getPosition.y = newPlayerData.pos.y;
-		player.getPosition.x = newPlayerData.pos.x;
+		player.getPosition.y = newPlayerData.getPosition.y;
+		player.getPosition.x = newPlayerData.getPosition.x;
 
 		if (player.input.arrowDown === false && player.input.arrowUp === false && player.input.arrowRight === false && player.input.arrowLeft === false) {
 			player.start = undefined;
@@ -48,6 +49,8 @@ export class PlayerService {
 	createPlayerModel(playerData, playerId) {
 		const player = this.#clientManager.game.state.players[playerId];
 
+		console.log("players", this.#clientManager.game.state.players);
+
 		player.getPosition.x = playerData.pos.x;
 		player.getPosition.y = playerData.pos.y;
 
@@ -56,7 +59,7 @@ export class PlayerService {
 			return;
 		}
 
-		console.log("Creating player: ", player.id);
+		console.log("Creating element for player: ", player.getId);
 
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")

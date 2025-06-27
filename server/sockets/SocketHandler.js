@@ -23,7 +23,7 @@ export class SocketHandler {
 			socket.on('createNewPlayer', () => {
 				const player = new Player(socket.id);
 				const success = this.#gameService.addPlayerToGame(gameId, socket.id, player);
-
+				//console.log("createnewplayer in side heere")
 				//if (success) {
 				this.#io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
 				//}
@@ -32,11 +32,11 @@ export class SocketHandler {
 
 			socket.on('fetchOtherPlayers', () => {
 				socket.emit('sendOtherPlayers', (gameState.players));
-				console.log('Sending player data', gameState.players);
+				//console.log('Sending player data', gameState.players);
 			});
 
 			socket.on('updatePlayerData', (input, shift, maxPosition) => {
-
+				//console.log("shift:", shift);
 				if (gameState.players[socket.id]) {
 					gameState.players[socket.id].input = input;
 					gameState.players[socket.id].shift = shift;

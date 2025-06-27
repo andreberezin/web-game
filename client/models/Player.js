@@ -44,7 +44,7 @@ export class Player {
         return this.#element;
     }
 
-     set setElement(element) {
+    setElement(element) {
         this.#element = element;
     }
 

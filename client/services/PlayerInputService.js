@@ -23,6 +23,7 @@ export class PlayerInputService {
 				break;
 			}
 		}
+		//console.log("HandleKeyDown player: ", player);
 	}
 
 	handleKeyUp(event, player) {
