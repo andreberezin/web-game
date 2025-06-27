@@ -18,6 +18,7 @@ export class PlayerService {
 			return;
 		}
 
+		// todo users setters and getters
 		if (player.start === undefined) {
 			player.start = timestamp;
 		}
@@ -28,6 +29,7 @@ export class PlayerService {
 		player.getMaxPosition.y = 500;
 		player.getMaxPosition.x = 500;
 
+		// todo users setters and getters
 		const elapsed = timestamp - player.start;
 		const newShiftValue = Math.min(0.001 * elapsed, 10);
 		player.setShift(newShiftValue);
@@ -35,6 +37,7 @@ export class PlayerService {
 		player.getPosition.y = newPlayerData.getPosition.y;
 		player.getPosition.x = newPlayerData.getPosition.x;
 
+		// todo users setters and getters
 		if (player.input.arrowDown === false && player.input.arrowUp === false && player.input.arrowRight === false && player.input.arrowLeft === false) {
 			player.start = undefined;
 		}

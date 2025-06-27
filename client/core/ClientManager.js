@@ -34,9 +34,10 @@ export class ClientManager {
 				}
 			}
 
+			console.log("myId", this.myID)
 			if (this.myID) {
-				//console.log("shift", this.game.state.players[this.myID].getShift)
-				this.socketHandler.socket.emit("updatePlayerData", this.game.state.players[this.myID].input, this.game.state.players[this.myID].getShift, this.game.state.players[this.myID].getMaxPosition);
+				const me =  this.game.state.players[this.myID];
+				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 			}
 
 			this.#renderLoopId = requestAnimationFrame(this.renderLoop);

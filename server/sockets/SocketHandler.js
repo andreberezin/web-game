@@ -20,35 +20,38 @@ export class SocketHandler {
 		const gameState = game.getState; // get the correct game's state
 
 		this.#io.on('connection', (socket) => {
-			socket.on('createNewPlayer', () => {
-				const player = new Player(socket.id);
-				const success = this.#gameService.addPlayerToGame(gameId, socket.id, player);
+			const playerId = socket.id;
+
+			socket.on('createNewPlayerAndFetchOtherPlayers', () => {
+				const player = new Player(playerId);
+				//const success;
+				this.#gameService.addPlayerToGame(gameId, playerId, player);
 				//console.log("createnewplayer in side heere")
 				//if (success) {
-				this.#io.emit('newPlayerCreated', gameState.players[socket.id], socket.id);
+				this.#io.emit('newPlayerCreatedAndSendingOtherPlayers', gameState.players[playerId], playerId, gameState.players);
 				//}
 
 			});
 
-			socket.on('fetchOtherPlayers', () => {
+			/*socket.on('fetchOtherPlayers', () => {
 				socket.emit('sendOtherPlayers', (gameState.players));
 				//console.log('Sending player data', gameState.players);
-			});
+			});*/
 
-			socket.on('updatePlayerData', (input, shift, maxPosition) => {
+			socket.on('updateMyPlayerData', (input, shift, maxPosition) => {
 				//console.log("shift:", shift);
-				if (gameState.players[socket.id]) {
-					gameState.players[socket.id].input = input;
-					gameState.players[socket.id].shift = shift;
-					gameState.players[socket.id].maxPosition = maxPosition;
+				if (gameState.players[playerId]) {
+					gameState.players[playerId].input = input;
+					gameState.players[playerId].shift = shift;
+					gameState.players[playerId].maxPosition = maxPosition;
 				}
 			});
 
 			socket.on('disconnect', () => {
 				//console.log("gamestate.players: ", gameState.players);
-				if (gameState.players[socket.id]) {
-					console.log('Disconnecting player: ', gameState.players[socket.id]);
-					delete gameState.players[socket.id];
+				if (gameState.players[playerId]) {
+					console.log('Disconnecting player: ', gameState.players[playerId]);
+					delete gameState.players[playerId];
 				}
 			});
 		});
