@@ -1,7 +1,4 @@
-import {useEffect} from 'react'
 import './App.css'
-import { io } from 'socket.io-client';
-import { Player } from '../models/Player.js';
 import {PlayerInputService} from '../services/PlayerInputService.js';
 import {PlayerService} from '../services/PlayerService.js';
 import {SocketHandler} from '../sockets/SocketHandler.js';
@@ -30,109 +27,13 @@ function App() {
         return clientManager;
     }
 
-    createClientManager();
-
-    /*const gameState = {
-        players: {
-
-        }
-    }
-    let myID = null;
-
-    useEffect(() => {
-        console.log('Connecting to socket...');
-
-        const socket = io()
-
-        socket.on('connect', () => {
-            console.log('Connected to server with ID:', socket.id);
-            socket.emit('createNewPlayer');
-            socket.emit('fetchOtherPlayers');
-        });
-
-
-
-        //player.insertPlayer();
-        socket.on('sendOtherPlayers', (playersData) => {
-            //console.log("Creating players: ", playersData);
-
-            let i = 1;
-            for (const playerID in playersData) {
-
-
-                if (playerID !== myID) {
-                    let player = new Player(playerID);
-                    //gameState.players[playerID].setName(`player${i}`);
-                    player.createPlayerModel(playersData[playerID]);
-                    gameState.players[playerID] = player;
-                    i++;
-                }
-            }
-
-            i = 0;
-        })
-
-
-        socket.on('newPlayerCreated', (newPlayer, playerID) => {
-            let player = new Player(playerID);
-            myID = playerID;
-            player.createPlayerModel(newPlayer);
-            gameState.players[playerID] = player;
-        })
-
-        socket.on('game state', (updatedGameState) => {
-            //console.log("updated game state in frontend: ", updatedGameState);
-            for (const playerID in gameState.players) {
-
-                if (!updatedGameState.players[playerID]) {
-                    document.getElementById(playerID).remove();
-                    delete gameState.players[playerID];
-                    continue;
-                }
-
-                if (gameState.players[playerID]) { // ensure the player exists
-                    gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
-                    gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
-                }
-            }
-        })
-
-        function renderLoop(timestamp) {
-
-            for (let playerID in gameState.players) {
-                if (playerID && gameState.players[playerID] != null) {
-                    gameState.players[playerID].update(timestamp, gameState.players[playerID]);
-                }
-            }
-
-            //console.log("LOOP IS RUNNING");
-
-            //console.log("myID", myID);
-
-            if (myID) {
-                socket.emit("updatePlayerData", gameState.players[myID].input, gameState.players[myID].getShift, gameState.players[myID].getMaxPosition);
-                //console.log("input from frontend", gameState.players[myID].input);
-            }
-
-            requestAnimationFrame(renderLoop)
-        }
-
-        requestAnimationFrame(renderLoop);
-
-        return () => {
-            if (gameState.players) {
-                delete gameState.players;
-                document.getElementById(socket.id).remove();
-            }
-            socket.disconnect();
-        };
-    }, []);*/
+    const clientmanager = createClientManager();
 
   return (
       <div id={"game-field"} onClick={() => {
-          // if (document.getElementById()) {
-          //     document.getElementById(myID).focus()
-          // }
+          if (document.getElementById(clientmanager.myID)) {
+              document.getElementById(clientmanager.myID).focus()
+          }
       }}
       >
       </div>

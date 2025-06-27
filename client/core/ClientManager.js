@@ -67,7 +67,11 @@ export class ClientManager {
 		for (const playerID in this.game.state.players) {
 			//this.playerService.removePlayer(playerID);
 			delete this.game.state.players[playerID];
-			document.getElementById(this.socketHandler.socket.id).remove();
+			const element = document.getElementById(playerID);
+
+			if (element) {
+				element.remove();
+			}
 		}
 
 		if (this.socketHandler.socket) {

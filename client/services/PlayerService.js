@@ -13,6 +13,11 @@ export class PlayerService {
 	updatePlayerModel(timestamp, newPlayerData, playerId) {
 		let player = this.#clientManager.game.state.players[playerId];
 
+		if (!player.getElement) {
+			//console.error("Element not found, cannot update position for ", player.id);
+			return;
+		}
+
 		if (player.start === undefined) {
 			player.start = timestamp;
 		}
@@ -32,12 +37,6 @@ export class PlayerService {
 
 		if (player.input.arrowDown === false && player.input.arrowUp === false && player.input.arrowRight === false && player.input.arrowLeft === false) {
 			player.start = undefined;
-		}
-
-
-		if (!player.getElement) {
-			console.error("Element not found, cannot update position for ", player.id);
-			return;
 		}
 
 		player.getElement.style.top = `${player.getPosition.y}px`
