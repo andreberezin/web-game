@@ -34,7 +34,7 @@ export class SocketHandler {
 			});
 
 			socket.on('fetchOtherPlayers', () => {
-				this.#io.emit('sendOtherPlayers', (gameState.players));
+				socket.emit('sendOtherPlayers', (gameState.players));
 				//console.log('Sending player data', gameState.players);
 			});
 

@@ -17,6 +17,7 @@ export class ClientManager {
 
 
 	startRenderLoop() {
+		console.log("Starting render loop");
 		if (!this.#renderLoopId && this.game) {
 			//console.log("game: ", this.game);
 			requestAnimationFrame(this.renderLoop);
@@ -34,8 +35,8 @@ export class ClientManager {
 				}
 			}
 
-			console.log("myId", this.myID)
 			if (this.myID) {
+				console.log("myId", this.myID)
 				const me =  this.game.state.players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 			}

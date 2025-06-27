@@ -49,17 +49,17 @@ export class PlayerService {
 
 
 	createPlayerModel(playerData, playerId) {
+		if (document.getElementById(playerId) !== null) {
+			console.log("Player already exists!");
+			return;
+		}
+
 		const player = this.#clientManager.game.state.players[playerId];
 
 		console.log("players", this.#clientManager.game.state.players);
 
 		player.getPosition.x = playerData.pos.x;
 		player.getPosition.y = playerData.pos.y;
-
-		if (document.getElementById(player.getId) !== null) {
-			console.log("Player already exists!");
-			return;
-		}
 
 		console.log("Creating element for player: ", player.getId);
 
