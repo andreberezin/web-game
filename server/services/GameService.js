@@ -1,4 +1,6 @@
 import {Game} from '../models/Game.js';
+import {Bullet} from "../models/Bullet.js";
+import {clamp} from "../utils/clamp.js";
 
 export class GameService {
 
@@ -20,6 +22,7 @@ export class GameService {
 
 		// handle player input
 		this.playerInputService.handlePlayerMovement(game);
+		this.playerInputService.handlePlayerShooting(game);
 
 	}
 
@@ -44,5 +47,23 @@ export class GameService {
 		return result;
 	}
 
+	createBulletAt(x, y, direction) {
+		const bullet = new Bullet(x, y, direction);
+
+		while(bullet.pos.y < 1000 || bullet.pos.y > 1000 || bullet.pos.x < 1000 || bullet.pos.x > 1000) {
+			if (bullet.direction === "up") {
+				bullet.pos.y = bullet.pos.y - 100;
+			}
+			if (bullet.direction === "down") {
+				bullet.pos.y = bullet.pos.y + 100;
+			}
+			if (bullet.direction === "left") {
+				bullet.pos.x = bullet.pos.x - 100;
+			}
+			if (bullet.direction === "right") {
+				bullet.pos.x = bullet.pos.x + 100;
+			}
+		}
+	}
 
 }
