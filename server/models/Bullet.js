@@ -8,6 +8,7 @@ export class Bullet {
     velocity = 100;
 
     constructor(id, x, y, direction) {
+        this.id = id;
         this.pos.x = x;
         this.pos.y = y;
         this.direction = direction;
