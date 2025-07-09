@@ -2,14 +2,15 @@
 export class ClientManager {
 	game = {
 		state: {
-			players: {}
+			players: {},
+			bullets: {}
 		},
 	};
 	myID = null;
 	#renderLoopId = null;
 
 	constructor(gameService, playerService, socketHandler) {
-		this.gameservice = gameService;
+		this.gameService = gameService;
 		this.playerService = playerService;
 		this.socketHandler = socketHandler;
 
@@ -32,6 +33,13 @@ export class ClientManager {
 				if (playerID && this.game.state.players[playerID] != null) {
 
 					this.playerService.updatePlayerModel(timestamp, this.game.state.players[playerID], playerID);
+				}
+			}
+
+			for (let bulletID in this.game.state.bullets) {
+				if (bulletID && this.game.state.bullets[bulletID] != null) {
+
+					this.gameService.updateBulletModel(timestamp, this.game.state.bullets[bulletID], bulletID);
 				}
 			}
 

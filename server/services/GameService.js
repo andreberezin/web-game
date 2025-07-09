@@ -20,6 +20,8 @@ export class GameService {
 
 	updateGameState(game) {
 
+		this.updateBullets(game);
+
 		// handle player input
 		this.playerInputService.handlePlayerMovement(game);
 		this.playerInputService.handlePlayerShooting(game);
@@ -47,21 +49,29 @@ export class GameService {
 		return result;
 	}
 
-	createBulletAt(x, y, direction) {
-		const bullet = new Bullet(x, y, direction);
+	createBulletAt(x, y, direction, game) {
+		const id = Math.floor(Math.random() * 10000);
+		const bullet = new Bullet(id, x, y, direction);
+		game.getState.bullets[id] = bullet;
+	}
 
-		while(bullet.pos.y < 1000 || bullet.pos.y > 1000 || bullet.pos.x < 1000 || bullet.pos.x > 1000) {
-			if (bullet.direction === "up") {
-				bullet.pos.y = bullet.pos.y - 100;
-			}
-			if (bullet.direction === "down") {
-				bullet.pos.y = bullet.pos.y + 100;
-			}
-			if (bullet.direction === "left") {
-				bullet.pos.x = bullet.pos.x - 100;
-			}
-			if (bullet.direction === "right") {
-				bullet.pos.x = bullet.pos.x + 100;
+	updateBullets(game) {
+		const bullets = game.getState.bullets;
+
+		for(let bullet in bullets) {
+			if(bullet.pos.y < 1000 || bullet.pos.y > 1000 || bullet.pos.x < 1000 || bullet.pos.x > 1000) {
+				if (bullet.direction === "up") {
+					bullet.pos.y = bullet.pos.y - 100;
+				}
+				if (bullet.direction === "down") {
+					bullet.pos.y = bullet.pos.y + 100;
+				}
+				if (bullet.direction === "left") {
+					bullet.pos.x = bullet.pos.x - 100;
+				}
+				if (bullet.direction === "right") {
+					bullet.pos.x = bullet.pos.x + 100;
+				}
 			}
 		}
 	}

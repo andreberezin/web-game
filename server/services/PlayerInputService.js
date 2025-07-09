@@ -50,7 +50,7 @@ export class PlayerInputService {
 			if (player.input) {
 
 				if (player.input.space === true) {
-					this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction);
+					this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
 				}
 			}
 		}

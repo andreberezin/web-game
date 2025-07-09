@@ -6,6 +6,12 @@ export class Bullet {
     id = "bullet-1";
     direction = "up";
     velocity = 100;
+    #element = null;
+
+    styles = {
+        width: "5px",
+        height: "5px",
+    }
 
     constructor(id, x, y, direction) {
         this.pos.x = x;
@@ -27,5 +33,13 @@ export class Bullet {
 
     getId() {
         return this.id;
+    }
+
+    get getElement() {
+        return this.#element;
+    }
+
+    setElement(element) {
+        this.#element = element;
     }
 }
