@@ -44,7 +44,7 @@ export class GamesManager {
 		const game = this.games.get(gameId);
 		if (game) {
 			this.#io.emit('UpdateGameState', (this.games.get(gameId).getState));
-			//console.log("input: ", this.games.get(gameId).getState.players);
+			//console.log("input: ", this.games.get(gameId).getState.bullets);
 		}
 	}
 

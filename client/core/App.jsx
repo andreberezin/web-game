@@ -16,8 +16,9 @@ function App() {
 
 
         socketHandler.setClientManager(clientManager);
-        //gameService.setClientManager(clientManager);
+        gameService.setClientManager(clientManager);
         playerService.setClientManager(clientManager);
+        socketHandler.setGameService(gameService);
 
         socketHandler.connectToServer();
 

@@ -22,6 +22,11 @@ export class PlayerInputService {
 				player.input.arrowRight = true;
 				break;
 			}
+			case " ": {
+				console.log("pressing space");
+				player.input.space = true;
+				break;
+			}
 		}
 		//console.log("HandleKeyDown player: ", player);
 	}
@@ -42,6 +47,10 @@ export class PlayerInputService {
 			}
 			case "ArrowRight": {
 				player.input.arrowRight = false;
+				break;
+			}
+			case " ": {
+				player.input.space = false;
 				break;
 			}
 		}

@@ -1,11 +1,13 @@
 import {useEffect} from 'react';
 import {io} from 'socket.io-client';
 import {Player} from '../models/Player.js';
+import {Bullet} from "../models/Bullet.js";
 
 export class SocketHandler {
 	socket;
 	#playerService;
 	#clientManager;
+	#gameService;
 
 	constructor(playerService) {
 		this.#playerService = playerService;
@@ -13,6 +15,10 @@ export class SocketHandler {
 
 	setClientManager(clientManager) {
 		this.#clientManager = clientManager;
+	}
+
+	setGameService(gameService) {
+		this.#gameService = gameService;
 	}
 
 	connectToServer() {
@@ -94,6 +100,20 @@ export class SocketHandler {
 				if (gameState.players[playerID]) { // ensure the player exists
 					gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
 					gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
+				}
+			}
+
+			// Update bullets
+			for (const bulletID in updatedGameState.bullets) {
+
+				if (!gameState.bullets[bulletID]) {
+					//console.log("creating bullet");
+					let bullet = new Bullet(bulletID);
+					//gameState.bullets[bulletID].setName(`bullet${i}`);
+					gameState.bullets[bulletID] = bullet;
+					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
+				}  else {
+					gameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
 				}
 			}
 		})

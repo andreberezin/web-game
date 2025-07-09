@@ -1,4 +1,6 @@
 import {Game} from '../models/Game.js';
+import {Bullet} from "../models/Bullet.js";
+import {clamp} from "../utils/clamp.js";
 
 export class GameService {
 
@@ -18,8 +20,11 @@ export class GameService {
 
 	updateGameState(game) {
 
+		this.updateBullets(game);
+
 		// handle player input
 		this.playerInputService.handlePlayerMovement(game);
+		this.playerInputService.handlePlayerShooting(game);
 
 	}
 
@@ -44,5 +49,35 @@ export class GameService {
 		return result;
 	}
 
+	createBulletAt(x, y, direction, game) {
+		const id = Math.floor(Math.random() * 10000);
+		const bullet = new Bullet(id, x, y, direction);
+		game.getState.bullets[id] = bullet;
+	}
+
+	updateBullets(game) {
+		const bullets = game.getState.bullets;
+
+		for(let bulletId in bullets) {
+			const bullet = bullets[bulletId];
+
+				if (bullet.direction === "up") {
+					bullet.pos.y = bullet.pos.y - bullet.velocity;
+				}
+				if (bullet.direction === "down") {
+					bullet.pos.y = bullet.pos.y + bullet.velocity;
+				}
+				if (bullet.direction === "left") {
+					bullet.pos.x = bullet.pos.x - bullet.velocity;
+				}
+				if (bullet.direction === "right") {
+					bullet.pos.x = bullet.pos.x + bullet.velocity;
+				}
+
+				if (bullet.pos.y < 0 || bullet.pos.y > 1000 || bullet.pos.x < 0 || bullet.pos.x > 1000) {
+					delete bullets[bulletId];
+				}
+		}
+	}
 
 }

@@ -3,7 +3,8 @@ export class Game {
 	#state = {
 		isRunning: false,
 		players: {},
-		timeRemaining: 0
+		timeRemaining: 0,
+		bullets: {}
 	};
 	#settings = {
 		duration: 60000, // milliseconds = 1 minute

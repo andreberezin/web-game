@@ -20,6 +20,7 @@ function createGamesManager(io) {
 
 	socketHandler.setGamesManager(gamesManager);
 	gameService.setGamesManager(gamesManager);
+	playerInputService.setGameService(gameService);
 
 	return gamesManager;
 }

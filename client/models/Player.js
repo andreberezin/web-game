@@ -17,6 +17,7 @@ export class Player {
         arrowDown: false,
         arrowRight: false,
         arrowLeft: false,
+        space: false
     }
     styles = {
         width: "20px",
