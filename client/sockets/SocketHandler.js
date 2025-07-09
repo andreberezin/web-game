@@ -106,7 +106,8 @@ export class SocketHandler {
 			// Update bullets
 			for (const bulletID in updatedGameState.bullets) {
 
-				if (bulletID !== gameState.bullets) {
+				if (!gameState.bullets[bulletID]) {
+					//console.log("creating bullet");
 					let bullet = new Bullet(bulletID);
 					//gameState.bullets[bulletID].setName(`bullet${i}`);
 					gameState.bullets[bulletID] = bullet;

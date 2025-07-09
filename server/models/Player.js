@@ -17,7 +17,7 @@ export class Player {
         arrowLeft: false,
         space: false
     }
-    direction = up;
+    direction = "up";
 
 	constructor(id) {
 		// this.#pos = pos;

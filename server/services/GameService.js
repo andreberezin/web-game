@@ -58,21 +58,25 @@ export class GameService {
 	updateBullets(game) {
 		const bullets = game.getState.bullets;
 
-		for(let bullet in bullets) {
-			if(bullet.pos.y < 1000 || bullet.pos.y > 1000 || bullet.pos.x < 1000 || bullet.pos.x > 1000) {
+		for(let bulletId in bullets) {
+			const bullet = bullets[bulletId];
+
 				if (bullet.direction === "up") {
-					bullet.pos.y = bullet.pos.y - 100;
+					bullet.pos.y = bullet.pos.y - bullet.velocity;
 				}
 				if (bullet.direction === "down") {
-					bullet.pos.y = bullet.pos.y + 100;
+					bullet.pos.y = bullet.pos.y + bullet.velocity;
 				}
 				if (bullet.direction === "left") {
-					bullet.pos.x = bullet.pos.x - 100;
+					bullet.pos.x = bullet.pos.x - bullet.velocity;
 				}
 				if (bullet.direction === "right") {
-					bullet.pos.x = bullet.pos.x + 100;
+					bullet.pos.x = bullet.pos.x + bullet.velocity;
 				}
-			}
+
+				if (bullet.pos.y < 0 || bullet.pos.y > 1000 || bullet.pos.x < 0 || bullet.pos.x > 1000) {
+					delete bullets[bulletId];
+				}
 		}
 	}
 

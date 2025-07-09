@@ -22,7 +22,8 @@ export class PlayerInputService {
 				player.input.arrowRight = true;
 				break;
 			}
-			case "space": {
+			case " ": {
+				console.log("pressing space");
 				player.input.space = true;
 				break;
 			}
@@ -48,7 +49,7 @@ export class PlayerInputService {
 				player.input.arrowRight = false;
 				break;
 			}
-			case "space": {
+			case " ": {
 				player.input.space = false;
 				break;
 			}
