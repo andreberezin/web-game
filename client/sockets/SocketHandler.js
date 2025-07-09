@@ -112,6 +112,8 @@ export class SocketHandler {
 					//gameState.bullets[bulletID].setName(`bullet${i}`);
 					gameState.bullets[bulletID] = bullet;
 					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
+				}  else {
+					gameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
 				}
 			}
 		})
