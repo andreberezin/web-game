@@ -1,9 +1,7 @@
 import {Game} from '../models/Game.js';
 import {Bullet} from "../models/Bullet.js";
-import {clamp} from "../utils/clamp.js";
 
 export class GameService {
-
     #gamesManager;
 
     static GAME_BOUNDS = {
@@ -26,41 +24,37 @@ export class GameService {
     }
 
     updateGameState(game) {
-
         this.updateBullets(game);
 
-        // handle player input
         this.playerInputService.handlePlayerMovement(game);
         this.playerInputService.handlePlayerShooting(game);
-
     }
 
     addPlayerToGame(gameId, playerId, player) {
         const game = this.#gamesManager.games.get(gameId);
         if (!game) {
-            return {success: false, reason: 'Game not found'};
+            throw new Error("Game not found, cannot add player");
         }
 
-        let result;
+        return this.canAddPlayer(game)
+            ? this.addPlayer(game, playerId, player)
+            : false;
+    }
 
-        if (Object.keys(game.getState.players).length < game.getSettings.maxPlayers) {
-            game.getState.players[playerId] = player;
-            result = true;
-        } else {
-            result = false;
-        }
+    canAddPlayer(game) {
+        const currentPlayerCount = Object.keys(game.getState.players).length;
+        const maxPlayersAllowed = game.getSettings.maxPlayers;
+        return currentPlayerCount < maxPlayersAllowed;
+    }
 
-        // if (result) {
-        // 	this.broadcastPlayerJoined(gameId, playerId, result.player);
-        // }
-
-        return result;
+    addPlayer(game, playerId, player) {
+        game.getState.players[playerId] = player;
+        return true;
     }
 
     createBulletAt(x, y, direction, game) {
         const id = Math.floor(Math.random() * 10000);
-        const bullet = new Bullet(id, x, y, direction);
-        game.getState.bullets[id] = bullet;
+        game.getState.bullets[id] = new Bullet(id, x, y, direction);
     }
 
     updateBullets(game) {
@@ -83,7 +77,7 @@ export class GameService {
             }
         });
 
-        this.deleteBulletsIfOutOfBounds(bulletsToDelete, bullets);
+        this.deleteBulletsOutOfBounds(bulletsToDelete, bullets);
     }
 
 	moveBulletByVelocity(bullet, directionValues) {
@@ -92,7 +86,7 @@ export class GameService {
             }
 	}
 
-	deleteBulletsIfOutOfBounds(bulletsToDelete, bullets) {
+	deleteBulletsOutOfBounds(bulletsToDelete, bullets) {
         bulletsToDelete.forEach(bulletId => {
             delete bullets[bulletId];
         });
