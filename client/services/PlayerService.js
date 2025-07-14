@@ -12,14 +12,15 @@ export class PlayerService {
 
 	updatePlayerModel(timestamp, newPlayerData, playerId) {
 		let player = this.#clientManager.game.state.players[playerId];
+		const {arrowDown, arrowUp, arrowRight, arrowLeft} = player.input;
 
 		if (!player.getElement) {
 			return;
 		}
 
 		// todo users setters and getters
-		if (player.start === undefined) {
-			player.start = timestamp;
+		if (this.playerIsNotMoving(player)) {
+			this.resetAcceleration(player, timestamp);
 		}
 
 		this.setMaxPosition(player);
@@ -32,11 +33,23 @@ export class PlayerService {
 		this.updatePosition(player, newPlayerData);
 
 		// todo users setters and getters
-		if (player.input.arrowDown === false && player.input.arrowUp === false && player.input.arrowRight === false && player.input.arrowLeft === false) {
+		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
 			player.start = undefined;
 		}
 
 		this.updateElementPosition(player);
+	}
+
+	noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft) {
+		return arrowDown === false && arrowUp === false && arrowRight === false && arrowLeft === false;
+	}
+
+	resetAcceleration(player, timestamp) {
+		player.start = timestamp;
+	}
+
+	playerIsNotMoving(player) {
+		return player.start === undefined;
 	}
 
 	setMaxPosition(player) {
