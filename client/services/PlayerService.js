@@ -78,7 +78,7 @@ export class PlayerService {
 
         const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length;
 
-		const playerElement = this.createElement(player, numberOfPlayers);
+		const playerElement = this.createElement(player, numberOfPlayers, playerId);
 		this.addEventListeners(playerElement, player);
 		player.setElement(playerElement);
 
@@ -107,7 +107,7 @@ export class PlayerService {
 		})
 	}
 
-	createElement(player, numberOfPlayers) {
+	createElement(player, numberOfPlayers, playerId) {
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
