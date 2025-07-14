@@ -1,8 +1,4 @@
-
 export class PlayerInputService {
-
-	constructor() {
-	}
 
 	handleKeyDown(event, player) {
 		switch(event.key) {
@@ -23,12 +19,10 @@ export class PlayerInputService {
 				break;
 			}
 			case " ": {
-				console.log("pressing space");
 				player.input.space = true;
 				break;
 			}
 		}
-		//console.log("HandleKeyDown player: ", player);
 	}
 
 	handleKeyUp(event, player) {

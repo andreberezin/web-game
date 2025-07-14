@@ -16,30 +16,23 @@ export class SocketHandler {
 
 	createSocketConnection(gameId) {
 		const game = this.#gamesManager.games.get(gameId);
-
-		const gameState = game.getState; // get the correct game's state
+		const gameState = game.getState;
 
 		this.#io.on('connection', (socket) => {
 			const playerId = socket.id;
 
 			socket.on('createMyPlayer', () => {
 				const player = new Player(playerId);
-				//const success;
-				this.#gameService.addPlayerToGame(gameId, playerId, player);
-				//console.log("createnewplayer in side heere")
-				//if (success) {
-				this.#io.emit('myPlayerCreated', gameState.players[playerId], playerId);
-				//}
 
+				this.#gameService.addPlayerToGame(gameId, playerId, player);
+				this.#io.emit('myPlayerCreated', gameState.players[playerId], playerId);
 			});
 
 			socket.on('fetchOtherPlayers', () => {
 				socket.emit('sendOtherPlayers', (gameState.players));
-				//console.log('Sending player data', gameState.players);
 			});
 
 			socket.on('updateMyPlayerData', (input, shift, maxPosition) => {
-				//console.log("shift:", shift);
 				if (gameState.players[playerId]) {
 					gameState.players[playerId].input = input;
 					gameState.players[playerId].shift = shift;
@@ -48,7 +41,6 @@ export class SocketHandler {
 			});
 
 			socket.on('disconnect', () => {
-				//console.log("gamestate.players: ", gameState.players);
 				if (gameState.players[playerId]) {
 					console.log('Disconnecting player: ', gameState.players[playerId]);
 					delete gameState.players[playerId];

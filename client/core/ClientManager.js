@@ -13,39 +13,33 @@ export class ClientManager {
 		this.gameService = gameService;
 		this.playerService = playerService;
 		this.socketHandler = socketHandler;
-
 	}
 
-
 	startRenderLoop() {
-		console.log("Starting render loop");
 		if (!this.#renderLoopId && this.game) {
-			//console.log("game: ", this.game);
 			requestAnimationFrame(this.renderLoop);
 		}
 	}
 
 	renderLoop = (timestamp) => {
+		const {players, bullets} = this.game.state;
 
 		if (this.game) {
-			//console.log("GAME");
-			for (let playerID in this.game.state.players) {
-				if (playerID && this.game.state.players[playerID] != null) {
-
-					this.playerService.updatePlayerModel(timestamp, this.game.state.players[playerID], playerID);
+			for (let playerID in players) {
+				if (playerID && players[playerID] != null) {
+					this.playerService.updatePlayerModel(timestamp, players[playerID], playerID);
 				}
 			}
 
-			for (let bulletID in this.game.state.bullets) {
-				if (bulletID && this.game.state.bullets[bulletID] != null) {
+			for (let bulletID in bullets) {
+				if (bulletID && bullets[bulletID] != null) {
 
-					this.gameService.updateBulletModel(timestamp, this.game.state.bullets[bulletID], bulletID);
+					this.gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
 				}
 			}
 
 			if (this.myID) {
-				console.log("myId", this.myID)
-				const me =  this.game.state.players[this.myID];
+				const me =  players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 			}
 
@@ -55,8 +49,6 @@ export class ClientManager {
 
 
 	stopRenderLoop = () => {
-		console.log("Stopping render loop");
-
 		if (this.#renderLoopId) {
 			cancelAnimationFrame(this.#renderLoopId);
 			this.#renderLoopId = null;
@@ -64,19 +56,13 @@ export class ClientManager {
 	}
 
 	cleanup = () => {
-		console.log("Cleaning up");
+		const {players} = this.game.state;
 
 		this.stopRenderLoop();
 
-		// if (this.#renderLoopId) {
-		// 	console.log("Stopping render loop");
-		// 	cancelAnimationFrame(this.#renderLoopId);
-		// 	this.#renderLoopId = null;
-		// }
+		for (const playerID in players) {
+			delete players[playerID];
 
-		for (const playerID in this.game.state.players) {
-			//this.playerService.removePlayer(playerID);
-			delete this.game.state.players[playerID];
 			const element = document.getElementById(playerID);
 
 			if (element) {
