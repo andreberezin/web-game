@@ -58,14 +58,16 @@ export class SocketHandler {
 
 		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
 			let player = new Player(playerID);
-			//this.#clientManager.myID = playerID;
-			gameState.players[playerID] = player;
-			this.#playerService.createPlayerModel(newPlayer, playerID);
-			const myId = this.#clientManager.myID;
 
+			const myId = this.#clientManager.myID;
 			if (!myId) {
 				this.#clientManager.myID = playerID;
 			}
+
+			//this.#clientManager.myID = playerID;
+			gameState.players[playerID] = player;
+			this.#playerService.createPlayerModel(newPlayer, playerID);
+
 
 			// let i = 1;
 			// for (const playerID in playersData) {

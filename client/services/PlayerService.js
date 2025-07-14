@@ -56,6 +56,8 @@ export class PlayerService {
 
 		const player = this.#clientManager.game.state.players[playerId];
 
+		const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length
+
 		console.log("players", this.#clientManager.game.state.players);
 
 		player.getPosition.x = playerData.pos.x;
@@ -65,11 +67,23 @@ export class PlayerService {
 
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
-		playerElement.id = `${player.getId}`
+		playerElement.id = `${playerId}`
 		playerElement.style.top = `${player.getPosition.y}px`
 		playerElement.style.left = `${player.getPosition.x}px`
 		playerElement.tabIndex = 0;
+
+		// css variable for styling
+		playerElement.style.setProperty("--name", `"${playerId.substring(0, 5)}"`)
+		playerElement.setAttribute("number", numberOfPlayers);
+
+		// Set a real HTML attribute (for DOM querying)
+		//playerElement.setAttribute("data-player-id", playerId);
+
 		//player.textContent = playerData.name;
+
+		if (playerId === this.#clientManager.myID) {
+			playerElement.classList.add("me")
+		}
 
 		for (const property in player.styles) {
 			playerElement.style[property] = player.styles[property]
