@@ -1,4 +1,6 @@
-import './App.css'
+import '../styles/gamefield.css'
+import '../styles/player.scss'
+import '../styles/bullet.css'
 import {PlayerInputService} from '../services/PlayerInputService.js';
 import {PlayerService} from '../services/PlayerService.js';
 import {SocketHandler} from '../sockets/SocketHandler.js';
@@ -26,12 +28,12 @@ function App() {
         return clientManager;
     }
 
-    const clientmanager = createClientManager();
+    const clientManager = createClientManager();
 
   return (
       <div id={"game-field"} onClick={() => {
-          if (document.getElementById(clientmanager.myID)) {
-              document.getElementById(clientmanager.myID).focus()
+          if (document.getElementById(clientManager.myID)) {
+              (document.getElementById(clientManager.myID).focus())
           }
       }}
       >

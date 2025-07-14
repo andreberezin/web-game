@@ -52,6 +52,7 @@ export class SocketHandler {
 		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
 			let player = new Player(playerID);
 
+
 			gameState.players[playerID] = player;
 			this.#playerService.createPlayerModel(newPlayer, playerID);
 
@@ -59,6 +60,8 @@ export class SocketHandler {
 			if (!myId) {
 				this.#clientManager.myID = playerID;
 			}
+
+			//this.#clientManager.myID = playerID;
 
 			// let i = 1;
 			// for (const playerID in playersData) {

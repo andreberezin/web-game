@@ -1,0 +1,59 @@
+$player-colors: (
+		'1': red,
+		'2': green,
+		'3': blue,
+		'4': yellow
+);
+
+@each $id, $color in $player-colors {
+  .player[number='#{$id}'] {
+	--player-color: #{$color};
+  }
+}
+
+.player {
+	/*width: 20px;*/
+	/*height: 20px;*/
+	position: absolute;
+  background-color: var(--player-color);
+
+  &::before {
+	content: var(--name);
+	position: absolute;
+	top: -20px;
+	left: 50%;
+	transform: translateX(-50%);
+	color: lightgray;
+  }
+
+  &.me {
+	&::before {
+	  color: black;
+	}
+  }
+
+  &:focus {
+	outline: none;
+  }
+
+
+  //// player 1 style
+  //&[id='1'] {
+	//background-color: red;
+  //}
+  //
+  //// player 2 style
+  //&[id='2'] {
+	//background-color: green;
+  //}
+  //
+  //// player 3 style
+  //&[id='3'] {
+	//background-color: blue;
+  //}
+  //
+  //// player 4 style
+  //&[id='4'] {
+	//background-color: yellow;
+  //}
+}
