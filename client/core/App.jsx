@@ -8,14 +8,12 @@ import {ClientManager} from './ClientManager.js';
 import {GameService} from '../services/GameService.js';
 
 function App() {
-
     function createClientManager() {
         const playerInputService = new PlayerInputService();
         const playerService = new PlayerService(playerInputService);
         const gameService = new GameService(playerInputService);
         const socketHandler = new SocketHandler(playerService);
         const clientManager = new ClientManager(gameService, playerService, socketHandler);
-
 
         socketHandler.setClientManager(clientManager);
         gameService.setClientManager(clientManager);
@@ -25,8 +23,8 @@ function App() {
         socketHandler.connectToServer();
 
         clientManager.startRenderLoop();
-        clientManager.setupCleanup();
 
+        clientManager.setupCleanup();
         return clientManager;
     }
 

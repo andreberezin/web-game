@@ -13,7 +13,6 @@ export class Game {
 
 	constructor(id, settings) {
 		this.#id = id;
-
 	}
 
 	get getState() {
@@ -47,20 +46,4 @@ export class Game {
 	set setId(newId) {
 		this.#id = newId;
 	}
-
-	// addPlayer(playerId, player) {
-	// 	if (this.#state.players.hasOwnProperty(playerId)) {
-	// 		console.error("Player: ", playerId, " already exists exist");
-	// 		return;
-	// 	}
-	// 	this.#state.players[playerId] = player;
-	// }
-	//
-	// removePlayer(playerId) {
-	// 	if (!(this.#state.players.hasOwnProperty(playerId))) {
-	// 		console.error("Player: ", playerId, " does not exist");
-	// 		return;
-	// 	}
-	// 	delete this.#state.players[playerId]
-	// }
 }
