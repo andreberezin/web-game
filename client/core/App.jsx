@@ -28,7 +28,7 @@ function App() {
         return clientManager;
     }
 
-    const clientmanager = createClientManager();
+    const clientManager = createClientManager();
 
   return (
       <div id={"game-field"} onClick={() => {
