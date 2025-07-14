@@ -44,7 +44,7 @@ export class ClientManager {
 			}
 
 			if (this.myID) {
-				console.log("myId", this.myID)
+				//console.log("myId", this.myID)
 				const me =  this.game.state.players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 			}
