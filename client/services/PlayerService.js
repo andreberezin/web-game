@@ -58,7 +58,7 @@ export class PlayerService {
 
 		const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length
 
-		console.log("players", this.#clientManager.game.state.players);
+		//console.log("players", this.#clientManager.game.state.players);
 
 		player.getPosition.x = playerData.pos.x;
 		player.getPosition.y = playerData.pos.y;
