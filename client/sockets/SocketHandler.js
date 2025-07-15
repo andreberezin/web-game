@@ -40,14 +40,14 @@ export class SocketHandler {
 
 			let i = 1;
 			for (const playerID in playersData) {
-				console.log("playersData:", playersData);
+				console.log("players:", playersData);
 
 				if (playerID !== this.#clientManager.myID) {
 					let player = new Player(playerID);
 					//gameState.players[playerID].setName(`player${i}`);
 					gameState.players[playerID] = player;
 					this.#playerService.createPlayerModel(playersData[playerID], playerID);
-					console.log("gameState:", gameState);
+					//console.log("gameState:", gameState);
 					i++;
 				}
 			}
