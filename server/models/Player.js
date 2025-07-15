@@ -20,7 +20,6 @@ export class Player {
     direction = "up";
 
 	constructor(id) {
-		// this.#pos = pos;
         this.id = id
 	}
 

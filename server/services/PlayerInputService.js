@@ -2,58 +2,51 @@ import {clamp} from '../utils/clamp.js';
 
 export class PlayerInputService {
 
-	#gameService;
+    #gameService;
 
-	constructor() {
-	}
+    setGameService(gameService) {
+        this.#gameService = gameService;
+    }
 
-	setGameService(gameService) {
-		this.#gameService = gameService;
-	}
+    handlePlayerMovement(game) {
+        for (let playerID in game.getState.players) {
+            const player = game.getState.players[playerID]
 
-	handlePlayerMovement(game) {
+            if (!player.input) continue;
 
-		for (let playerID in game.getState.players) {
-			const player = game.getState.players[playerID]
+            const {arrowUp, arrowDown, arrowLeft, arrowRight} = player.input;
+            if (arrowUp) {
+                this.movePlayer(player, 'y', -1, "up");
+            }
+            if (arrowDown) {
+                this.movePlayer(player, 'y', 1, "down");
+            }
+            if (arrowLeft) {
+                this.movePlayer(player, 'x', -1, "left");
+            }
+            if (arrowRight) {
+                this.movePlayer(player, 'x', 1, "right");
+            }
+        }
+    }
 
-			if (player.input) {
+    movePlayer(player, axis, multiplier, direction) {
+        const distance = multiplier * player.shift;
+        const newPosition = player.pos[axis] + distance;
+        player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
+        player.direction = direction;
+    }
 
-				if (player.input.arrowUp === true) {
-					player.pos.y = clamp(0, player.pos.y - player.shift, player.maxPosition.y);
-					player.direction = "up";
-					//console.log("Arrow up. pos.y: ", player.pos.y);
-				}
-				if (player.input.arrowDown === true) {
-					player.pos.y = clamp(0, player.pos.y + player.shift, player.maxPosition.y);
-					player.direction = "down";
-					//console.log("Arrow down. pos.y: ", player.pos.y);
-				}
-				if (player.input.arrowLeft === true) {
-					player.pos.x = clamp(0, player.pos.x - player.shift, player.maxPosition.x);
-					player.direction = "left";
-					//console.log("Arrow left. pos.x: ", player.pos.x);
-				}
-				if (player.input.arrowRight === true) {
-					player.pos.x = clamp(0, player.pos.x + player.shift, player.maxPosition.x);
-					player.direction = "right";
-					//console.log("Arrow right. pos.x: ", player.pos.x);
-				}
-			}
-		}
-	}
+    handlePlayerShooting(game) {
+        const players = game.getState.players;
 
-	handlePlayerShooting(game) {
+        for (let playerID in players) {
+            const player = players[playerID];
 
-		for (let playerID in game.getState.players) {
-			const player = game.getState.players[playerID]
-
-			if (player.input) {
-
-				if (player.input.space === true) {
-					this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
-				}
-			}
-		}
-	}
+            if (player.input && player.input.space === true) {
+                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
+            }
+        }
+    }
 }
 

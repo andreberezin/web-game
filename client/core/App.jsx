@@ -16,7 +16,6 @@ export function createClientManager() {
     const socketHandler = new SocketHandler(playerService);
     const clientManager = new ClientManager(gameService, playerService, socketHandler);
 
-
     socketHandler.setClientManager(clientManager);
     gameService.setClientManager(clientManager);
     playerService.setClientManager(clientManager);

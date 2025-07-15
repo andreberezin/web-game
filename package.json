@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "ngrok": "^5.0.0-beta.2"
+    "ngrok": "^5.0.0-beta.2",
+    "sass-embedded": "^1.89.2"
   }
 }

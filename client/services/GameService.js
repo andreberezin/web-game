@@ -1,6 +1,4 @@
-
 export class GameService {
-
 	#clientManager;
 
 	constructor(playerInputService) {
@@ -18,14 +16,19 @@ export class GameService {
 			return;
 		}
 
+		this.updatePosition(bullet, newBulletData);
+		this.updateElementPosition(bullet);
+	}
+
+	updatePosition(bullet, newBulletData) {
 		bullet.getPosition.y = newBulletData.getPosition.y;
 		bullet.getPosition.x = newBulletData.getPosition.x;
+	}
 
+	updateElementPosition(bullet) {
 		bullet.getElement.style.top = `${bullet.getPosition.y}px`
 		bullet.getElement.style.left = `${bullet.getPosition.x}px`
 	}
-
-
 
 	createBulletModel(bulletData, bulletId) {
 		if (document.getElementById(bulletId) !== null) {
@@ -35,9 +38,17 @@ export class GameService {
 
 		const bullet = this.#clientManager.game.state.bullets[bulletId];
 
-		bullet.getPosition.x = bulletData.pos.x;
-		bullet.getPosition.y = bulletData.pos.y;
+		this.setPosition(bullet, bulletData);
+		const bulletElement = this.createElement(bullet);
+		this.appendToGameField(bulletElement);
+	}
 
+	appendToGameField(bulletElement) {
+		const gameField = document.getElementById("game-field");
+		gameField.appendChild(bulletElement);
+	}
+
+	createElement(bullet) {
 		const bulletElement = document.createElement("div")
 		bulletElement.classList.add("bullet")
 		bulletElement.id = `${bullet.getId}`
@@ -50,32 +61,11 @@ export class GameService {
 		}
 
 		bullet.setElement(bulletElement);
-
-		const gameField = document.getElementById("game-field");
-
-		gameField.appendChild(bulletElement);
+		return bulletElement;
 	}
 
-	// updateSettings(updatedSettings) {
-	// 	this.#settings = {...this.#settings, ...updatedSettings};
-	// }
-	//
-	// updateState(updatedState) {
-	// 	this.#state = {...this.#state, ...updatedState};
-	// }
-
-	// setClientManager(clientManager) {
-	// 	this.#clientManager = clientManager;
-	// }
-	//
-	// createGame(hostId, settings) {
-	// 	return new Game(hostId, settings);
-	// }
-	//
-	// updateGameState(game) {
-	//
-	// 	// handle bullet input
-	// 	this.bulletInputService.handlePlayerMovement(game);
-	//
-	// }
+	setPosition(bullet, bulletData) {
+		bullet.getPosition.x = bulletData.pos.x;
+		bullet.getPosition.y = bulletData.pos.y;
+	}
 }
