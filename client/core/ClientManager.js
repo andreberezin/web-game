@@ -74,14 +74,23 @@ export class ClientManager {
 		// 	this.#renderLoopId = null;
 		// }
 
+		// cleanup existing player elements
 		for (const playerID in this.game.state.players) {
 			//this.playerService.removePlayer(playerID);
 			delete this.game.state.players[playerID];
 			const element = document.getElementById(playerID);
+			console.log("removed player: ",  playerID);
 
 			if (element) {
 				element.remove();
 			}
+		}
+
+		// cleanup for any other player elements just in case
+		const elements = document.getElementsByClassName("player")
+
+		if (elements.length > 0) {
+			elements.forEach((element) => {element.remove()});
 		}
 
 		if (this.socketHandler.socket) {
