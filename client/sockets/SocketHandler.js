@@ -40,7 +40,7 @@ export class SocketHandler {
 					//gameState.players[playerID].setName(`player${i}`);
 					gameState.players[playerID] = player;
 					this.#playerService.createPlayerModel(playersData[playerID], playerID);
-					console.log("gameState:", gameState);
+					//console.log("gameState:", gameState);
 					i++;
 				}
 			}
