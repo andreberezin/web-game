@@ -1,24 +1,30 @@
-import '../styles/gamefield.css'
+import '../styles/gamefield.scss'
 import '../styles/player.scss'
 import '../styles/bullet.css'
+import '../styles/gameUI.scss'
 import {PlayerInputService} from '../services/PlayerInputService.js';
 import {PlayerService} from '../services/PlayerService.js';
 import {SocketHandler} from '../sockets/SocketHandler.js';
 import {ClientManager} from './ClientManager.js';
 import {GameService} from '../services/GameService.js';
 import {Menu} from '../components/menu/Menu.jsx';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
+import {GameInterfaceService} from '../services/GameInterfaceService.js';
+import {GameInterface} from '../models/GameInterface.js';
 
 export function createClientManager() {
     const playerInputService = new PlayerInputService();
     const playerService = new PlayerService(playerInputService);
     const gameService = new GameService(playerInputService);
-    const socketHandler = new SocketHandler(playerService);
-    const clientManager = new ClientManager(gameService, playerService, socketHandler);
+    const gameInterface = new GameInterface();
+    const gameInterfaceService = new GameInterfaceService(gameInterface);
+    const socketHandler = new SocketHandler(playerService, gameInterface);
+    const clientManager = new ClientManager(gameService, gameInterfaceService, playerService, socketHandler);
 
     socketHandler.setClientManager(clientManager);
     gameService.setClientManager(clientManager);
     playerService.setClientManager(clientManager);
+    gameInterfaceService.setClientManager(clientManager);
     socketHandler.setGameService(gameService);
 
     //socketHandler.connectToServer();
@@ -36,9 +42,34 @@ function App() {
 
     const SHOW_MENU = import.meta.env.VITE_SHOW_MENU;
 
+    // useEffect(() => {
+    //     if (SHOW_MENU === "FALSE") setIsGameStarted(true);
+    // })
+
+    useEffect(() => {
+        console.log("SHOW MENU: ", SHOW_MENU);
+
+        if (SHOW_MENU === "FALSE") {
+            clientManager.socketHandler.connectToServer();
+            clientManager.startRenderLoop();
+            clientManager.gameInterfaceService.createGameUIElements();
+
+            const root = document.getElementById("root");
+            root.style.display = "flex";
+            root.style.flexDirection = "column-reverse";
+        }
+    }, []);
+
+    // if (isGameStarted || SHOW_MENU === "FALSE") {
+    //     clientManager.gameInterfaceService.createGameUIElements();
+    // }
+
     // with menu enabled
     if (SHOW_MENU === "TRUE") {
-        console.log("SHOW_MENU: ", SHOW_MENU);
+
+        if (isGameStarted) {
+            clientManager.gameInterfaceService.createGameUIElements();
+        }
 
         return (
             <>
@@ -59,9 +90,9 @@ function App() {
         )
         // menu disabled
     } else {
-        console.log("SHOW_MENU: ", SHOW_MENU);
-        clientManager.socketHandler.connectToServer();
-        clientManager.startRenderLoop();
+        // clientManager.socketHandler.connectToServer();
+        // clientManager.startRenderLoop();
+        // clientManager.gameInterfaceService.createGameUIElements();
 
         return (
             <div id={"game-field"} onClick={() => {
@@ -73,17 +104,6 @@ function App() {
             </div>
         )
     }
-
-  // return (
-  //     // <div id={"game-field"} onClick={() => {
-  //     //     if (document.getElementById(clientManager.myID)) {
-  //     //         (document.getElementById(clientManager.myID).focus())
-  //     //     }
-  //     // }}
-  //     // >
-  //     // </div>
-  //     // <Menu></Menu>
-  // )
 }
 
 export default App

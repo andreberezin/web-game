@@ -1,0 +1,88 @@
+export class GameInterfaceService {
+	#gameInterface
+	#clientManager
+
+	constructor(gameInterface) {
+		this.#gameInterface = gameInterface;
+	}
+
+	setClientManager(clientManager) {
+		this.#clientManager = clientManager;
+	}
+
+	createGameUIElements() {
+		const exisitingUI = document.getElementById("game-ui");
+		if (exisitingUI) return;
+
+		const gameUI = document.createElement("div");
+		gameUI.id= "game-ui" ;
+
+		const root = document.getElementById("root");
+
+		const idElement = this.createGameIdElement();
+		const playerCountElement = this.createPlayerCountElement();
+
+		root.appendChild(gameUI);
+		gameUI.appendChild(idElement);
+		gameUI.appendChild(playerCountElement);
+	}
+
+	createGameIdElement() {
+		const gameIdElement = document.createElement("div")
+		gameIdElement.id = "game-id"
+		gameIdElement.className = "ui-item";
+		gameIdElement.innerHTML = `Game id: <span id="game-id-value" class="value"></span>`;
+
+		//this.#gameInterface.setIdElement(gameIdElement);
+
+		return gameIdElement;
+	}
+
+	createPlayerCountElement() {
+		const playerCountElement = document.createElement("div")
+		playerCountElement.id = "player-count"
+		playerCountElement.className = "ui-item";
+		playerCountElement.innerHTML = `Players: <span id="player-count-value" class="value"></span>`;
+
+		//this.#gameInterface.setPlayerCountElement(playerCountElement);
+
+		return playerCountElement;
+	}
+
+	updateGameUI() {
+		const gameUI = document.getElementById("game-ui");
+		if (!gameUI) return;
+
+		this.updateGameIdElement();
+		this.updatePlayerCountElement();
+
+	}
+
+	updateGameIdElement() {
+		const gameIdElement = document.getElementById("game-id");
+		const gameIdValueElement = document.getElementById("game-id-value");
+		if (!gameIdElement || !gameIdValueElement) return;
+
+		if (this.#gameInterface.getGameId) {
+			gameIdValueElement.textContent = this.#gameInterface.getGameId;
+		}
+	}
+
+	updatePlayerCountElement() {
+		const playerCountElement = document.getElementById("player-count");
+		const playerCountValueElement = document.getElementById("player-count-value");
+		if (!playerCountElement || !playerCountValueElement) return;
+
+		this.getNumberOfPlayers();
+
+		if (this.#gameInterface.getPlayerCount) {
+			playerCountValueElement.textContent = this.#gameInterface.getPlayerCount;
+		}
+	}
+
+	getNumberOfPlayers() {
+		const players = this.#clientManager.game.state.players;
+		const count = Object.keys(players).length;
+		this.#gameInterface.setPlayerCount(count);
+	}
+}

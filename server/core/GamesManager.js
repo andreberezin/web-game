@@ -30,15 +30,23 @@ export class GamesManager {
 
 		this.startGameLoop(hostId);
 
+		//this.broadcastGameId(game.getId);
+
 		this.socketHandler.createSocketConnection(1);
 	}
 
 	broadcastGameState(gameId) {
 		const game = this.games.get(gameId);
 		if (game) {
-			this.#io.emit('UpdateGameState', (this.games.get(gameId).getState));
+			this.#io.emit('updateGameState', gameId, game.getState);
 		}
 	}
+
+	// broadcastGameId(gameId) {
+	// 	this.#io.emit('updateGameId', (gameId))
+	// }
+
+	// todo broadcast game settings if needed
 
 	updateGame(gameId) {
 		const game = this.games.get(gameId);
