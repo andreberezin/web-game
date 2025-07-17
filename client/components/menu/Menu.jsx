@@ -1,4 +1,4 @@
-import './menu.scss'
+import '../../styles/menu.scss'
 import {JoinGame} from './JoinGame.jsx';
 import {useState} from 'react';
 import {CreateGame} from './CreateGame.jsx';

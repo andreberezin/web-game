@@ -1,15 +1,18 @@
 import {io} from 'socket.io-client';
 import {Player} from '../models/Player.js';
 import {Bullet} from "../models/Bullet.js";
+import {GameInterface} from '../models/GameInterface.js';
 
 export class SocketHandler {
 	socket;
 	#playerService;
+	#gameInterface
 	#clientManager;
 	#gameService;
 
-	constructor(playerService) {
+	constructor(playerService, gameInterface) {
 		this.#playerService = playerService;
+		this.#gameInterface = gameInterface;
 	}
 
 	setClientManager(clientManager) {
@@ -27,9 +30,16 @@ export class SocketHandler {
 
 		this.socket.on('connect', () => {
 			console.log('Connected to server with ID:', this.socket.id);
+			//this.socket.emit('fetchGameId')
 			this.socket.emit('createMyPlayer');
 			this.socket.emit('fetchOtherPlayers');
 		});
+
+		this.socket.on('sendGameId', (gameId) => {
+			this.#clientManager.game.id = gameId;
+			this.#gameInterface.setGameId(gameId);
+			console.log("game id when fetched from backend: ", gameId);
+		})
 
 		this.socket.on('sendOtherPlayers', (playersData) => {
 			let i = 1;
@@ -51,7 +61,9 @@ export class SocketHandler {
 
 		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
 			let player = new Player(playerID);
-
+			// let userInterface = new GameInterface(playerID);
+			//
+			// userInterface.setGameId(this.#clientManager.game.id)
 
 			gameState.players[playerID] = player;
 			this.#playerService.createPlayerModel(newPlayer, playerID);
@@ -79,7 +91,12 @@ export class SocketHandler {
 			// i = 0;
 		})
 
-		this.socket.on('UpdateGameState', (updatedGameState) => {
+
+		this.socket.on('updateGameState', (gameId, updatedGameState) => {
+
+			this.#gameInterface.setGameId(gameId);
+
+			// console.log("game id: ", gameId);
 			for (const playerID in gameState.players) {
 				if (!updatedGameState.players[playerID]) {
 					document.getElementById(playerID).remove();

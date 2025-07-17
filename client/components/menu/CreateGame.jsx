@@ -6,6 +6,7 @@ export function CreateGame({setIsCreateGame, isGameStarted, setIsGameStarted, cl
 		setIsCreateGame(false);
 		setIsGameStarted(true);
 		clientManager.socketHandler.connectToServer();
+		//clientManager.gameInterfaceService.createGameUIElements();
 		clientManager.startRenderLoop();
 
 		// document.getElementById("menu").remove();

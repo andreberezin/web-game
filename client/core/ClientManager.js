@@ -1,6 +1,7 @@
 
 export class ClientManager {
 	game = {
+		id: null,
 		state: {
 			players: {},
 			bullets: {}
@@ -9,8 +10,9 @@ export class ClientManager {
 	myID = null;
 	#renderLoopId = null;
 
-	constructor(gameService, playerService, socketHandler) {
+	constructor(gameService, gameInterfaceService, playerService, socketHandler) {
 		this.gameService = gameService;
+		this.gameInterfaceService = gameInterfaceService
 		this.playerService = playerService;
 		this.socketHandler = socketHandler;
 	}
@@ -25,6 +27,8 @@ export class ClientManager {
 		const {players, bullets} = this.game.state;
 
 		if (this.game) {
+			this.gameInterfaceService.updateGameUI();
+
 			for (let playerID in players) {
 				if (playerID && players[playerID] != null) {
 					this.playerService.updatePlayerModel(timestamp, players[playerID], playerID);
