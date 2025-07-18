@@ -1,7 +1,7 @@
 import '../styles/gamefield.scss'
 import '../styles/player.scss'
 import '../styles/bullet.css'
-import '../styles/gameUI.scss'
+import '../styles/userInterfaces.scss'
 import {PlayerInputService} from '../services/PlayerInputService.js';
 import {PlayerService} from '../services/PlayerService.js';
 import {SocketHandler} from '../sockets/SocketHandler.js';
@@ -11,6 +11,7 @@ import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useState} from 'react';
 import {GameInterfaceService} from '../services/GameInterfaceService.js';
 import {GameInterface} from '../models/GameInterface.js';
+import {PlayerInterfaceService} from '../services/PlayerInterfaceService.js';
 
 export function createClientManager() {
     const playerInputService = new PlayerInputService();
@@ -18,13 +19,13 @@ export function createClientManager() {
     const gameService = new GameService(playerInputService);
     const gameInterface = new GameInterface();
     const gameInterfaceService = new GameInterfaceService(gameInterface);
-    const socketHandler = new SocketHandler(playerService, gameInterface);
-    const clientManager = new ClientManager(gameService, gameInterfaceService, playerService, socketHandler);
+    const playerInterfaceService = new PlayerInterfaceService();
+    const socketHandler = new SocketHandler(playerService, playerInterfaceService, gameInterface);
+    const clientManager = new ClientManager(gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler);
 
     socketHandler.setClientManager(clientManager);
     gameService.setClientManager(clientManager);
     playerService.setClientManager(clientManager);
-    gameInterfaceService.setClientManager(clientManager);
     socketHandler.setGameService(gameService);
 
     //socketHandler.connectToServer();
@@ -52,7 +53,7 @@ function App() {
         if (SHOW_MENU === "FALSE") {
             clientManager.socketHandler.connectToServer();
             clientManager.startRenderLoop();
-            clientManager.gameInterfaceService.createGameUIElements();
+            clientManager.gameInterfaceService.createGameUI();
 
             const root = document.getElementById("root");
             root.style.display = "flex";
@@ -68,7 +69,7 @@ function App() {
     if (SHOW_MENU === "TRUE") {
 
         if (isGameStarted) {
-            clientManager.gameInterfaceService.createGameUIElements();
+            clientManager.gameInterfaceService.createGameUI();
         }
 
         return (

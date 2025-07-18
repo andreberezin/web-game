@@ -4,15 +4,17 @@ export class ClientManager {
 		id: null,
 		state: {
 			players: {},
+			interfaces: {},
 			bullets: {}
 		},
 	};
 	myID = null;
 	#renderLoopId = null;
 
-	constructor(gameService, gameInterfaceService, playerService, socketHandler) {
+	constructor(gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler) {
 		this.gameService = gameService;
 		this.gameInterfaceService = gameInterfaceService
+		this.playerInterfaceService = playerInterfaceService
 		this.playerService = playerService;
 		this.socketHandler = socketHandler;
 	}
@@ -27,7 +29,9 @@ export class ClientManager {
 		const {players, bullets} = this.game.state;
 
 		if (this.game) {
-			this.gameInterfaceService.updateGameUI();
+			const playersCount = this.gameInterfaceService.getNumberOfPlayers(players)
+			this.gameInterfaceService.updateGameUI(this.game.id, playersCount);
+
 
 			for (let playerID in players) {
 				if (playerID && players[playerID] != null) {
@@ -45,6 +49,7 @@ export class ClientManager {
 			if (this.myID) {
 				const me =  players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
+				this.playerInterfaceService.updatePlayerUI(this.myID);
 			}
 
 			this.#renderLoopId = requestAnimationFrame(this.renderLoop);

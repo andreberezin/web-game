@@ -6,11 +6,7 @@ export class GameInterfaceService {
 		this.#gameInterface = gameInterface;
 	}
 
-	setClientManager(clientManager) {
-		this.#clientManager = clientManager;
-	}
-
-	createGameUIElements() {
+	createGameUI() {
 		const exisitingUI = document.getElementById("game-ui");
 		if (exisitingUI) return;
 
@@ -33,8 +29,6 @@ export class GameInterfaceService {
 		gameIdElement.className = "ui-item";
 		gameIdElement.innerHTML = `Game id: <span id="game-id-value" class="value"></span>`;
 
-		//this.#gameInterface.setIdElement(gameIdElement);
-
 		return gameIdElement;
 	}
 
@@ -44,45 +38,37 @@ export class GameInterfaceService {
 		playerCountElement.className = "ui-item";
 		playerCountElement.innerHTML = `Players: <span id="player-count-value" class="value"></span>`;
 
-		//this.#gameInterface.setPlayerCountElement(playerCountElement);
-
 		return playerCountElement;
 	}
 
-	updateGameUI() {
+	updateGameUI(gameId, playersCount) {
 		const gameUI = document.getElementById("game-ui");
 		if (!gameUI) return;
 
-		this.updateGameIdElement();
-		this.updatePlayerCountElement();
+		this.updateGameIdElement(gameId);
+		this.updatePlayerCountElement(playersCount);
 
 	}
 
-	updateGameIdElement() {
+	updateGameIdElement(gameId) {
 		const gameIdElement = document.getElementById("game-id");
 		const gameIdValueElement = document.getElementById("game-id-value");
 		if (!gameIdElement || !gameIdValueElement) return;
 
-		if (this.#gameInterface.getGameId) {
-			gameIdValueElement.textContent = this.#gameInterface.getGameId;
-		}
+		gameIdValueElement.textContent = gameId
 	}
 
-	updatePlayerCountElement() {
+	updatePlayerCountElement(playerCount) {
 		const playerCountElement = document.getElementById("player-count");
 		const playerCountValueElement = document.getElementById("player-count-value");
 		if (!playerCountElement || !playerCountValueElement) return;
 
-		this.getNumberOfPlayers();
-
-		if (this.#gameInterface.getPlayerCount) {
-			playerCountValueElement.textContent = this.#gameInterface.getPlayerCount;
-		}
+		playerCountValueElement.textContent = playerCount;
 	}
 
-	getNumberOfPlayers() {
-		const players = this.#clientManager.game.state.players;
+	getNumberOfPlayers(players) {
 		const count = Object.keys(players).length;
 		this.#gameInterface.setPlayerCount(count);
+		return count;
 	}
 }
