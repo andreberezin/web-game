@@ -1,17 +1,19 @@
 import {io} from 'socket.io-client';
 import {Player} from '../models/Player.js';
 import {Bullet} from "../models/Bullet.js";
-import {GameInterface} from '../models/GameInterface.js';
+import {PlayerInterface} from '../models/PlayerInterface.js';
 
 export class SocketHandler {
 	socket;
 	#playerService;
+	#playerInterfaceService;
 	#gameInterface
 	#clientManager;
 	#gameService;
 
-	constructor(playerService, gameInterface) {
+	constructor(playerService, playerInterfaceService, gameInterface) {
 		this.#playerService = playerService;
+		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
 	}
 
@@ -30,16 +32,16 @@ export class SocketHandler {
 
 		this.socket.on('connect', () => {
 			console.log('Connected to server with ID:', this.socket.id);
-			//this.socket.emit('fetchGameId')
+			this.socket.emit('fetchGameId')
 			this.socket.emit('createMyPlayer');
 			this.socket.emit('fetchOtherPlayers');
 		});
 
-		this.socket.on('sendGameId', (gameId) => {
-			this.#clientManager.game.id = gameId;
-			this.#gameInterface.setGameId(gameId);
-			console.log("game id when fetched from backend: ", gameId);
-		})
+		// this.socket.on('sendGameId', (gameId) => {
+		// 	this.#clientManager.game.id = gameId;
+		// 	this.#gameInterface.setGameId(gameId);
+		// 	console.log("game id when fetched from backend: ", gameId);
+		// })
 
 		this.socket.on('sendOtherPlayers', (playersData) => {
 			let i = 1;
@@ -47,8 +49,10 @@ export class SocketHandler {
 			for (const playerID in playersData) {
 				if (playerID !== this.#clientManager.myID) {
 					let player = new Player(playerID);
+					let playerInterface = new PlayerInterface(playerID);
 					//gameState.players[playerID].setName(`player${i}`);
 					gameState.players[playerID] = player;
+					gameState.interfaces[playerID] = playerInterface;
 					this.#playerService.createPlayerModel(playersData[playerID], playerID);
 					//console.log("gameState:", gameState);
 					i++;
@@ -61,17 +65,16 @@ export class SocketHandler {
 
 		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
 			let player = new Player(playerID);
-			// let userInterface = new GameInterface(playerID);
-			//
-			// userInterface.setGameId(this.#clientManager.game.id)
-
+			let playerInterface = new PlayerInterface(playerID);
 			gameState.players[playerID] = player;
+			gameState.interfaces[playerID] = playerInterface;
 			this.#playerService.createPlayerModel(newPlayer, playerID);
 
 			const myId = this.#clientManager.myID;
 			if (!myId) {
 				this.#clientManager.myID = playerID;
 			}
+			this.#playerInterfaceService.createPlayerUI();
 
 			//this.#clientManager.myID = playerID;
 
@@ -95,6 +98,7 @@ export class SocketHandler {
 		this.socket.on('updateGameState', (gameId, updatedGameState) => {
 
 			this.#gameInterface.setGameId(gameId);
+			this.#clientManager.game.id = gameId;
 
 			// console.log("game id: ", gameId);
 			for (const playerID in gameState.players) {
