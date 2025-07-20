@@ -15,7 +15,8 @@ export class GamesManager {
 			const game = this.games.get(gameId);
 
 			if (game && game.getState.isRunning) {
-				this.updateGame(gameId);
+				const currentTime = Date.now();
+				this.updateGame(gameId, currentTime);
 				this.broadcastGameState(gameId)
 				setTimeout(gameLoop, this.#TICK_RATE);
 			}
@@ -48,10 +49,10 @@ export class GamesManager {
 
 	// todo broadcast game settings if needed
 
-	updateGame(gameId) {
+	updateGame(gameId, currentTime) {
 		const game = this.games.get(gameId);
 		if (game && game.getState.isRunning) {
-			this.gameService.updateGameState(game);
+			this.gameService.updateGameState(game, currentTime);
 		}
 	}
 }

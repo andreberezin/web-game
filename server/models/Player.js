@@ -18,10 +18,20 @@ export class Player {
         space: false
     }
     direction = "up";
+    lastShotTime = 0;
+    shotCooldown = 250;
 
 	constructor(id) {
         this.id = id
 	}
+
+    canShoot(currentTime) {
+        return (currentTime - this.lastShotTime) >= this.shotCooldown;
+    }
+
+    lastBulletShotAt(currentTime) {
+        this.lastShotTime = currentTime;
+    }
 
     get getPosition() {
         return this.pos;

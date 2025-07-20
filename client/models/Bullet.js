@@ -14,6 +14,7 @@ export class Bullet {
     }
 
     constructor(id, x, y, direction) {
+        this.id = id;
         this.pos.x = x;
         this.pos.y = y;
         this.direction = direction;

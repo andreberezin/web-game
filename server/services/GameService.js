@@ -23,11 +23,11 @@ export class GameService {
         return new Game(hostId, settings);
     }
 
-    updateGameState(game) {
+    updateGameState(game, currentTime) {
         this.updateBullets(game);
 
         this.playerInputService.handlePlayerMovement(game);
-        this.playerInputService.handlePlayerShooting(game);
+        this.playerInputService.handlePlayerShooting(game, currentTime);
     }
 
     addPlayerToGame(gameId, playerId, player) {

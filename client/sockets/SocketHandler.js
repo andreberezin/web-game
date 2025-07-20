@@ -125,6 +125,17 @@ export class SocketHandler {
 					gameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
 				}
 			}
+
+			// Delete bullet from client if not present in game state sent from server
+			for (const bulletID in gameState.bullets) {
+				if (!updatedGameState.bullets[bulletID]) {
+					const bulletElement = document.getElementById(bulletID);
+					if (bulletElement) {
+						bulletElement.remove();
+					}
+					delete gameState.bullets[bulletID];
+				}
+			}
 		})
 	}
 }
