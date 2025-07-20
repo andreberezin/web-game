@@ -19,6 +19,7 @@ export class Player {
         arrowLeft: false,
         space: false
     }
+    hp = 100;
     styles = {
         width: "20px",
         height: "20px",
@@ -28,6 +29,14 @@ export class Player {
 		// this.#pos = pos;
         this.#id = id
 	}
+
+    setHp(hp) {
+        this.hp = hp;
+    }
+
+    get getHp() {
+        return this.hp;
+    }
 
     get getId() {
         return this.#id;

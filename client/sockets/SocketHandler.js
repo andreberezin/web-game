@@ -152,6 +152,7 @@ export class SocketHandler {
 				if (gameState.players[playerID]) {
 					gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
 					gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
+					gameState.players[playerID].setHp(updatedGameState.players[playerID].hp);
 				}
 			}
 

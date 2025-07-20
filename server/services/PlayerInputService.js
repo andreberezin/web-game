@@ -37,6 +37,22 @@ export class PlayerInputService {
         player.direction = direction;
     }
 
+    handlePlayerRespawning(game, currentTime) {
+
+        const players = game.getState.players;
+
+        for (let playerID in players) {
+            const player = players[playerID];
+            if (player.getStatus() === "alive") {
+                return;
+            }
+
+                if (player.canRespawn(currentTime)) {
+                    this.#gameService.addPlayer(game, playerID, player);
+                }
+        }
+    }
+
     handlePlayerShooting(game, currentTime) {
         const players = game.getState.players;
 

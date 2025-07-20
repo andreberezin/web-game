@@ -20,13 +20,33 @@ export class Player {
     direction = "up";
     lastShotTime = 0;
     shotCooldown = 250;
+    hp = 100;
+    deathCooldown = 5000;
+    deathTime = 0;
+    status = alive;
 
 	constructor(id) {
         this.id = id
 	}
 
+    setStatus(status) {
+        this.status = status;
+    }
+
+    getStatus() {
+        return this.status;
+    }
+
+    canRespawn(currentTime) {
+        return (currentTime - this.deathTime) >= this.deathCooldown;
+    }
+
     canShoot(currentTime) {
         return (currentTime - this.lastShotTime) >= this.shotCooldown;
+    }
+
+    diedAt(currentTime) {
+        this.deathTime = currentTime;
     }
 
     lastBulletShotAt(currentTime) {
@@ -43,6 +63,14 @@ export class Player {
 
     get getMaxPosition() {
         return this.maxPosition;
+    }
+
+    setHp(hp) {
+        this.hp = hp;
+    }
+
+    getHp() {
+        return this.hp;
     }
 
     setShift(data) {
