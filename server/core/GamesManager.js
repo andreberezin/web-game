@@ -11,6 +11,7 @@ export class GamesManager {
 	}
 
 	startGameLoop(gameId) {
+		console.log("Starting Game Loop");
 		const gameLoop = () => {
 			const game = this.games.get(gameId);
 
@@ -23,22 +24,28 @@ export class GamesManager {
 		gameLoop();
 	}
 
-	createGame(hostId, settings = {}) {
+	createGame(socket, hostId, settings = {}) {
+		console.log("Creating game with id: ", hostId);
 		const game = this.gameService.createGame(hostId, settings);
 		game.updateState({ isRunning: true});
 		this.games.set(game.getId, game);
+
+		console.log("Created game: ", game.getId, game.getState);
+
+		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
+		socket.emit("gameCreated", hostId, game.getState, game.getSettings);
 
 		this.startGameLoop(hostId);
 
 		//this.broadcastGameId(game.getId);
 
-		this.socketHandler.createSocketConnection(1);
+		//this.socketHandler.createSocketConnection(1);
 	}
 
 	broadcastGameState(gameId) {
 		const game = this.games.get(gameId);
 		if (game) {
-			this.#io.emit('updateGameState', gameId, game.getState);
+			this.#io.to(gameId).emit('updateGameState', gameId, game.getState);
 		}
 	}
 

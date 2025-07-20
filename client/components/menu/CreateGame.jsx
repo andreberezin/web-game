@@ -1,32 +1,14 @@
-import {createClientManager} from '../../core/App.jsx';
-
-export function CreateGame({setIsCreateGame, isGameStarted, setIsGameStarted, clientManager}) {
+export function CreateGame({clientManager, setIsCreateGame, isGameStarted, setIsGameStarted}) {
 
 	function startGame() {
 		setIsCreateGame(false);
 		setIsGameStarted(true);
-		clientManager.socketHandler.connectToServer();
-		//clientManager.gameInterfaceService.createGameUIElements();
-		clientManager.startRenderLoop();
 
-		// document.getElementById("menu").remove();
-		//
-		// // const gameField = document.createElement("div")
-		// // gameField.addEventListener(onclick(() => {
-		// // 	if (document.getElementById(clientManager.myID)) {
-		// // 		(document.getElementById(clientManager.myID).focus())
-		// // 	}
-		// // }))
-		//
-		// return (
-		// 	<div id={"game-field"} onClick={() => {
-		// 		if (document.getElementById(clientManager.myID)) {
-		// 			(document.getElementById(clientManager.myID).focus())
-		// 		}
-		// 	}}
-		// 	>
-		// 	</div>
-		// )
+		const socket = clientManager.socketHandler.socket;
+		socket.emit('createGame', socket.id);
+
+		clientManager.gameInterfaceService.createGameUI();
+		clientManager.startRenderLoop();
 	}
 
 	return (

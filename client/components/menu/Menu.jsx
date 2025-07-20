@@ -36,19 +36,19 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 
 			{isJoinGame && !isGameStarted &&
 				<JoinGame
+					clientManager={clientManager}
 					setIsJoinGame={setIsJoinGame}
 					isGameStarted={isGameStarted}
 					setIsGameStarted={setIsGameStarted}
-					clientManager={clientManager}
 				/>
 			}
 
 			{isCreateGame && !isGameStarted &&
 				<CreateGame
+					clientManager={clientManager}
 					setIsCreateGame={setIsCreateGame}
 					isGameStarted={isGameStarted}
 					setIsGameStarted={setIsGameStarted}
-					clientManager={clientManager}
 				/>
 				// CreateGame(setIsCreateGame, isGameStarted, setIsGameStarted)
 			}

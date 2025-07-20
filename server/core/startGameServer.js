@@ -4,9 +4,11 @@ import {SocketHandler} from '../sockets/SocketHandler.js';
 import {GamesManager} from './GamesManager.js';
 
 export function startGameServer(io) {
-	const gamesManager = createGamesManager(io);
-	gamesManager.createGame(1);
-	gamesManager.startGameLoop(1);
+	// const gamesManager = createGamesManager(io);
+	// gamesManager.createGame(1);
+	// gamesManager.startGameLoop(1);
+
+	createGamesManager(io);
 }
 
 function createGamesManager(io) {
@@ -15,6 +17,8 @@ function createGamesManager(io) {
 	const gameService = new GameService(playerInputService);
 	const socketHandler = new SocketHandler(io);
 	const gamesManager = new GamesManager(io, gameService, socketHandler);
+
+	socketHandler.createSocketConnection();
 
 	socketHandler.setGamesManager(gamesManager);
 	gameService.setGamesManager(gamesManager);

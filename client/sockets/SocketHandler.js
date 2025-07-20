@@ -25,10 +25,33 @@ export class SocketHandler {
 		this.#gameService = gameService;
 	}
 
-	connectToServer() {
-		const gameState = this.#clientManager.game.state;
 
+	connectToServer() {
 		this.socket = io();
+
+		this.socket.on('connect', () => {
+			console.log('Connected to server with ID:', this.socket.id);
+			this.socket.emit('fetchAvailableGames');
+		})
+
+		this.socket.on('availableGames', (games) => {
+			this.#clientManager.games = new Map(games);
+			console.log("Available games: ", new Map(games));
+		})
+
+		this.socket.on('gameCreated', (gameId, gameState, gameSettings) => {
+			this.#clientManager.games.set(gameId, {gameState, gameSettings});
+			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
+			this.joinGame(gameId);
+		})
+	}
+
+	joinGame(gameId) {
+		const gameState = this.#clientManager.game.state;
+		console.log("Joining game: ", gameId);
+
+		// this.socket = io();
+		this.socket.emit('joinGame', gameId);
 
 		this.socket.on('connect', () => {
 			console.log('Connected to server with ID:', this.socket.id);
