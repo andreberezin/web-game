@@ -37,6 +37,24 @@ export class PlayerInputService {
         player.direction = direction;
     }
 
+    handlePlayerRespawning(game, currentTime) {
+
+        const deadPlayers = game.getState.deadPlayers;
+
+        for (let playerID in deadPlayers) {
+            const player = deadPlayers[playerID];
+
+                if (player.canRespawn(currentTime)) {
+                    player.setHp(100);
+                    player.setStatus("alive");
+                    player.pos = { x: 100, y: 100 };
+
+                    game.getState.players[playerID] = player;
+                    delete game.getState.deadPlayers[playerID];
+                }
+        }
+    }
+
     handlePlayerShooting(game, currentTime) {
         const players = game.getState.players;
 

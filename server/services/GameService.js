@@ -28,6 +28,40 @@ export class GameService {
 
         this.playerInputService.handlePlayerMovement(game);
         this.playerInputService.handlePlayerShooting(game, currentTime);
+        this.checkForCollisions(game, currentTime);
+        this.playerInputService.handlePlayerRespawning(game, currentTime);
+    }
+
+    checkForCollisions(game, currentTime) {
+        const players = game.getState.players;
+        const bullets = game.getState.bullets;
+        const bulletsToDelete = [];
+
+        for (let playerID in players) {
+            const player = players[playerID];
+
+            for (let bulletID in bullets) {
+                const bullet = bullets[bulletID];
+
+                if (bullet.pos.x + 5 > player.pos.x && bullet.pos.x < player.pos.x + 20 && bullet.pos.y + 5 > player.pos.y && bullet.pos.y < player.pos.y + 20) {
+                    console.log("PLAYER GOT HIT REMOVING 20 HP");
+                    player.setHp(player.hp - 20);
+                    if (player.getHp() <= 0) {
+                        // Player dies if hp is 0
+                        player.setStatus("dead");
+                        player.diedAt(currentTime);
+                        game.getState.deadPlayers[playerID] = player;
+                        delete game.getState.players[playerID];
+                    }
+
+                    bulletsToDelete.push(bulletID);
+                }
+            }
+        }
+
+        bulletsToDelete.forEach(bulletID => {
+            delete game.getState.bullets[bulletID];
+        });
     }
 
     addPlayerToGame(gameId, playerId, player) {
@@ -49,12 +83,19 @@ export class GameService {
 
     addPlayer(game, playerId, player) {
         game.getState.players[playerId] = player;
-        return true;
     }
 
     createBulletAt(x, y, direction, game) {
         const id = Math.floor(Math.random() * 10000);
-        game.getState.bullets[id] = new Bullet(id, x, y, direction);
+        if (direction === "up") {
+            game.getState.bullets[id] = new Bullet(id, x, y-6, "up");
+        } else if (direction === "down") {
+            game.getState.bullets[id] = new Bullet(id, x, y+26, "down");
+        } else if (direction === "left") {
+            game.getState.bullets[id] = new Bullet(id, x-6, y, "left");
+        } else if (direction === "right") {
+            game.getState.bullets[id] = new Bullet(id, x+26, y, "right");
+        }
     }
 
     updateBullets(game) {

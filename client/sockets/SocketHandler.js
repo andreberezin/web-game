@@ -141,6 +141,15 @@ export class SocketHandler {
 			this.#gameInterface.setGameId(gameId);
 			this.#clientManager.game.id = gameId;
 
+			// Respawning
+			for (const playerID in updatedGameState.players) {
+				if (!gameState.players[playerID]) {
+					let player = new Player(playerID);
+					gameState.players[playerID] = player;
+					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
+				}
+			}
+
 			// console.log("game id: ", gameId);
 			for (const playerID in gameState.players) {
 				if (!updatedGameState.players[playerID]) {
@@ -152,6 +161,7 @@ export class SocketHandler {
 				if (gameState.players[playerID]) {
 					gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
 					gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
+					gameState.players[playerID].setHp(updatedGameState.players[playerID].hp);
 				}
 			}
 
