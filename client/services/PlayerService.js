@@ -30,8 +30,6 @@ export class PlayerService {
 		const newShiftValue = Math.min(0.001 * elapsed, 10);
 		player.setShift(newShiftValue);
 
-		this.updatePosition(player, newPlayerData);
-
 		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
 			player.start = undefined;
@@ -57,11 +55,6 @@ export class PlayerService {
 		player.getMaxPosition.x = 500;
 	}
 
-	updatePosition(player, newPlayerData) {
-		player.getPosition.y = newPlayerData.getPosition.y;
-		player.getPosition.x = newPlayerData.getPosition.x;
-	}
-
 	updateElementPosition(player) {
 		player.getElement.style.top = `${player.getPosition.y}px`
 		player.getElement.style.left = `${player.getPosition.x}px`
@@ -78,7 +71,7 @@ export class PlayerService {
 
         const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length;
 
-		const playerElement = this.createElement(player, numberOfPlayers, playerId);
+ 		const playerElement = this.createElement(player, numberOfPlayers, playerId);
 		this.addEventListeners(playerElement, player);
 		player.setElement(playerElement);
 

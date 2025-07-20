@@ -5,7 +5,7 @@ export class Bullet {
     };
     id = "bullet-1";
     direction = "up";
-    velocity = 2;
+    velocity = 10;
 
     constructor(id, x, y, direction) {
         this.id = id;

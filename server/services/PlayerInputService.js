@@ -37,14 +37,17 @@ export class PlayerInputService {
         player.direction = direction;
     }
 
-    handlePlayerShooting(game) {
+    handlePlayerShooting(game, currentTime) {
         const players = game.getState.players;
 
         for (let playerID in players) {
             const player = players[playerID];
 
             if (player.input && player.input.space === true) {
-                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
+                if (player.canShoot(currentTime)) {
+                    this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
+                    player.lastBulletShotAt(currentTime);
+                }
             }
         }
     }

@@ -16,13 +16,7 @@ export class GameService {
 			return;
 		}
 
-		this.updatePosition(bullet, newBulletData);
 		this.updateElementPosition(bullet);
-	}
-
-	updatePosition(bullet, newBulletData) {
-		bullet.getPosition.y = newBulletData.getPosition.y;
-		bullet.getPosition.x = newBulletData.getPosition.x;
 	}
 
 	updateElementPosition(bullet) {
@@ -51,7 +45,7 @@ export class GameService {
 	createElement(bullet) {
 		const bulletElement = document.createElement("div")
 		bulletElement.classList.add("bullet")
-		bulletElement.id = `${bullet.getId}`
+		bulletElement.id = bullet.getId();
 		bulletElement.style.top = `${bullet.getPosition.y}px`
 		bulletElement.style.left = `${bullet.getPosition.x}px`
 		bulletElement.tabIndex = 0;
