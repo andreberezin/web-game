@@ -33,7 +33,7 @@ export class GamesManager {
 		console.log("Created game: ", game.getId, game.getState);
 
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
-		socket.emit("gameCreated", hostId, game.getState, game.getSettings);
+		//socket.emit("gameCreated", hostId, game.getState, game.getSettings);
 
 		this.startGameLoop(hostId);
 
