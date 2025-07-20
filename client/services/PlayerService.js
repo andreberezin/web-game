@@ -76,13 +76,15 @@ export class PlayerService {
 		player.setElement(playerElement);
 
 		console.log("players", this.#clientManager.game.state.players);
-		this.appendToGameField(playerElement);
+		this.appendToGameField(playerElement, playerId);
 	}
 
-	appendToGameField(playerElement) {
+	appendToGameField(playerElement, playerId) {
 		const gameField = document.getElementById("game-field");
 		gameField.appendChild(playerElement);
-		playerElement.focus();
+		if (playerId === this.#clientManager.myID) {
+			playerElement.focus();
+		}
 	}
 
 	setPosition(player, playerData) {

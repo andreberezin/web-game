@@ -80,7 +80,7 @@ export class ClientManager {
 				}
 			}
 
-			if (this.myID) {
+			if (this.myID && players[this.myID].input) {
 				const me =  players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 				this.playerInterfaceService.updatePlayerUI(this.myID);

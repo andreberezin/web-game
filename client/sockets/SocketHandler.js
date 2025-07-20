@@ -141,6 +141,15 @@ export class SocketHandler {
 			this.#gameInterface.setGameId(gameId);
 			this.#clientManager.game.id = gameId;
 
+			// Respawning
+			for (const playerID in updatedGameState.players) {
+				if (!gameState.players[playerID]) {
+					let player = new Player(playerID);
+					gameState.players[playerID] = player;
+					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
+				}
+			}
+
 			// console.log("game id: ", gameId);
 			for (const playerID in gameState.players) {
 				if (!updatedGameState.players[playerID]) {
