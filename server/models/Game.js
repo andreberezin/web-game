@@ -3,6 +3,7 @@ export class Game {
 	#state = {
 		isRunning: false,
 		players: {},
+		deadPlayers: {},
 		timeRemaining: 0,
 		bullets: {}
 	};

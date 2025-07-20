@@ -23,7 +23,7 @@ export class Player {
     hp = 100;
     deathCooldown = 5000;
     deathTime = 0;
-    status = alive;
+    status = "alive";
 
 	constructor(id) {
         this.id = id

@@ -28,11 +28,11 @@ export class GameService {
 
         this.playerInputService.handlePlayerMovement(game);
         this.playerInputService.handlePlayerShooting(game, currentTime);
-        this.checkForCollisions(game);
+        this.checkForCollisions(game, currentTime);
         this.playerInputService.handlePlayerRespawning(game, currentTime);
     }
 
-    checkForCollisions(game) {
+    checkForCollisions(game, currentTime) {
         const players = game.getState.players;
         const bullets = game.getState.bullets;
         const bulletsToDelete = [];
@@ -49,8 +49,9 @@ export class GameService {
                     if (player.getHp() <= 0) {
                         // Player dies if hp is 0
                         player.setStatus("dead");
-                        delete game.getState.players[playerID];
                         player.diedAt(currentTime);
+                        game.getState.deadPlayers[playerID] = player;
+                        delete game.getState.players[playerID];
                     }
 
                     bulletsToDelete.push(bulletID);

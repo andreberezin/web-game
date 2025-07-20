@@ -39,16 +39,18 @@ export class PlayerInputService {
 
     handlePlayerRespawning(game, currentTime) {
 
-        const players = game.getState.players;
+        const deadPlayers = game.getState.deadPlayers;
 
-        for (let playerID in players) {
-            const player = players[playerID];
-            if (player.getStatus() === "alive") {
-                return;
-            }
+        for (let playerID in deadPlayers) {
+            const player = deadPlayers[playerID];
 
                 if (player.canRespawn(currentTime)) {
-                    this.#gameService.addPlayer(game, playerID, player);
+                    player.setHp(100);
+                    player.setStatus("alive");
+                    player.pos = { x: 100, y: 100 };
+
+                    game.getState.players[playerID] = player;
+                    delete game.getState.deadPlayers[playerID];
                 }
         }
     }
