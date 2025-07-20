@@ -17,7 +17,6 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 					<button id={"create-game"} onClick={() => {
 						setIsJoinGame(false);
 						setIsCreateGame(true);
-						console.log("Create game!")
 					}}
 					>
 						Create game
@@ -25,7 +24,6 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 					<button id={"join-game"} onClick={() => {
 						setIsCreateGame(false);
 						setIsJoinGame(true);
-						console.log("Join game!")
 					}
 					}
 					>

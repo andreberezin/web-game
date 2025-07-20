@@ -28,6 +28,14 @@ export class SocketHandler {
 			socket.on('createGame', (hostId) => {
 				socket.join(hostId);
 				this.#gamesManager.createGame(socket, hostId);
+
+				socket.join(hostId);
+				this.connectToGame(hostId, socket);
+
+				const game = this.#gamesManager.games.get(hostId);
+				console.log("game: ", game);
+
+				socket.emit("gameCreated", hostId, game.getState, game.getSettings);
 			})
 
 			socket.on('joinGame', (gameId) => {
@@ -47,7 +55,7 @@ export class SocketHandler {
 	}
 
 	connectToGame(gameId, socket) {
-		console.log("Connecting to game...");
+		console.log("Connecting player: ", socket.id, " to game: ", gameId);
 		const game = this.#gamesManager.games.get(gameId);
 		const gameState = game.getState;
 		const playerId = socket.id;
@@ -55,14 +63,20 @@ export class SocketHandler {
 		const player = new Player(playerId);
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
-		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
+		console.log("players: ", gameState.players);
 
-		// socket.on('createMyPlayer', () => {
-		// 	const player = new Player(playerId);
-		//
-		// 	this.#gameService.addPlayerToGame(gameId, playerId, player);
-		// 	this.#io.emit('myPlayerCreated', gameState.players[playerId], playerId);
-		// });
+		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
+		//socket.emit('myPlayerCreated', gameState.players[playerId], playerId);
+
+		// Send existing players to the joining player
+		socket.emit('sendOtherPlayers', gameState.players);
+
+		socket.on('createMyPlayer', () => {
+			const player = new Player(playerId);
+
+			this.#gameService.addPlayerToGame(gameId, playerId, player);
+			this.#io.emit('myPlayerCreated', gameState.players[playerId], playerId);
+		});
 
 		socket.on('updateMyPlayerData', (input, shift, maxPosition) => {
 			if (gameState.players[playerId]) {

@@ -42,6 +42,12 @@ export class SocketHandler {
 		this.socket.on('gameCreated', (gameId, gameState, gameSettings) => {
 			this.#clientManager.games.set(gameId, {gameState, gameSettings});
 			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
+			//this.socket.emit('joinGame', gameId);
+			this.joinGame(gameId);
+		})
+
+		this.socket.on('gameJoined', (gameId) => {
+			console.log("Game joined: ", gameId, this.#clientManager.games.get(gameId));
 			this.joinGame(gameId);
 		})
 	}
@@ -50,15 +56,21 @@ export class SocketHandler {
 		const gameState = this.#clientManager.game.state;
 		console.log("Joining game: ", gameId);
 
-		// this.socket = io();
-		this.socket.emit('joinGame', gameId);
+		// this.socket.emit('createMyPlayer');
+		// this.socket.emit('fetchOtherPlayers');
 
-		this.socket.on('connect', () => {
-			console.log('Connected to server with ID:', this.socket.id);
-			this.socket.emit('fetchGameId')
-			this.socket.emit('createMyPlayer');
-			this.socket.emit('fetchOtherPlayers');
-		});
+		// if (this.socket.connected) {
+		// 	this.socket.emit('createMyPlayer');
+		// 	this.socket.emit('fetchOtherPlayers');
+		// } else {
+		// 	this.socket.on('connect', () => {
+		// 		this.socket.emit('createMyPlayer');
+		// 		this.socket.emit('fetchOtherPlayers');
+		// 	});
+		// }
+
+		this.socket.emit('createMyPlayer');
+		this.socket.emit('fetchOtherPlayers');
 
 		// this.socket.on('sendGameId', (gameId) => {
 		// 	this.#clientManager.game.id = gameId;
@@ -67,6 +79,7 @@ export class SocketHandler {
 		// })
 
 		this.socket.on('sendOtherPlayers', (playersData) => {
+			console.log("Sending otherPlayers");
 			let i = 1;
 
 			for (const playerID in playersData) {
@@ -87,6 +100,11 @@ export class SocketHandler {
 
 
 		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
+			const myPlayer = document.getElementById(playerID);
+
+			// return if player already exists
+			if (myPlayer) return;
+
 			let player = new Player(playerID);
 			let playerInterface = new PlayerInterface(playerID);
 			gameState.players[playerID] = player;
