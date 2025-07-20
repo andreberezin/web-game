@@ -1,6 +1,4 @@
-import {createClientManager} from '../../core/App.jsx';
-
-export function JoinGame({setIsJoinGame, isGameStarted, setIsGameStarted}) {
+export function JoinGame({clientManager, setIsJoinGame, isGameStarted, setIsGameStarted}) {
 
 	return (
 		<div className={"menu-items"}>
@@ -15,7 +13,7 @@ export function JoinGame({setIsJoinGame, isGameStarted, setIsGameStarted}) {
 				<button onClick={() => {
 					setIsJoinGame(false);
 					setIsGameStarted(true);
-					createClientManager();
+					//clientManager.createClientManager();
 				}}
 				>
 					Join
