@@ -75,7 +75,7 @@ export class PlayerService {
 		this.addEventListeners(playerElement, player);
 		player.setElement(playerElement);
 
-		console.log("players", this.#clientManager.game.state.players);
+		// console.log("players", this.#clientManager.game.state.players);
 		this.appendToGameField(playerElement, playerId);
 	}
 
