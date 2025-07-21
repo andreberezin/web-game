@@ -20,7 +20,7 @@ export class SocketHandler {
 		this.#io.on('connection', (socket) => {
 			console.log("Connected servers");
 
-			socket.on("fetchAvailableGames", () => {
+			socket.once("fetchAvailableGames", () => {
 				console.log("Fetching available games");
 				socket.emit('availableGames', Array.from(this.#gamesManager.games.entries()));
 			})
@@ -85,9 +85,11 @@ export class SocketHandler {
 				if (gameState.players[playerId]) {
 					console.log('Disconnecting player: ', playerId);
 					delete gameState.players[playerId];
+					socket.to(gameId).emit("playerLeft", playerId);
 				}
 				if (Object.keys(gameState.players).length === 0) {
-					game.delete(gameId);
+					console.log("Deleting game: ", gameId);
+					this.#gamesManager.games.delete(gameId);
 				}
 			});
 			socket.hasDisconnectHandler = true;

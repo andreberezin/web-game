@@ -66,13 +66,17 @@ export class SocketHandler {
 		})
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
-			console.log("Game: ", gameId, " joined by player: ", myPlayer.id);
+			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
 			this.initializePlayers(players, myPlayer);
 		})
 
 		socket.on('playerJoined', (playerId) => {
-			console.log("A new player joined the game:", playerId);
+			console.log("Player:", playerId, "joined the game:");
+		})
+
+		socket.on('playerLeft', (playerId) => {
+			console.log("Player:", playerId, "left the game");
 		})
 
 		// todo refactor this socket connection
