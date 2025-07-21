@@ -28,7 +28,7 @@ export function JoinGame({clientManager, setIsJoinGame, isGameStarted, setIsGame
 			clientManager.gameInterfaceService.createGameUI();
 			clientManager.startRenderLoop();
 		} else {
-			alert('Invalid game ID');x
+			alert('Invalid game ID');
 		}
 	}
 

@@ -1,6 +1,6 @@
 import {io} from 'socket.io-client';
 import {Player} from '../models/Player.js';
-import {Bullet} from "../models/Bullet.js";
+import {Bullet} from '../models/Bullet.js';
 import {PlayerInterface} from '../models/PlayerInterface.js';
 
 export class SocketHandler {
@@ -25,168 +25,118 @@ export class SocketHandler {
 		this.#gameService = gameService;
 	}
 
+	initializePlayers(players, myPlayer) {
+		if (!this.#clientManager.myID) {
+			this.#clientManager.myID = myPlayer.id;
+		}
+
+		const gameState = this.#clientManager.game.state;
+
+		for (const playerID in players) {
+			gameState.players[playerID] = new Player(playerID);
+			this.#playerService.createPlayerModel(players[playerID], playerID);
+
+			gameState.interfaces[playerID] = new PlayerInterface(playerID);
+
+			if (playerID === myPlayer.id) {
+				this.#playerInterfaceService.createPlayerUI();
+			}
+		}
+	}
 
 	connectToServer() {
 		this.socket = io();
+		const socket = this.socket;
 
-		this.socket.on('connect', () => {
+		socket.on('connect', () => {
 			console.log('Connected to server with ID:', this.socket.id);
 			this.socket.emit('fetchAvailableGames');
 		})
 
-		this.socket.on('availableGames', (games) => {
+		socket.on('availableGames', (games) => {
 			this.#clientManager.games = new Map(games);
 			console.log("Available games: ", new Map(games));
 		})
 
-		this.socket.on('gameCreated', (gameId, gameState, gameSettings) => {
+		socket.on('createGameSuccess', (gameId, gameState, gameSettings) => {
 			this.#clientManager.games.set(gameId, {gameState, gameSettings});
 			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
-			//this.socket.emit('joinGame', gameId);
-			this.joinGame(gameId);
+
+			this.initializePlayers(gameState.players, gameState.players[gameId]);
 		})
 
-		this.socket.on('gameJoined', (gameId) => {
-			console.log("Game joined: ", gameId, this.#clientManager.games.get(gameId));
-			this.joinGame(gameId);
+		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
+			console.log("Game: ", gameId, " joined by player: ", myPlayer.id);
+
+			this.initializePlayers(players, myPlayer);
 		})
-	}
 
-	joinGame(gameId) {
-		const gameState = this.#clientManager.game.state;
-		console.log("Joining game: ", gameId);
+		socket.on('playerJoined', (playerId) => {
+			console.log("A new player joined the game:", playerId);
+		})
 
-		// this.socket.emit('createMyPlayer');
-		// this.socket.emit('fetchOtherPlayers');
+		// todo refactor this socket connection
+		socket.on('updateGameState', (gameId, updatedGameState) => {
+			//console.log("updating game state: ", gameId);
+			const currentGameState = this.#clientManager.game.state;
 
-		// if (this.socket.connected) {
-		// 	this.socket.emit('createMyPlayer');
-		// 	this.socket.emit('fetchOtherPlayers');
-		// } else {
-		// 	this.socket.on('connect', () => {
-		// 		this.socket.emit('createMyPlayer');
-		// 		this.socket.emit('fetchOtherPlayers');
-		// 	});
-		// }
-
-		this.socket.emit('createMyPlayer');
-		this.socket.emit('fetchOtherPlayers');
-
-		// this.socket.on('sendGameId', (gameId) => {
-		// 	this.#clientManager.game.id = gameId;
-		// 	this.#gameInterface.setGameId(gameId);
-		// 	console.log("game id when fetched from backend: ", gameId);
-		// })
-
-		this.socket.on('sendOtherPlayers', (playersData) => {
-			console.log("Sending otherPlayers");
-			let i = 1;
-
-			for (const playerID in playersData) {
-				if (playerID !== this.#clientManager.myID) {
-					let player = new Player(playerID);
-					let playerInterface = new PlayerInterface(playerID);
-					//gameState.players[playerID].setName(`player${i}`);
-					gameState.players[playerID] = player;
-					gameState.interfaces[playerID] = playerInterface;
-					this.#playerService.createPlayerModel(playersData[playerID], playerID);
-					//console.log("gameState:", gameState);
-					i++;
-				}
+			if (!currentGameState) {
+				console.warn(`No game found with ID ${gameId}`);
+				return;
 			}
-
-			i = 0;
-		})
-
-
-		this.socket.on('myPlayerCreated', (newPlayer, playerID) => {
-			const myPlayer = document.getElementById(playerID);
-
-			// return if player already exists
-			if (myPlayer) return;
-
-			let player = new Player(playerID);
-			let playerInterface = new PlayerInterface(playerID);
-			gameState.players[playerID] = player;
-			gameState.interfaces[playerID] = playerInterface;
-			this.#playerService.createPlayerModel(newPlayer, playerID);
-
-			const myId = this.#clientManager.myID;
-			if (!myId) {
-				this.#clientManager.myID = playerID;
-			}
-			this.#playerInterfaceService.createPlayerUI();
-
-			//this.#clientManager.myID = playerID;
-
-			// let i = 1;
-			// for (const playerID in playersData) {
-			// 	//console.log("playersData:", playersData);
-			//
-			// 	if (playerID !== myId) {
-			// 		let player = new Player(playerID);
-			// 		//gameState.players[playerID].setName(`player${i}`);
-			// 		gameState.players[playerID] = player;
-			// 		this.#playerService.createPlayerModel(playersData[playerID], playerID);
-			// 		i++;
-			// 	}
-			// }
-			//
-			// i = 0;
-		})
-
-
-		this.socket.on('updateGameState', (gameId, updatedGameState) => {
 
 			this.#gameInterface.setGameId(gameId);
 			this.#clientManager.game.id = gameId;
 
 			// Respawning
 			for (const playerID in updatedGameState.players) {
-				if (!gameState.players[playerID]) {
-					let player = new Player(playerID);
-					gameState.players[playerID] = player;
+				if (!currentGameState.players[playerID]) {
+					currentGameState.players[playerID] = new Player(playerID);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}
 
 			// console.log("game id: ", gameId);
-			for (const playerID in gameState.players) {
+			for (const playerID in currentGameState.players) {
 				if (!updatedGameState.players[playerID]) {
 					document.getElementById(playerID).remove();
-					delete gameState.players[playerID];
+					delete currentGameState.players[playerID];
 					continue;
 				}
 
-				if (gameState.players[playerID]) {
-					gameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
-					gameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
-					gameState.players[playerID].setHp(updatedGameState.players[playerID].hp);
+				if (currentGameState.players[playerID]) {
+					currentGameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
+					currentGameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
+					currentGameState.players[playerID].setHp(updatedGameState.players[playerID].hp);
 				}
 			}
 
 			for (const bulletID in updatedGameState.bullets) {
 
-				if (!gameState.bullets[bulletID]) {
+				if (!currentGameState.bullets[bulletID]) {
 					let bullet = new Bullet(bulletID);
 
-					gameState.bullets[bulletID] = bullet;
+					currentGameState.bullets[bulletID] = bullet;
 					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
 				}  else {
-					gameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
+					currentGameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
 				}
 			}
 
 			// Delete bullet from client if not present in game state sent from server
-			for (const bulletID in gameState.bullets) {
+			for (const bulletID in currentGameState.bullets) {
 				if (!updatedGameState.bullets[bulletID]) {
 					const bulletElement = document.getElementById(bulletID);
 					if (bulletElement) {
 						bulletElement.remove();
 					}
-					delete gameState.bullets[bulletID];
+					delete currentGameState.bullets[bulletID];
 				}
 			}
+		})
+
+		socket.on('disconnect', () => {
+			console.log('Disconnected from the server ');
 		})
 	}
 }

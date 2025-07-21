@@ -31,8 +31,6 @@ export class GamesManager {
 		game.updateState({ isRunning: true});
 		this.games.set(game.getId, game);
 
-		console.log("Created game: ", game.getId, game.getState);
-
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
 		//socket.emit("gameCreated", hostId, game.getState, game.getSettings);
 
@@ -45,9 +43,9 @@ export class GamesManager {
 
 	broadcastGameState(gameId) {
 		const game = this.games.get(gameId);
-		if (game) {
-			this.#io.to(gameId).emit('updateGameState', gameId, game.getState);
-		}
+		if (!game) return;
+
+		this.#io.to(gameId).emit('updateGameState', gameId, game.getState);
 	}
 
 	// broadcastGameId(gameId) {
