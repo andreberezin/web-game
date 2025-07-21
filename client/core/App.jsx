@@ -20,14 +20,32 @@ function App() {
             const socket = clientManager.socketHandler.socket;
 
             socket.on('connect', () => {
-                console.log("socket", socket.id);
-                socket.emit('createGame', socket.id);
+                console.log("Socket connected with ID:", socket.id);
 
-                clientManager.gameInterfaceService.createGameUI();
-                clientManager.startRenderLoop();
-            })
+                // Listen once for available games
+                socket.once('availableGames', (gamesArray) => {
+                    const games = new Map(gamesArray);
+                    console.log("Available games:", games);
 
+                    if (games.size > 0) {
+                        // Join the first available game
+                        const [firstGameId] = games.keys();
+                        console.log("Joining game:", firstGameId);
+                        socket.emit('joinGame', firstGameId);
+                    } else {
+                        // Create a new game
+                        console.log("Creating new game with ID:", socket.id);
+                        socket.emit('createGame', socket.id);
+                    }
 
+                    // After joining/creating, start UI/render loop
+                    clientManager.gameInterfaceService.createGameUI();
+                    clientManager.startRenderLoop();
+                });
+
+                // Fetch available games immediately after connect
+                socket.emit('fetchAvailableGames');
+            });
         }
     }, []);
 
