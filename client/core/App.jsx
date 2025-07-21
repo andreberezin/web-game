@@ -17,13 +17,17 @@ function App() {
         console.log("SHOW MENU: ", SHOW_MENU);
 
         if (SHOW_MENU === "FALSE") {
-            //clientManager.socketHandler.connectToServer();
-            clientManager.startRenderLoop();
-            clientManager.gameInterfaceService.createGameUI();
+            const socket = clientManager.socketHandler.socket;
 
-            // const root = document.getElementById("root");
-            // root.style.display = "flex";
-            // root.style.flexDirection = "column-reverse";
+            socket.on('connect', () => {
+                console.log("socket", socket.id);
+                socket.emit('createGame', socket.id);
+
+                clientManager.gameInterfaceService.createGameUI();
+                clientManager.startRenderLoop();
+            })
+
+
         }
     }, []);
 
