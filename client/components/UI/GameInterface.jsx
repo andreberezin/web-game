@@ -1,4 +1,4 @@
 
-export function GameInterface({gameInterface}) {
+export function GameInterface() {
 
 }
