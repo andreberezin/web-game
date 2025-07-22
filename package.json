@@ -10,7 +10,8 @@
     "client": "cd client && npm run dev",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
     "client:ngrok": "cross-env USE_NGROK=true npm run client",
-    "dev:ngrok": "cross-env USE_NGROK=true concurrently \"npm run client\" \"npm run server\" \"node ngrok.js\""
+    "dev:ngrok": "cross-env USE_NGROK=true concurrently \"npm run client\" \"npm run server\" \"node ngrok.js\"",
+    "lint": "eslint ."
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,13 @@
     "concurrently": "^9.1.2"
   },
   "devDependencies": {
+    "@eslint/js": "^9.31.0",
     "cross-env": "^7.0.3",
+    "eslint": "^9.31.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
     "ngrok": "^5.0.0-beta.2",
     "sass-embedded": "^1.89.2"
   }
