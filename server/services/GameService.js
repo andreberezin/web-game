@@ -1,7 +1,7 @@
-import {Game} from '../models/Game.js';
-import {Bullet} from "../models/Bullet.js";
+import Game from '../models/Game.js';
+import Bullet from "../models/Bullet.js";
 
-export class GameService {
+export default class GameService {
     #gamesManager;
 
     static GAME_BOUNDS = {
@@ -11,7 +11,7 @@ export class GameService {
         MAX_Y: 1000
     }
 
-    constructor(playerInputService) {
+    constructor({playerInputService}) {
         this.playerInputService = playerInputService;
     }
 

@@ -1,9 +1,9 @@
-export class GamesManager {
+export default class GamesManager {
 	#TICK_RATE = 1000/60;
 	#io = null;
 	games = null;
 
-	constructor(io, gameService, socketHandler) {
+	constructor({io, gameService, socketHandler}) {
 		this.games = new Map();
 		this.#io = io;
 		this.gameService = gameService;

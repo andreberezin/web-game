@@ -1,8 +1,7 @@
-
-export class PlayerService {
+export default class PlayerService {
 	#clientManager;
 
-	constructor(playerInputService) {
+	constructor({playerInputService}) {
 		this.playerInputService = playerInputService;
 	}
 

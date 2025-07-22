@@ -1,9 +1,9 @@
 import {io} from 'socket.io-client';
-import {Player} from '../models/Player.js';
-import {Bullet} from '../models/Bullet.js';
-import {PlayerInterface} from '../models/PlayerInterface.js';
+import Player from '../models/Player.js';
+import Bullet from '../models/Bullet.js';
+import PlayerInterface from '../models/PlayerInterface.js';
 
-export class SocketHandler {
+export default class SocketHandler {
 	socket;
 	#playerService;
 	#playerInterfaceService;
@@ -11,7 +11,7 @@ export class SocketHandler {
 	#clientManager;
 	#gameService;
 
-	constructor(playerService, playerInterfaceService, gameInterface) {
+	constructor({playerService, playerInterfaceService, gameInterface}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;

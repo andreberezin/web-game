@@ -1,8 +1,7 @@
-export class GameInterfaceService {
+export default class GameInterfaceService {
 	#gameInterface
-	#clientManager
 
-	constructor(gameInterface) {
+	constructor({gameInterface}) {
 		this.#gameInterface = gameInterface;
 	}
 
