@@ -1,8 +1,6 @@
-export class PlayerInterfaceService {
-	#clientManager
+export default class PlayerInterfaceService {
 
-	constructor(playerInterface) {
-
+	constructor() {
 	}
 
 	createPlayerUI() {

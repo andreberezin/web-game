@@ -1,4 +1,4 @@
-export class Bullet {
+export default class Bullet {
     pos = {
         x: 100,
         y: 100,

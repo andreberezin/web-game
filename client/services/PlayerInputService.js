@@ -1,4 +1,4 @@
-export class PlayerInputService {
+export default class PlayerInputService {
 
 	handleKeyDown(event, player) {
 		switch(event.key) {

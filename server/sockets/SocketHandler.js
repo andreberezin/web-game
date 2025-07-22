@@ -1,11 +1,11 @@
-import {Player} from '../models/Player.js';
+import Player from '../models/Player.js';
 
-export class SocketHandler {
+export default class SocketHandler {
 	#io = null;
 	#gamesManager = null;
 	#gameService = null;
 
-	constructor(io) {
+	constructor({io}) {
 		this.#io = io;
 	}
 

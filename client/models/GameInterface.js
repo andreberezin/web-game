@@ -1,4 +1,4 @@
-export class GameInterface {
+export default class GameInterface {
 	#gameId = null;
 	#playerCount = null;
 	// #idElement
