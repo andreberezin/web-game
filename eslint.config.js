@@ -12,7 +12,7 @@ import reactRefresh from 'eslint-plugin-react-refresh';
 // ]);
 
 export default defineConfig([
-  { ignores: ['dist'] },
+  { ignores: ['dist', '.idea', 'node_modules'] },
 
   pluginReact.configs.flat.recommended,
 
