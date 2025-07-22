@@ -4,9 +4,9 @@ import '../styles/bullet.css'
 import '../styles/userInterfaces.scss'
 import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useState} from 'react';
-import {ClientManager} from './ClientManager.js';
+import {createClientManager} from './createClientManager.js';
 
-const clientManager = ClientManager.createClientManager();
+const clientManager = createClientManager();
 clientManager.socketHandler.connectToServer();
 
 function App() {

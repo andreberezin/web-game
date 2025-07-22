@@ -1,4 +1,4 @@
-export class GameField {
+export default class GameField {
     // todo gamefield class
 
 }

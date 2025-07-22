@@ -1,4 +1,4 @@
-export class Game {
+export default class Game {
 	#id = null;
 	#state = {
 		isRunning: false,

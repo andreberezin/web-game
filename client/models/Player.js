@@ -1,4 +1,4 @@
-export class Player {
+export default class Player {
 	#pos = {
 		x: 0,
 		y: 0,

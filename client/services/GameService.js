@@ -1,7 +1,7 @@
-export class GameService {
+export default class GameService {
 	#clientManager;
 
-	constructor(playerInputService) {
+	constructor({playerInputService}) {
 		this.playerInputService = playerInputService;
 	}
 

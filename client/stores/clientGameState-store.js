@@ -1,4 +1,4 @@
-export class clientGameState {
+export default class clientGameState {
 
 	constructor() {
 	}

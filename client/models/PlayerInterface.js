@@ -1,4 +1,4 @@
-export class PlayerInterface {
+export default class PlayerInterface {
 	#playerId = null;
 
 

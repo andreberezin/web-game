@@ -1,2 +1,2 @@
-export class backendGameState {
+export default class backendGameState {
 }
