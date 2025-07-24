@@ -22,13 +22,14 @@ export default class SocketHandler {
 
 			socket.once("fetchAvailableGames", () => {
 				console.log("Fetching available games");
-				socket.emit('availableGames', Array.from(this.#gamesManager.games.entries()));
+
+				socket.emit('updateAvailableGames', this.getPublicGameList());
 			})
 
-			socket.on('createGame', (hostId) => {
+			socket.on('createGame', (hostId, gameSettings) => {
 				const gameId = hostId;
 
-				this.#gamesManager.createGame(socket, gameId);
+				this.#gamesManager.createGame(socket, gameId, gameSettings);
 
 				this.joinGame(socket, gameId, hostId);
 
@@ -38,7 +39,10 @@ export default class SocketHandler {
 
 			socket.on('joinGame', (gameId) => {
 				const game = this.#gamesManager.games.get(gameId);
-				if (!game) return;
+				if (!game) {
+					socket.emit('joinGameFailed', gameId);
+					return;
+				}
 
 				const playerId = socket.id;
 				this.joinGame(socket, gameId, playerId);
@@ -52,6 +56,31 @@ export default class SocketHandler {
 				socket.to(gameId).emit("playerJoined", playerId);
 			})
 
+			socket.on('disconnect', () => {
+				const playerId = socket.id;
+				const gameId = socket.gameId;
+				if (!gameId) return;
+
+				const game = this.#gamesManager.games.get(gameId);
+				if (!game) return;
+
+				const gameState = game.getState;
+
+				if (gameState.players[playerId]) {
+					console.log('Disconnecting player: ', playerId);
+					delete gameState.players[playerId];
+					socket.to(gameId).emit("playerLeft", playerId);
+				}
+				if (Object.keys(gameState.players).length === 0) {
+					console.log("Deleting game: ", gameId);
+					this.#gamesManager.games.delete(gameId);
+				}
+
+				if (!game.getSettings.private) {
+					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+				}
+			});
+
 			// socket.on('disconnect', () => {
 			// 	console.log('Disconnecting player: ',socket.id);
 			// })
@@ -61,6 +90,7 @@ export default class SocketHandler {
 
 	joinGame(socket, gameId, playerId) {
 		socket.join(gameId);
+		socket.gameId = gameId;
 
 		const player = new Player(playerId);
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
@@ -80,19 +110,45 @@ export default class SocketHandler {
 			}
 		});
 
-		if (!socket.hasDisconnectHandler) {
-			socket.on('disconnect', () => {
-				if (gameState.players[playerId]) {
-					console.log('Disconnecting player: ', playerId);
-					delete gameState.players[playerId];
-					socket.to(gameId).emit("playerLeft", playerId);
-				}
-				if (Object.keys(gameState.players).length === 0) {
-					console.log("Deleting game: ", gameId);
-					this.#gamesManager.games.delete(gameId);
-				}
-			});
-			socket.hasDisconnectHandler = true;
+		if (!game.getSettings.private) {
+			console.log("game private: ", game.getState.private);
+			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
+
+		// if (!socket.hasDisconnectHandler) {
+		// 	socket.on('disconnect', () => {
+		// 		if (gameState.players[playerId]) {
+		// 			console.log('Disconnecting player: ', playerId);
+		// 			delete gameState.players[playerId];
+		// 			socket.to(gameId).emit("playerLeft", playerId);
+		// 		}
+		// 		if (Object.keys(gameState.players).length === 0) {
+		// 			console.log("Deleting game: ", gameId);
+		// 			this.#gamesManager.games.delete(gameId);
+		// 		}
+		// 		const gamesList = Array.from(this.#gamesManager.games.entries()).map(([id, game]) => ({
+		// 			id: id,
+		// 			settings: game.getSettings,
+		// 			players: Object.keys(game.getState.players).length,
+		// 		}))
+		//
+		// 		this.#io.emit('updateAvailableGames', gamesList);
+		// 	});
+		// 	socket.hasDisconnectHandler = true;
+		// }
+	}
+
+	// todo possibly create a DTO for this?
+	getPublicGameList() {
+		const publicGamesList = Array.from(this.#gamesManager.games.entries())
+			//eslint-disable-next-line
+			.filter(([_, game]) => !game.getSettings.private)
+			.map(([id, game]) => ({
+			id: id,
+			settings: game.getSettings,
+			players: Object.keys(game.getState.players).length,
+		}))
+
+		return publicGamesList;
 	}
 }

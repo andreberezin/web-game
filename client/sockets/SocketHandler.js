@@ -10,6 +10,7 @@ export default class SocketHandler {
 	#gameInterface
 	#clientManager;
 	#gameService;
+	#onUpdateAvailableGames = null;
 
 	constructor({playerService, playerInterfaceService, gameInterface}) {
 		this.#playerService = playerService;
@@ -44,6 +45,10 @@ export default class SocketHandler {
 		}
 	}
 
+	onUpdateAvailableGames(callback) {
+		this.#onUpdateAvailableGames = callback;
+	}
+
 	connectToServer() {
 		this.socket = io();
 		const socket = this.socket;
@@ -53,9 +58,21 @@ export default class SocketHandler {
 			this.socket.emit('fetchAvailableGames');
 		})
 
-		socket.on('availableGames', (games) => {
-			this.#clientManager.games = new Map(games);
-			console.log("Available games: ", new Map(games));
+		// socket.on('availableGames', (gamesList) => {
+		// 	this.#clientManager.games = new Map(gamesList);
+		//
+		// 	if (this.#onUpdateAvailableGames) {
+		// 		this.#onUpdateAvailableGames(gamesList)
+		// 	}
+		//})
+
+		socket.on('updateAvailableGames', (gamesList) => {
+			console.log("Updating available games");
+			this.#clientManager.games = new Map(gamesList);
+
+			if (this.#onUpdateAvailableGames) {
+				this.#onUpdateAvailableGames(gamesList)
+			}
 		})
 
 		socket.on('createGameSuccess', (gameId, gameState, gameSettings) => {
@@ -69,6 +86,13 @@ export default class SocketHandler {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
 			this.initializePlayers(players, myPlayer);
+
+			this.#clientManager.gameInterfaceService.createGameUI();
+			this.#clientManager.startRenderLoop();
+		})
+
+		socket.on('joinGameFailed', (gameId) => {
+			console.log("Failed to join game: ", gameId);
 		})
 
 		socket.on('playerJoined', (playerId) => {

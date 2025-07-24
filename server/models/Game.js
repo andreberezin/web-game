@@ -8,12 +8,17 @@ export default class Game {
 		bullets: {}
 	};
 	#settings = {
+		private: false,
 		duration: 60000, // milliseconds = 1 minute
 		maxPlayers: 4,
 	}
 
-	constructor(id, settings) {
+	constructor(id, settings = {}) {
 		this.#id = id;
+		this.#settings = {
+			...this.#settings,
+			...settings
+		};
 	}
 
 	get getState() {

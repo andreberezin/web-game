@@ -23,8 +23,8 @@ function App() {
                 console.log("Socket connected with ID:", socket.id);
 
                 // Listen once for available games
-                socket.once('availableGames', (gamesArray) => {
-                    const games = new Map(gamesArray);
+                socket.once('availableGames', (gamesList) => {
+                    const games = new Map(gamesList);
                     console.log("Available games:", games);
 
                     if (games.size > 0) {
