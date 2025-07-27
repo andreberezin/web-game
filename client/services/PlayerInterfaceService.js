@@ -9,12 +9,13 @@ export default class PlayerInterfaceService {
 
 		const playerUI = document.createElement("div");
 		playerUI.id= "player-ui" ;
+		playerUI.className = 'ui'
 
-		const root = document.getElementById("root");
+		const game = document.getElementById("game");
 
 		const idElement = this.createPlayerIdElement();
 
-		root.appendChild(playerUI);
+		game.appendChild(playerUI);
 		playerUI.appendChild(idElement);
 	}
 

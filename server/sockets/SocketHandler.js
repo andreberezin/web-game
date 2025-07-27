@@ -35,6 +35,11 @@ export default class SocketHandler {
 
 				const game = this.#gamesManager.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.getState, game.getSettings);
+				socket.emit("joinGameSuccess", {
+					gameId,
+					players: game.getState.players,
+					myPlayer: game.getState.players[hostId],
+				});
 			})
 
 			socket.on('joinGame', (gameId) => {
@@ -111,7 +116,6 @@ export default class SocketHandler {
 		});
 
 		if (!game.getSettings.private) {
-			console.log("game private: ", game.getState.private);
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
 
@@ -140,15 +144,13 @@ export default class SocketHandler {
 
 	// todo possibly create a DTO for this?
 	getPublicGameList() {
-		const publicGamesList = Array.from(this.#gamesManager.games.entries())
+		return Array.from(this.#gamesManager.games.entries())
 			//eslint-disable-next-line
 			.filter(([_, game]) => !game.getSettings.private)
 			.map(([id, game]) => ({
-			id: id,
-			settings: game.getSettings,
-			players: Object.keys(game.getState.players).length,
-		}))
-
-		return publicGamesList;
+				id: id,
+				settings: game.getSettings,
+				players: Object.keys(game.getState.players).length,
+			}));
 	}
 }

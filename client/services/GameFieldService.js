@@ -1,0 +1,22 @@
+export default class GameFieldService {
+
+	constructor() {}
+
+	createElement() {
+
+		const root = document.getElementById('root');
+		const game = document.createElement('div');
+		game.id = 'game';
+
+		const gameField = document.createElement('div');
+		gameField.id = 'game-field';
+		gameField.addEventListener('click', () => {
+			if (document.getElementsByClassName("me")) {
+				document.getElementsByClassName("me")[0].focus();
+			}
+		})
+
+		root.append(game);
+		game.append(gameField);
+	}
+}

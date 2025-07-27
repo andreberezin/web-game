@@ -39,7 +39,10 @@ function App() {
                     }
 
                     // After joining/creating, start UI/render loop
+                    // clientManager.gameInterfaceService.createGameUI();
+                    // clientManager.startRenderLoop();
                     clientManager.gameInterfaceService.createGameUI();
+                    clientManager.gameFieldService.createElement();
                     clientManager.startRenderLoop();
                 });
 
@@ -58,15 +61,15 @@ function App() {
                 {!isGameStarted && (
                     <Menu clientManager={clientManager} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted}></Menu>
                 )}
-                {isGameStarted && (
-                    <div id={"game-field"} onClick={() => {
-                        if (document.getElementById(clientManager.myID)) {
-                            (document.getElementById(clientManager.myID).focus())
-                        }
-                    }}
-                    >
-                    </div>
-                )}
+                {/*{isGameStarted && (*/}
+                {/*    <div id={"game-field"} onClick={() => {*/}
+                {/*        if (document.getElementById(clientManager.myID)) {*/}
+                {/*            (document.getElementById(clientManager.myID).focus())*/}
+                {/*        }*/}
+                {/*    }}*/}
+                {/*    >*/}
+                {/*    </div>*/}
+                {/*)}*/}
             </>
 
         )
@@ -74,13 +77,15 @@ function App() {
     } else {
 
         return (
-            <div id={"game-field"} onClick={() => {
-                if (document.getElementById(clientManager.myID)) {
-                    (document.getElementById(clientManager.myID).focus())
-                }
-            }}
-            >
-            </div>
+            <>
+            </>
+            // <div id={"game-field"} onClick={() => {
+            //     if (document.getElementById(clientManager.myID)) {
+            //         (document.getElementById(clientManager.myID).focus())
+            //     }
+            // }}
+            // >
+            // </div>
         )
     }
 }

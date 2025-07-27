@@ -8,14 +8,18 @@ export default class SocketHandler {
 	#playerService;
 	#playerInterfaceService;
 	#gameInterface
+	#gameInterfaceService;
+	#gameFieldService;
 	#clientManager;
 	#gameService;
 	#onUpdateAvailableGames = null;
 
-	constructor({playerService, playerInterfaceService, gameInterface}) {
+	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
+		this.#gameInterfaceService = gameInterfaceService;
+		this.#gameFieldService = gameFieldService;
 	}
 
 	setClientManager(clientManager) {
@@ -43,6 +47,18 @@ export default class SocketHandler {
 				this.#playerInterfaceService.createPlayerUI();
 			}
 		}
+	}
+
+	initializeGameField() {
+		this.#gameFieldService.createElement();
+	}
+
+	startGame(players, myPlayer) {
+		console.log("Starting game");
+		this.initializeGameField();
+		this.initializePlayers(players, myPlayer);
+		this.#gameInterfaceService.createGameUI();
+		this.#clientManager.startRenderLoop();
 	}
 
 	onUpdateAvailableGames(callback) {
@@ -79,16 +95,19 @@ export default class SocketHandler {
 			this.#clientManager.games.set(gameId, {gameState, gameSettings});
 			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
 
-			this.initializePlayers(gameState.players, gameState.players[gameId]);
+			// this.initializePlayers(gameState.players, gameState.players[gameId]);
+			//this.startGame(gameState.players, gameState.players[gameId]);
 		})
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
-			this.initializePlayers(players, myPlayer);
+			this.startGame(players, myPlayer);
 
-			this.#clientManager.gameInterfaceService.createGameUI();
-			this.#clientManager.startRenderLoop();
+			// this.initializePlayers(players, myPlayer);
+			//
+			// this.#clientManager.gameInterfaceService.createGameUI();
+			// this.#clientManager.startRenderLoop();
 		})
 
 		socket.on('joinGameFailed', (gameId) => {
