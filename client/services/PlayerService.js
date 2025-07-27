@@ -122,9 +122,9 @@ export default class PlayerService {
 			playerElement.classList.add("me")
 		}
 
-		for (const property in player.styles) {
-			playerElement.style[property] = player.styles[property]
-		}
+		// for (const property in player.styles) {
+		// 	playerElement.style[property] = player.styles[property]
+		// }
 
 		return playerElement;
 	}
