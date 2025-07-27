@@ -49,7 +49,7 @@ export default class ClientManager {
 				}
 			}
 
-			if (this.myID && players[this.myID].input) {
+			if (this.myID && players[this.myID]) {
 				const me =  players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
 				this.playerInterfaceService.updatePlayerUI(this.myID);
