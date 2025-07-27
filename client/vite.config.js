@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-const serverTarget = process.env.USE_NGROK === 'true' ? 'https://intimate-upright-sunfish.ngrok-free.app' : 'http://localhost:3000' // https://just-panda-musical.ngrok-free.app
+const serverTarget = process.env.USE_NGROK === 'true' ? 'https://intimate-upright-sunfish.ngrok-free.app' : 'http://192.168.3.61:3000' // https://just-panda-musical.ngrok-free.app
 
 export default defineConfig({
   plugins: [react()],

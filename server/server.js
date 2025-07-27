@@ -30,7 +30,7 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Start server
-server.listen(port, () => {
+server.listen(port, '192.168.3.61', () => {
     console.log(`🚀 Server running on http://localhost:${port}`);
 });
 
