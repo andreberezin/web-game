@@ -16,7 +16,11 @@ export default class GameFieldService {
 			}
 		})
 
+		const gameInner = document.createElement('div');
+		gameInner.id = 'game-inner';
+
 		root.append(game);
 		game.append(gameField);
+		gameField.append(gameInner);
 	}
 }

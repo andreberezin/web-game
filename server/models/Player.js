@@ -7,8 +7,8 @@ export default class Player {
     name = null;
     shift = null;
     maxPosition = {
-        x: 0,
-        y: 0,
+        x: 1000,
+        y: 1000,
     }
     input = {
         arrowUp: false,

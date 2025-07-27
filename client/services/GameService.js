@@ -38,7 +38,7 @@ export default class GameService {
 	}
 
 	appendToGameField(bulletElement) {
-		const gameField = document.getElementById("game-field");
+		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(bulletElement);
 	}
 

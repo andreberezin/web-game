@@ -6,9 +6,9 @@ export default class GameService {
 
     static GAME_BOUNDS = {
         MIN_X: 0,
-        MAX_X: 1000,
+        MAX_X: 1920,
         MIN_Y: 0,
-        MAX_Y: 1000
+        MAX_Y: 1080,
     }
 
     constructor({playerInputService}) {

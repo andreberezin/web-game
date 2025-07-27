@@ -49,9 +49,11 @@ export default class PlayerService {
 		return player.start === undefined;
 	}
 
+	// todo should be part of Player.js
 	setMaxPosition(player) {
-		player.getMaxPosition.y = 500;
-		player.getMaxPosition.x = 500;
+		const playerElement = document.getElementsByClassName("player")[0];
+		player.getMaxPosition.x = 1920 - playerElement.offsetWidth;
+		player.getMaxPosition.y = 1080 - playerElement.offsetWidth;
 	}
 
 	updateElementPosition(player) {
@@ -79,13 +81,14 @@ export default class PlayerService {
 	}
 
 	appendToGameField(playerElement, playerId) {
-		const gameField = document.getElementById("game-field");
+		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(playerElement);
 		if (playerId === this.#clientManager.myID) {
 			playerElement.focus();
 		}
 	}
 
+	// todo should be part of Player.js
 	setPosition(player, playerData) {
 		player.getPosition.x = playerData.pos.x;
 		player.getPosition.y = playerData.pos.y;

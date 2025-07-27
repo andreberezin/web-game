@@ -12,7 +12,7 @@ $player-colors: (
 }
 
 .player {
-	position: absolute;
+  position: absolute;
   background-color: var(--player-color);
   width: clamp(20px, 2vw, 40px);
   aspect-ratio: 1/1;
