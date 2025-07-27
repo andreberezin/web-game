@@ -1,6 +1,13 @@
 import ngrok from 'ngrok';
+import dotenv from 'dotenv';
 
 async function startTunnel() {
+    dotenv.config();
+
+    const NGROK_HOSTNAME = process.env.NGROK_HOSTNAME;
+    const HOSTNAME = process.env.HOSTNAME || 'localhost';
+    const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
+
     try {
         console.log('🔗 Starting ngrok tunnel...');
         console.log('⏳ Waiting for server to be ready...');
@@ -9,14 +16,14 @@ async function startTunnel() {
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         const url = await ngrok.connect({
-            addr: '192.168.3.61:3000',
+            addr: `${HOSTNAME}:${EXPRESS_PORT}`,
             // hostname: 'just-panda-musical.ngrok-free.app',
-            hostname: 'intimate-upright-sunfish.ngrok-free.app',
+            hostname: `${NGROK_HOSTNAME}`,
             region: 'eu',
         });
 
         console.log('🚀 Tunnel created successfully!');
-        console.log(`📡 Public URL: ${url}`);
+        console.log(`📡 Backend server public URL: ${url}`);
         console.log('🔥 Your app is now publicly accessible!');
         console.log('Press Ctrl+C to stop the tunnel');
 

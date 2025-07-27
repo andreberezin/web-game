@@ -3,16 +3,19 @@ import http from 'http';
 import cors from 'cors';
 import { Server } from 'socket.io'
 import {startGameServer} from './core/startGameServer.js';
-
+import dotenv from 'dotenv';
 const app = express();
 const server = http.createServer(app);
 
-const port = process.env.BACKEND_PORT || 3000;
+dotenv.config();
+const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
+const VITE_PORT = process.env.EXPRESS_PORT || 5173;
+const HOSTNAME = process.env.HOSTNAME || 'localhost';
 
 // Socket.io
 const io = new Server(server, {
     cors: {
-        origin: ['http://localhost:5173', 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
+        origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
         credentials: true
     },
@@ -20,7 +23,7 @@ const io = new Server(server, {
 
 // CORS
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
+    origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     credentials: true,
 }));
@@ -30,8 +33,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Start server
-server.listen(port, '192.168.3.61', () => {
-    console.log(`🚀 Server running on http://localhost:${port}`);
+server.listen(EXPRESS_PORT, HOSTNAME,() => {
+    console.log(`🚀 Express Server running on http://${HOSTNAME}:${EXPRESS_PORT}`);
 });
 
 startGameServer(io);
