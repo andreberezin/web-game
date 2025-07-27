@@ -20,10 +20,10 @@ export default class Player {
         space: false
     }
     hp = 100;
-    styles = {
-        width: "20px",
-        height: "20px",
-    }
+    // styles = {
+    //     width: "20px",
+    //     height: "20px",
+    // }
 
 	constructor(id) {
 		// this.#pos = pos;
