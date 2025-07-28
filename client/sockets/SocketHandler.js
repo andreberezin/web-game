@@ -39,6 +39,7 @@ export default class SocketHandler {
 
 		for (const playerID in players) {
 			gameState.players[playerID] = new Player(playerID);
+			console.log("gameState.players[playerID]:", gameState.players[playerID]);
 			this.#playerService.createPlayerModel(players[playerID], playerID);
 
 			gameState.interfaces[playerID] = new PlayerInterface(playerID);
@@ -74,14 +75,6 @@ export default class SocketHandler {
 			this.socket.emit('fetchAvailableGames');
 		})
 
-		// socket.on('availableGames', (gamesList) => {
-		// 	this.#clientManager.games = new Map(gamesList);
-		//
-		// 	if (this.#onUpdateAvailableGames) {
-		// 		this.#onUpdateAvailableGames(gamesList)
-		// 	}
-		//})
-
 		socket.on('updateAvailableGames', (gamesList) => {
 			console.log("Updating available games");
 			this.#clientManager.games = new Map(gamesList);
@@ -94,20 +87,12 @@ export default class SocketHandler {
 		socket.on('createGameSuccess', (gameId, gameState, gameSettings) => {
 			this.#clientManager.games.set(gameId, {gameState, gameSettings});
 			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
-
-			// this.initializePlayers(gameState.players, gameState.players[gameId]);
-			//this.startGame(gameState.players, gameState.players[gameId]);
 		})
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
 			this.startGame(players, myPlayer);
-
-			// this.initializePlayers(players, myPlayer);
-			//
-			// this.#clientManager.gameInterfaceService.createGameUI();
-			// this.#clientManager.startRenderLoop();
 		})
 
 		socket.on('joinGameFailed', (gameId) => {
@@ -154,7 +139,7 @@ export default class SocketHandler {
 				if (currentGameState.players[playerID]) {
 					currentGameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
 					currentGameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
-					currentGameState.players[playerID].setHp(updatedGameState.players[playerID].hp);
+					currentGameState.players[playerID].hp =(updatedGameState.players[playerID].hp);
 				}
 			}
 

@@ -3,7 +3,7 @@ export default class Player {
 		x: 0,
 		y: 0,
 	};
-    #id = "player-1";
+    #id = null;
     #name = null;
     #shift = null;
     start;
@@ -16,30 +16,37 @@ export default class Player {
         width: 0,
         height: 0,
     }
-    input = {
+    #input = {
         arrowUp: false,
         arrowDown: false,
         arrowRight: false,
         arrowLeft: false,
         space: false
     }
-    hp = 100;
-    // styles = {
-    //     width: "20px",
-    //     height: "20px",
-    // }
+    #hp = 100;
 
 	constructor(id) {
-		// this.#pos = pos;
         this.#id = id
 	}
 
-    setHp(hp) {
-        this.hp = hp;
+    get id() {
+        return this.#id;
     }
 
-    get getHp() {
-        return this.hp;
+    set input(input) {
+        this.#input = input;
+    }
+
+    get input() {
+        return this.#input;
+    }
+
+    set hp(hp) {
+        this.#hp = hp;
+    }
+
+    get hp() {
+        return this.#hp;
     }
 
     get getId() {

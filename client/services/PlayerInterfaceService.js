@@ -1,4 +1,5 @@
 export default class PlayerInterfaceService {
+	#uiParts = ["id", "hp"]
 
 	constructor() {
 	}
@@ -13,36 +14,39 @@ export default class PlayerInterfaceService {
 
 		const game = document.getElementById("game");
 
-		const idElement = this.createPlayerIdElement();
-
 		game.appendChild(playerUI);
-		playerUI.appendChild(idElement);
+
+		this.#uiParts.forEach(uiPart => {
+			const element = this.createElement(uiPart);
+			playerUI.appendChild(element);
+		})
 	}
 
-	updatePlayerUI(playerId) {
+	updatePlayerUI(player) {
 		const playerUI = document.getElementById("player-ui");
 		if (!playerUI) return;
 
-		this.updatePlayerIdElement(playerId);
+		this.#uiParts.forEach(key => {
+			if(player[key] !== undefined) {
+				this.updateElement(key, player[key]);
+			}
+		})
 	}
 
-	createPlayerIdElement() {
-		const playerIdElement = document.createElement("div")
-		playerIdElement.id = "player-id"
-		playerIdElement.className = "ui-item";
-		playerIdElement.innerHTML = `Player id: <span id="player-id-value" class="value"></span>`;
+	createElement(type) {
+		const element = document.createElement("div");
+		element.id= `player-${type}`;
+		element.className = 'ui-item';
+		element.innerHTML = `${type.toUpperCase()}: <span id="player-${type}-value" class='value'></span>`;
 
-		//this.#gameInterface.setIdElement(gameIdElement);
-
-		return playerIdElement;
+		return element;
 	}
 
-	updatePlayerIdElement(playerId) {
-		const playerIdElement = document.getElementById("player-id");
-		const playerIdValueElement = document.getElementById("player-id-value");
-		if (!playerIdElement || !playerIdValueElement) return;
+	updateElement(key, value) {
+		const element = document.getElementById(`player-${key}`);
+		const elementValue = document.getElementById(`player-${key}-value`);
+		if (!element || !elementValue) return;
 
-		playerIdValueElement.textContent = playerId
+		elementValue.textContent = value
 	}
-
 }
