@@ -8,10 +8,10 @@ export default class Bullet {
     velocity = 100;
     #element = null;
 
-    styles = {
-        width: "5px",
-        height: "5px",
-    }
+    // styles = {
+    //     width: "5px",
+    //     height: "5px",
+    // }
 
     constructor(id, x, y, direction) {
         this.id = id;

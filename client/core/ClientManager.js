@@ -11,8 +11,9 @@ export default class ClientManager {
 	#renderLoopId = null;
 	games = null;
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler}) {
+	constructor({gameService, gameFieldService, gameInterfaceService, playerInterfaceService, playerService, socketHandler}) {
 		this.gameService = gameService;
+		this.gameFieldService = gameFieldService;
 		this.gameInterfaceService = gameInterfaceService
 		this.playerInterfaceService = playerInterfaceService
 		this.playerService = playerService;
@@ -48,10 +49,9 @@ export default class ClientManager {
 				}
 			}
 
-			if (this.myID && players[this.myID].input) {
+			if (this.myID && players[this.myID]) {
 				const me =  players[this.myID];
 				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
-				//console.log("updateMyPlayerData: ", me);
 				this.playerInterfaceService.updatePlayerUI(this.myID);
 			}
 

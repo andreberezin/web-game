@@ -11,13 +11,14 @@ export default class GameInterfaceService {
 
 		const gameUI = document.createElement("div");
 		gameUI.id= "game-ui" ;
+		gameUI.className = 'ui'
 
-		const root = document.getElementById("root");
+		const game = document.getElementById("game");
 
 		const idElement = this.createGameIdElement();
 		const playerCountElement = this.createPlayerCountElement();
 
-		root.appendChild(gameUI);
+		game.appendChild(gameUI);
 		gameUI.appendChild(idElement);
 		gameUI.appendChild(playerCountElement);
 	}

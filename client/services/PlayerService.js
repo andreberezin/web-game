@@ -22,7 +22,7 @@ export default class PlayerService {
 			this.resetAcceleration(player, timestamp);
 		}
 
-		this.setMaxPosition(player);
+		// this.setMaxPosition(player);
 
 		// todo users setters and getters
 		const elapsed = timestamp - player.start;
@@ -49,9 +49,20 @@ export default class PlayerService {
 		return player.start === undefined;
 	}
 
+	// todo should be part of Player.js
 	setMaxPosition(player) {
-		player.getMaxPosition.y = 500;
-		player.getMaxPosition.x = 500;
+
+		const gameInner = document.getElementById('game-inner')
+		const rect = gameInner.getBoundingClientRect();
+
+		const playerElement = document.getElementsByClassName("player")[0];
+
+		player.setMaxPosition({
+			x: rect.width - playerElement.offsetWidth,
+			y: rect.height - playerElement.offsetHeight,
+		})
+		// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
+		// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
 	}
 
 	updateElementPosition(player) {
@@ -79,13 +90,14 @@ export default class PlayerService {
 	}
 
 	appendToGameField(playerElement, playerId) {
-		const gameField = document.getElementById("game-field");
+		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(playerElement);
 		if (playerId === this.#clientManager.myID) {
 			playerElement.focus();
 		}
 	}
 
+	// todo should be part of Player.js
 	setPosition(player, playerData) {
 		player.getPosition.x = playerData.pos.x;
 		player.getPosition.y = playerData.pos.y;
@@ -122,9 +134,9 @@ export default class PlayerService {
 			playerElement.classList.add("me")
 		}
 
-		for (const property in player.styles) {
-			playerElement.style[property] = player.styles[property]
-		}
+		// for (const property in player.styles) {
+		// 	playerElement.style[property] = player.styles[property]
+		// }
 
 		return playerElement;
 	}

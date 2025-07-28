@@ -38,7 +38,7 @@ export default class GameService {
 	}
 
 	appendToGameField(bulletElement) {
-		const gameField = document.getElementById("game-field");
+		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(bulletElement);
 	}
 
@@ -50,9 +50,9 @@ export default class GameService {
 		bulletElement.style.left = `${bullet.getPosition.x}px`
 		bulletElement.tabIndex = 0;
 
-		for (const property in bullet.styles) {
-			bulletElement.style[property] = bullet.styles[property]
-		}
+		// for (const property in bullet.styles) {
+		// 	bulletElement.style[property] = bullet.styles[property]
+		// }
 
 		bullet.setElement(bulletElement);
 		return bulletElement;
