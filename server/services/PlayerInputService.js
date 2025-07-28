@@ -35,6 +35,7 @@ export default class PlayerInputService {
     movePlayer(player, axis, multiplier, direction) {
         const distance = multiplier * player.shift;
         const newPosition = player.pos[axis] + distance;
+        // player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
         player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
         player.direction = direction;
     }

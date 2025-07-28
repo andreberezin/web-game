@@ -9,8 +9,12 @@ export default class Player {
     start;
     #element = null;
     #maxPosition = {
-        x: 0,
-        y: 0,
+        x: 1920 - 30,
+        y: 1080 - 30,
+    }
+    #size = {
+        width: 0,
+        height: 0,
     }
     input = {
         arrowUp: false,
@@ -60,6 +64,24 @@ export default class Player {
 
     get getMaxPosition() {
         return this.#maxPosition;
+    }
+
+    setMaxPosition({ x, y }) {
+        this.#maxPosition = {
+            x: x,
+            y: y,
+        }
+    }
+
+    get getSize() {
+        return this.#size;
+    }
+
+    setSize({ width, height }) {
+        this.#size = {
+            width: width,
+            height: height,
+        }
     }
 
     setName(name) {

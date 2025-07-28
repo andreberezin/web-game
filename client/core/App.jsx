@@ -23,13 +23,10 @@ function App() {
                 console.log("Socket connected with ID:", socket.id);
 
                 // Listen once for available games
-                socket.once('availableGames', (gamesList) => {
-                    const games = new Map(gamesList);
-                    console.log("Available games:", games);
-
-                    if (games.size > 0) {
+                socket.once('updateAvailableGames', (gamesList) => {
+                    if (gamesList.length > 0) {
                         // Join the first available game
-                        const [firstGameId] = games.keys();
+                        const firstGameId = gamesList[0].id
                         console.log("Joining game:", firstGameId);
                         socket.emit('joinGame', firstGameId);
                     } else {
@@ -37,32 +34,25 @@ function App() {
                         console.log("Creating new game with ID:", socket.id);
                         socket.emit('createGame', socket.id);
                     }
-
-                    // After joining/creating, start UI/render loop
-                    // clientManager.gameInterfaceService.createGameUI();
-                    // clientManager.startRenderLoop();
-                    clientManager.gameInterfaceService.createGameUI();
-                    clientManager.gameFieldService.createElement();
-                    clientManager.startRenderLoop();
                 });
-
-                // Fetch available games immediately after connect
-                socket.emit('fetchAvailableGames');
             });
         }
-    }, []);
+    }, [SHOW_MENU]);
 
     useEffect(() => {
         function updateScale() {
-            const scaleX = window.innerWidth / 1920;
-            const scaleY = (window.innerHeight * 0.9) / 1080; // match 90% height from #game-field
+            const scaleX = (window.innerWidth * 0.99) / 1920;
+            const scaleY = (window.innerHeight * 0.90) / 1080; // match 90% height from #game-field
             const scale = Math.min(scaleX, scaleY);
 
             document.documentElement.style.setProperty('--scale', scale);
         }
 
         updateScale();
-        window.addEventListener('resize', updateScale);
+
+        window.addEventListener('resize', () => {
+            updateScale();
+        });
         return () => window.removeEventListener('resize', updateScale);
     }, []);
 

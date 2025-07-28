@@ -7,8 +7,12 @@ export default class Player {
     name = null;
     shift = null;
     maxPosition = {
-        x: 1000,
-        y: 1000,
+        x: 1920 - 30,
+        y: 1080 - 30,
+    }
+    size = {
+        width: 0,
+        height: 0,
     }
     input = {
         arrowUp: false,

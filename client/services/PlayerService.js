@@ -22,7 +22,7 @@ export default class PlayerService {
 			this.resetAcceleration(player, timestamp);
 		}
 
-		this.setMaxPosition(player);
+		// this.setMaxPosition(player);
 
 		// todo users setters and getters
 		const elapsed = timestamp - player.start;
@@ -51,9 +51,18 @@ export default class PlayerService {
 
 	// todo should be part of Player.js
 	setMaxPosition(player) {
+
+		const gameInner = document.getElementById('game-inner')
+		const rect = gameInner.getBoundingClientRect();
+
 		const playerElement = document.getElementsByClassName("player")[0];
-		player.getMaxPosition.x = 1920 - playerElement.offsetWidth;
-		player.getMaxPosition.y = 1080 - playerElement.offsetWidth;
+
+		player.setMaxPosition({
+			x: rect.width - playerElement.offsetWidth,
+			y: rect.height - playerElement.offsetHeight,
+		})
+		// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
+		// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
 	}
 
 	updateElementPosition(player) {
