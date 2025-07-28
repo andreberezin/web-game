@@ -28,12 +28,25 @@ async function startTunnel() {
         console.log('Press Ctrl+C to stop the tunnel');
 
         // Keep the process running
+        // process.on('SIGINT', async () => {
+        //     console.log('\n🛑 Closing tunnel...');
+        //     await ngrok.disconnect();
+        //     await ngrok.kill();
+        //     console.log('✅ Tunnel closed');
+        //     process.exit();
+        // });
+
         process.on('SIGINT', async () => {
             console.log('\n🛑 Closing tunnel...');
-            await ngrok.disconnect();
-            await ngrok.kill();
-            console.log('✅ Tunnel closed');
-            process.exit();
+            try {
+                await ngrok.disconnect();
+                await ngrok.kill();
+                console.log('✅ Tunnel closed');
+            } catch (err) {
+                console.warn('⚠️ Failed to cleanly close tunnel:', err.message);
+            } finally {
+                process.exit();
+            }
         });
 
     } catch (error) {
