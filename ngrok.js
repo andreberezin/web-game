@@ -5,7 +5,7 @@ async function startTunnel() {
     dotenv.config();
 
     const NGROK_HOSTNAME = process.env.NGROK_HOSTNAME;
-    const HOSTNAME = process.env.HOSTNAME || 'localhost';
+    // const HOSTNAME = process.env.HOSTNAME || 'localhost';
     const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
 
     try {
@@ -16,7 +16,8 @@ async function startTunnel() {
         await new Promise(resolve => setTimeout(resolve, 3000));
 
         const url = await ngrok.connect({
-            addr: `${HOSTNAME}:${EXPRESS_PORT}`,
+            // addr: `${HOSTNAME}:${EXPRESS_PORT}`,
+            addr: `http://localhost:${EXPRESS_PORT}`,
             // hostname: 'just-panda-musical.ngrok-free.app',
             hostname: `${NGROK_HOSTNAME}`,
             region: 'eu',
@@ -39,14 +40,20 @@ async function startTunnel() {
         process.on('SIGINT', async () => {
             console.log('\n🛑 Closing tunnel...');
             try {
-                await ngrok.disconnect();
-                await ngrok.kill();
-                console.log('✅ Tunnel closed');
+                // More reliable order in case ngrok is already dead
+                await ngrok.kill(); // force-close first
             } catch (err) {
-                console.warn('⚠️ Failed to cleanly close tunnel:', err.message);
-            } finally {
-                process.exit();
+                console.warn('⚠️ ngrok.kill() failed:', err.message);
             }
+
+            try {
+                await ngrok.disconnect(); // might fail if kill already happened
+            } catch (err) {
+                console.warn('⚠️ ngrok.disconnect() failed:', err.message);
+            }
+
+            console.log('✅ Tunnel closed');
+            process.exit();
         });
 
     } catch (error) {

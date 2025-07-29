@@ -33,8 +33,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Start server
-server.listen(EXPRESS_PORT, HOSTNAME,() => {
-    console.log(`🚀 Express Server running on http://${HOSTNAME}:${EXPRESS_PORT}`);
+server.listen(EXPRESS_PORT, '0.0.0.0',() => {
+    console.log(`🚀 Express Server running on http://0.0.0.0:${EXPRESS_PORT}`);
 });
 
 startGameServer(io);
