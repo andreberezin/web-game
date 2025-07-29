@@ -45,7 +45,16 @@ export default class GamesManager {
 		const game = this.games.get(gameId);
 		if (!game) return;
 
+
 		this.#io.to(gameId).emit('updateGameState', gameId, game.state);
+
+		// const players = game.state.players;
+
+		// if (players && players.length > 0) {
+		// 	players.forEach((player) => {
+		// 		console.log("player respawn timer: ", player.respawnTimer);
+		// 	})
+		// }
 	}
 
 	// broadcastGameId(gameId) {

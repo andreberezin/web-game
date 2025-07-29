@@ -26,10 +26,12 @@ export default class GameService {
     updateGameState(game, currentTime) {
         this.updateBullets(game);
 
+        // todo refactor so this function iterates over game.state.players and then applies all these next functions. Currently all these functions iterate over game.state.players over and over again
         this.playerInputService.handlePlayerMovement(game);
         this.playerInputService.handlePlayerShooting(game, currentTime);
         this.checkForCollisions(game, currentTime);
         this.playerInputService.handlePlayerRespawning(game, currentTime);
+        // this.playerInputService.handlePlayerRespawnTimer(game, currentTime);
     }
 
     checkForCollisions(game, currentTime) {
@@ -38,23 +40,25 @@ export default class GameService {
         const bulletsToDelete = [];
 
         for (let playerID in players) {
-            const player = players[playerID];
+            if (players[playerID].status.alive) {
+                const player = players[playerID];
 
-            for (let bulletID in bullets) {
-                const bullet = bullets[bulletID];
+                for (let bulletID in bullets) {
+                    const bullet = bullets[bulletID];
 
-                if (bullet.position.x + 5 > player.position.x && bullet.position.x < player.position.x + 20 && bullet.position.y + 5 > player.position.y && bullet.position.y < player.position.y + 20) {
-                    console.log("PLAYER GOT HIT REMOVING 20 HP");
-                    player.hp = player.hp - 20;
-                    if (player.hp() <= 0) {
-                        // Player dies if hp is 0
-                        player.status = "dead";
-                        player.diedAt(currentTime);
-                        game.state.deadPlayers[playerID] = player;
-                        delete game.state.players[playerID];
+                    if (bullet.position.x + 5 > player.position.x && bullet.position.x < player.position.x + 20 && bullet.position.y + 5 > player.position.y && bullet.position.y < player.position.y + 20) {
+                        //console.log("PLAYER GOT HIT REMOVING 20 HP");
+                        player.hp = player.hp - 20;
+                        if (player.hp <= 0) {
+                            // Player dies if hp is 0
+                            player.status.alive = false;
+                            player.diedAt(currentTime);
+                            game.state.deadPlayers[playerID] = player;
+                            //delete game.state.players[playerID];
+                        }
+
+                        bulletsToDelete.push(bulletID);
                     }
-
-                    bulletsToDelete.push(bulletID);
                 }
             }
         }

@@ -1,14 +1,15 @@
 export default class Player {
-	#pos = {
-		x: 0,
-		y: 0,
-	};
+
     #id = null;
     #name = null;
     #shift = null;
-    start;
     #element = null;
-    #maxPosition = {
+    #pos = {
+        x: 0,
+        y: 0,
+    };
+    #start = null;
+    #maxPos = {
         x: 1920 - 30,
         y: 1080 - 30,
     }
@@ -23,7 +24,16 @@ export default class Player {
         arrowLeft: false,
         space: false
     }
+    direction = null;
     #hp = 100;
+    // lastShotTime = 0;
+    // shotCooldown = 250;
+    #deathCooldown = 5000;
+    #respawnTime = null;
+    // deathTime = 0;
+    #status = {
+        alive: true,
+    };
 
 	constructor(id) {
         this.#id = id
@@ -78,11 +88,11 @@ export default class Player {
     }
 
     get maxPosition() {
-        return this.#maxPosition;
+        return this.#maxPos;
     }
 
     set maxPosition({ x, y }) {
-        this.#maxPosition = {
+        this.#maxPos = {
             x: x,
             y: y,
         }
@@ -105,5 +115,37 @@ export default class Player {
 
     set name(name) {
         this.#name = name;
+    }
+
+    get start() {
+        return this.#start;
+    }
+
+    set start(timestamp) {
+        this.#start = timestamp;
+    }
+
+    get status() {
+        return this.#status;
+    }
+
+    set status(status) {
+        this.#status = status;
+    }
+
+    get deathCooldown() {
+        return this.#deathCooldown;
+    }
+
+    set deathCooldown(cooldown) {
+        this.#deathCooldown = cooldown;
+    }
+
+    get respawnTimer() {
+        return this.#respawnTime;
+    }
+
+    set respawnTimer(time) {
+        this.#respawnTime = time;
     }
 }
