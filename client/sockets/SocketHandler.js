@@ -139,17 +139,12 @@ export default class SocketHandler {
 				}
 
 				if (player) {
-					player.position = (updatedPlayer.pos);
-					player.shift =(updatedPlayer.shift);
-					player.hp = (updatedPlayer.hp);
+					player.position = updatedPlayer.pos;
+					player.shift = updatedPlayer.shift;
+					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;
+					player.respawnTimer = updatedPlayer.respawnTimer;
 				}
-
-				// if (!player.status.alive) {
-				// 	console.log("Player is  dead");
-				// 	const element = document.getElementById(playerID);
-				// 	if (element) element.remove();
-				// }
 			}
 
 			for (const bulletID in updatedGameState.bullets) {
@@ -157,7 +152,6 @@ export default class SocketHandler {
 				if (!currentGameState.bullets[bulletID]) {
 
 					currentGameState.bullets[bulletID] = new Bullet(bulletID);
-					//console.log("updatedgamestate.bullets: ", updatedGameState.bullets);
 					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
 				}  else {
 					currentGameState.bullets[bulletID].position = updatedGameState.bullets[bulletID].position;

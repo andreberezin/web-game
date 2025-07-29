@@ -1,6 +1,6 @@
 export default class PlayerInterfaceService {
-	// #uiParts = ["id", "hp", "deathCooldown"]
-	#uiParts = ["id", "hp"]
+	#uiParts = ["id", "hp", "respawnTimer"]
+	//#uiParts = ["id", "hp"]
 
 	constructor() {
 	}
@@ -18,18 +18,14 @@ export default class PlayerInterfaceService {
 		game.appendChild(playerUI);
 
 		this.#uiParts.forEach(uiPart => {
-			if (uiPart === "deathCooldown") return;
-
-			const element = this.createElement(uiPart);
-			playerUI.appendChild(element);
-
-			// if (uiPart === "deathCooldown") {
-			// 	const gameInner = document.getElementById('game-inner');
-			// 	element.hidden = true;
-			// 	gameInner.appendChild(element);
-			// 	return
-			// }
-
+			if (uiPart === "respawnTimer") {
+				const gameInner = document.getElementById("game-inner");
+				const element = this.createRespawnTimer(uiPart);
+				gameInner.appendChild(element);
+			} else {
+				const element = this.createElement(uiPart);
+				playerUI.appendChild(element);
+			}
 		})
 	}
 
@@ -39,32 +35,38 @@ export default class PlayerInterfaceService {
 
 		this.#uiParts.forEach(key => {
 			if(player[key] !== undefined) {
-
-				// if (key === "deathCooldown") {
-				// 	this.handleDeathCooldownElement(player, key);
-				// 	return;
-				// }
-
-				this.updateElement(key, player[key]);
+				this.updateElement(key, player);
 			}
 		})
 	}
 
 	createElement(type) {
+
 		const element = document.createElement("div");
 		element.id= `player-${type}`;
 		element.className = 'ui-item';
 		element.innerHTML = `${type.toUpperCase()}: <span id="player-${type}-value" class='value'></span>`;
 
+		if (type === "deathCooldown") {
+			element.hidden = true;
+		}
+
 		return element;
 	}
 
-	updateElement(key, value) {
+	updateElement(key, player) {
+
+		const value = player[key]
 		const element = document.getElementById(`player-${key}`);
 		const elementValue = document.getElementById(`player-${key}-value`);
 		if (!element || !elementValue) return;
 
-		elementValue.textContent = value
+		if (key === "respawnTimer") {
+			element.hidden = player.status.alive;
+			elementValue.textContent = (value / 1000).toFixed(2);
+		} else {
+			elementValue.textContent = value
+		}
 	}
 
 	removeElement(key) {
@@ -72,17 +74,27 @@ export default class PlayerInterfaceService {
 		if (element) element.remove();
 	}
 
-	// handleDeathCooldownElement(player, key) {
-	// 	if (!player.status.alive) {
-	// 		console.log("Handling death cooldown element");
-	// 		const gameInner = document.getElementById('game-inner')
-	// 		const element = document.createElement("div");
-	// 		element.id= `player-${key}`;
-	// 		element.innerHTML = `${player.respawnTimer} <span id="player-${key}-value" class='value'></span>`;
-	// 		gameInner.appendChild(element);
-	//
-	// 	} else {
-	// 		this.removeElement(key)
-	// 	}
-	// }
+	createRespawnTimer(type) {
+		const element = document.createElement("div");
+		element.id= `player-${type}`;
+		element.className = 'ui-item';
+		element.innerHTML = `<span id="player-${type}-value" class='value'></span>`;
+		element.hidden = true;
+
+		return element;
+	}
+
+	handleDeathCooldownElement(player, key) {
+		if (!player.status.alive) {
+			console.log("Handling death cooldown element");
+			const gameInner = document.getElementById('game-inner')
+			const element = document.createElement("div");
+			element.id= `player-${key}`;
+			element.innerHTML = `${player.respawnTimer} <span id="player-${key}-value" class='value'></span>`;
+			gameInner.appendChild(element);
+
+		} else {
+			this.removeElement(key)
+		}
+	}
 }

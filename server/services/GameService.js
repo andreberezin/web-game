@@ -31,7 +31,7 @@ export default class GameService {
         this.playerInputService.handlePlayerShooting(game, currentTime);
         this.checkForCollisions(game, currentTime);
         this.playerInputService.handlePlayerRespawning(game, currentTime);
-        // this.playerInputService.handlePlayerRespawnTimer(game, currentTime);
+        this.playerInputService.handlePlayerRespawnTimer(game, currentTime);
     }
 
     checkForCollisions(game, currentTime) {

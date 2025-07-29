@@ -61,18 +61,20 @@ export default class PlayerInputService {
         }
     }
 
-    // handlePlayerRespawnTimer(game, currentTime) {
-    //     const players = game.state.players;
-    //
-    //     for (let playerID in players) {
-    //         const player = players[playerID];
-    //
-    //         if (!player.status.alive) {
-    //             player.respawnTimer = Math.max(0, player.deathCooldown - (currentTime - player.deathTime));
-    //             console.log("Respawn timer: ", player.respawnTimer);
-    //         }
-    //     }
-    // }
+    handlePlayerRespawnTimer(game, currentTime) {
+        const players = game.state.players;
+
+        for (let playerID in players) {
+            const player = players[playerID];
+
+            if (!player.status.alive) {
+                player.respawnTimer = Math.max(0, player.deathCooldown - (currentTime - player.deathTime));
+                // console.log("Respawn timer: ", player.respawnTimer);
+            } else {
+                player.respawnTimer = null;
+            }
+        }
+    }
 
 
     handlePlayerShooting(game, currentTime) {
