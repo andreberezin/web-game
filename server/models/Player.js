@@ -28,8 +28,11 @@ export default class Player {
     shotCooldown = 250;
     hp = 100;
     deathCooldown = 5000;
+    respawnTime = null;
     deathTime = 0;
-    status = "alive";
+    status = {
+        alive: true
+    };
 
 	constructor(id) {
         this.id = id
@@ -70,10 +73,6 @@ export default class Player {
         }
     }
 
-    // get getShift() {
-    //     return this.shift;
-    // }
-    //
     get maxPosition() {
         return this.maxPos;
     }
@@ -84,6 +83,20 @@ export default class Player {
             y: y,
         }
     }
+
+    get respawnTimer() {
+        return this.respawnTime;
+    }
+
+    set respawnTimer(time) {
+        this.respawnTime = time;
+    }
+
+
+    // get getShift() {
+    //     return this.shift;
+    // }
+    //
 
     // setHp(hp) {
     //     this.hp = hp;

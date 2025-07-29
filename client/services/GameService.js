@@ -62,9 +62,9 @@ export default class GameService {
 		return bulletElement;
 	}
 
-	setPosition(bullet, bulletData) {
-		console.log("bulletData:", bulletData);
-		bullet.position.x = bulletData.position.x;
-		bullet.position.y = bulletData.position.y;
-	}
+	// setPosition(bullet, bulletData) {
+	// 	console.log("bulletData:", bulletData);
+	// 	bullet.position.x = bulletData.position.x;
+	// 	bullet.position.y = bulletData.position.y;
+	// }
 }

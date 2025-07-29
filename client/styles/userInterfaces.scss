@@ -10,30 +10,45 @@
   transform: translateX(-50%);
   background-color: lightgray;
 
+  &#game-ui {
+    top: 0;
+  }
+
+  &#player-ui {
+    bottom: 0;
+  }
+
   .ui-item {
 
-  }
 
-  .value {
-    width: 5px;
-  }
+    &#player-id {
 
-  #game-id {
+    }
 
-  }
+    &#player-hp{
 
-  #player-count {
-  }
+    }
 
-  #player-id {
+    &#game-id {
 
+    }
+
+    &#player-count {
+    }
+
+    .value {
+      width: 5px;
+    }
   }
 }
 
-#game-ui {
-  top: 0;
-}
+#game-inner {
 
-#player-ui {
-  bottom: 0;
+  #player-deathCooldown {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 30px;
+  }
 }

@@ -10,7 +10,7 @@ export default class GameFieldService {
 		const gameField = document.createElement('div');
 		gameField.id = 'game-field';
 		gameField.addEventListener('click', () => {
-			if (document.getElementsByClassName("me")) {
+			if (document.getElementsByClassName("me").length > 0) {
 				document.getElementsByClassName("me")[0].focus();
 			}
 		})

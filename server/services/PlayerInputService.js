@@ -44,20 +44,36 @@ export default class PlayerInputService {
     handlePlayerRespawning(game, currentTime) {
 
         const deadPlayers = game.state.deadPlayers;
+        const alivePlayers = game.state.players
 
         for (let playerID in deadPlayers) {
-            const player = deadPlayers[playerID];
+            const player = alivePlayers[playerID];
 
                 if (player.canRespawn(currentTime)) {
-                    player.hp(100);
-                    player.status("alive");
+                    player.hp = 100;
+                    player.status.alive = true;
                     player.position = { x: 100, y: 100 };
 
-                    game.state.players[playerID] = player;
+                    // todo does this next line do anything?
+                   // game.state.players[playerID] = player;
                     delete game.state.deadPlayers[playerID];
                 }
         }
     }
+
+    // handlePlayerRespawnTimer(game, currentTime) {
+    //     const players = game.state.players;
+    //
+    //     for (let playerID in players) {
+    //         const player = players[playerID];
+    //
+    //         if (!player.status.alive) {
+    //             player.respawnTimer = Math.max(0, player.deathCooldown - (currentTime - player.deathTime));
+    //             console.log("Respawn timer: ", player.respawnTimer);
+    //         }
+    //     }
+    // }
+
 
     handlePlayerShooting(game, currentTime) {
         const players = game.state.players;

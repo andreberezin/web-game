@@ -76,7 +76,7 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			console.log("Updating available games");
+			//console.log("Updating available games");
 			this.#clientManager.games = new Map(gamesList);
 
 			if (this.#onUpdateAvailableGames) {
@@ -100,7 +100,7 @@ export default class SocketHandler {
 		})
 
 		socket.on('playerJoined', (playerId) => {
-			console.log("Player:", playerId, "joined the game:");
+			console.log("Player:", playerId, "joined the game");
 		})
 
 		socket.on('playerLeft', (playerId) => {
@@ -127,22 +127,29 @@ export default class SocketHandler {
 				}
 			}
 
-			// console.log("game id: ", gameId);
 			for (const playerID in currentGameState.players) {
-				if (!updatedGameState.players[playerID]) {
-					document.getElementById(playerID).remove();
+				const player = currentGameState.players[playerID];
+				const updatedPlayer = updatedGameState.players[playerID];
+
+				if (!updatedPlayer) {
+					const element = document.getElementById(playerID);
+					if (element) element.remove();
 					delete currentGameState.players[playerID];
 					continue;
 				}
 
-				if (currentGameState.players[playerID]) {
-					const player = currentGameState.players[playerID]
-					const updatedPlayer = updatedGameState.players[playerID]
-
-					player.position = updatedPlayer.pos;
-					player.shift = updatedPlayer.shift;
-					player.hp = updatedPlayer.hp;
+				if (player) {
+					player.position = (updatedPlayer.pos);
+					player.shift =(updatedPlayer.shift);
+					player.hp = (updatedPlayer.hp);
+					player.status = updatedPlayer.status;
 				}
+
+				// if (!player.status.alive) {
+				// 	console.log("Player is  dead");
+				// 	const element = document.getElementById(playerID);
+				// 	if (element) element.remove();
+				// }
 			}
 
 			for (const bulletID in updatedGameState.bullets) {

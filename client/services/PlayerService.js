@@ -17,6 +17,18 @@ export default class PlayerService {
 			return;
 		}
 
+		const playerElement = document.getElementById(playerId);
+		if (player.status.alive === false && playerElement) {
+			playerElement.hidden = true;
+			//this.removePlayerModel(playerId);
+			//this.resetAcceleration(player, timestamp);
+			return;
+		}
+
+		if (playerElement.hidden) {
+			playerElement.hidden = false;
+		}
+
 		// todo users setters and getters
 		if (this.playerIsNotMoving(player)) {
 			this.resetAcceleration(player, timestamp);
@@ -26,8 +38,7 @@ export default class PlayerService {
 
 		// todo users setters and getters
 		const elapsed = timestamp - player.start;
-		const newShiftValue = Math.min(0.001 * elapsed, 10);
-		player.shift = newShiftValue;
+		player.shift = Math.min(0.001 * elapsed, 10);
 
 		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
@@ -50,20 +61,20 @@ export default class PlayerService {
 	}
 
 	// todo should be part of Player.js
-	setMaxPosition(player) {
-
-		const gameInner = document.getElementById('game-inner')
-		const rect = gameInner.getBoundingClientRect();
-
-		const playerElement = document.getElementsByClassName("player")[0];
-
-		player.maxPosition = ({
-			x: rect.width - playerElement.offsetWidth,
-			y: rect.height - playerElement.offsetHeight,
-		})
-		// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
-		// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
-	}
+	// setMaxPosition(player) {
+	//
+	// 	const gameInner = document.getElementById('game-inner')
+	// 	const rect = gameInner.getBoundingClientRect();
+	//
+	// 	const playerElement = document.getElementsByClassName("player")[0];
+	//
+	// 	player.maxPosition = ({
+	// 		x: rect.width - playerElement.offsetWidth,
+	// 		y: rect.height - playerElement.offsetHeight,
+	// 	})
+	// 	// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
+	// 	// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
+	// }
 
 	updateElementPosition(player) {
 		player.element.style.top = `${player.position.y}px`
@@ -135,7 +146,9 @@ export default class PlayerService {
 		return playerElement;
 	}
 
-	// TODO: implement removePlayerModel()
-	removePlayerModel() {}
+	removePlayerModel(playerId) {
+		const playerElement = document.getElementById(playerId);
+		playerElement.remove();
+	}
 
 }
