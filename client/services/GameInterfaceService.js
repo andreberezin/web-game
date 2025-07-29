@@ -68,7 +68,7 @@ export default class GameInterfaceService {
 
 	getNumberOfPlayers(players) {
 		const count = Object.keys(players).length;
-		this.#gameInterface.setPlayerCount(count);
+		this.#gameInterface.playerCount = count;
 		return count;
 	}
 }

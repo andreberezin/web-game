@@ -51,7 +51,7 @@ export default class ClientManager {
 
 			if (this.myID && players[this.myID]) {
 				const me =  players[this.myID];
-				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.getShift, me.getMaxPosition);
+				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.shift, me.maxPosition);
 				this.playerInterfaceService.updatePlayerUI(me);
 			}
 

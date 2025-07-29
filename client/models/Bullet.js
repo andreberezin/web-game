@@ -1,11 +1,11 @@
 export default class Bullet {
-    pos = {
+    #id = "bullet-1";
+    #pos = {
         x: 100,
         y: 100,
     };
-    id = "bullet-1";
-    direction = "up";
-    velocity = 100;
+    #direction = "up";
+    #velocity = 100;
     #element = null;
 
     // styles = {
@@ -14,33 +14,49 @@ export default class Bullet {
     // }
 
     constructor(id, x, y, direction) {
-        this.id = id;
-        this.pos.x = x;
-        this.pos.y = y;
-        this.direction = direction;
+        this.#id = id;
+        this.#pos.x = x;
+        this.#pos.y = y;
+        this.#direction = direction;
     }
 
-    get getPosition() {
-        return this.pos;
+    get id() {
+        return this.#id;
     }
 
-    setPosition(pos) {
-        this.pos = pos;
+    set id(id) {
+        this.#id = id;
     }
 
-    setId(id) {
-        this.id = id;
+    get position() {
+        return this.#pos;
     }
 
-    getId() {
-        return this.id;
+    set position({ x, y }) {
+        this.#pos = { x, y };
     }
 
-    get getElement() {
+    get direction() {
+        return this.#direction;
+    }
+
+    set direction(direction) {
+        this.#direction = direction;
+    }
+
+    get velocity() {
+        return this.#velocity;
+    }
+
+    set velocity(velocity) {
+        this.#velocity = velocity;
+    }
+
+    get element() {
         return this.#element;
     }
 
-    setElement(element) {
+    set element(element) {
         this.#element = element;
     }
 }

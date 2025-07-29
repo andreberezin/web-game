@@ -15,7 +15,7 @@ export default class GamesManager {
 		const gameLoop = () => {
 			const game = this.games.get(gameId);
 
-			if (game && game.getState.isRunning) {
+			if (game && game.state.isRunning) {
 				const currentTime = Date.now();
 				this.updateGame(gameId, currentTime);
 				this.broadcastGameState(gameId)
@@ -29,7 +29,7 @@ export default class GamesManager {
 		console.log("Creating game with id: ", hostId);
 		const game = this.gameService.createGame(hostId, settings);
 		game.updateState({ isRunning: true});
-		this.games.set(game.getId, game);
+		this.games.set(game.id, game);
 
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
 		//socket.emit("gameCreated", hostId, game.getState, game.getSettings);
@@ -45,7 +45,7 @@ export default class GamesManager {
 		const game = this.games.get(gameId);
 		if (!game) return;
 
-		this.#io.to(gameId).emit('updateGameState', gameId, game.getState);
+		this.#io.to(gameId).emit('updateGameState', gameId, game.state);
 	}
 
 	// broadcastGameId(gameId) {
@@ -56,7 +56,7 @@ export default class GamesManager {
 
 	updateGame(gameId, currentTime) {
 		const game = this.games.get(gameId);
-		if (game && game.getState.isRunning) {
+		if (game && game.state.isRunning) {
 			this.gameService.updateGameState(game, currentTime);
 		}
 	}

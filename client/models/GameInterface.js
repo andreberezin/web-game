@@ -7,19 +7,19 @@ export default class GameInterface {
 	constructor() {
 	}
 
-	get getGameId() {
+	get gameId() {
 		return this.#gameId;
 	}
 
-	setGameId(gameId) {
+	set gameId(gameId) {
 		this.#gameId = gameId;
 	}
 
-	get getPlayerCount() {
+	get playerCount() {
 		return this.#playerCount;
 	}
 
-	setPlayerCount(playerCount) {
+	set playerCount(playerCount) {
 		this.#playerCount = playerCount;
 	}
 

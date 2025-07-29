@@ -13,7 +13,7 @@ export default class PlayerService {
 		let player = this.#clientManager.game.state.players[playerId];
 		const {arrowDown, arrowUp, arrowRight, arrowLeft} = player.input;
 
-		if (!player.getElement) {
+		if (!player.element) {
 			return;
 		}
 
@@ -27,7 +27,7 @@ export default class PlayerService {
 		// todo users setters and getters
 		const elapsed = timestamp - player.start;
 		const newShiftValue = Math.min(0.001 * elapsed, 10);
-		player.setShift(newShiftValue);
+		player.shift = newShiftValue;
 
 		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
@@ -57,7 +57,7 @@ export default class PlayerService {
 
 		const playerElement = document.getElementsByClassName("player")[0];
 
-		player.setMaxPosition({
+		player.maxPosition = ({
 			x: rect.width - playerElement.offsetWidth,
 			y: rect.height - playerElement.offsetHeight,
 		})
@@ -66,8 +66,8 @@ export default class PlayerService {
 	}
 
 	updateElementPosition(player) {
-		player.getElement.style.top = `${player.getPosition.y}px`
-		player.getElement.style.left = `${player.getPosition.x}px`
+		player.element.style.top = `${player.position.y}px`
+		player.element.style.left = `${player.position.x}px`
 	}
 
 	createPlayerModel(playerData, playerId) {
@@ -77,13 +77,13 @@ export default class PlayerService {
 		}
 
 		const player = this.#clientManager.game.state.players[playerId];
-		this.setPosition(player, playerData);
+		player.position = playerData.pos;
 
         const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length;
 
  		const playerElement = this.createElement(player, numberOfPlayers, playerId);
 		this.addEventListeners(playerElement, player);
-		player.setElement(playerElement);
+		player.element = playerElement;
 
 		// console.log("players", this.#clientManager.game.state.players);
 		this.appendToGameField(playerElement, playerId);
@@ -95,12 +95,6 @@ export default class PlayerService {
 		if (playerId === this.#clientManager.myID) {
 			playerElement.focus();
 		}
-	}
-
-	// todo should be part of Player.js
-	setPosition(player, playerData) {
-		player.getPosition.x = playerData.pos.x;
-		player.getPosition.y = playerData.pos.y;
 	}
 
 	addEventListeners(playerElement, player) {
@@ -117,8 +111,8 @@ export default class PlayerService {
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
-		playerElement.style.top = `${player.getPosition.y}px`
-		playerElement.style.left = `${player.getPosition.x}px`
+		playerElement.style.top = `${player.position.y}px`
+		playerElement.style.left = `${player.position.x}px`
 		playerElement.tabIndex = 0;
 
 		// css variable for styling

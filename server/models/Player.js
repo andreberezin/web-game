@@ -1,12 +1,14 @@
 export default class Player {
-	pos = {
+    // todo make fields private and use setters, getters? Needs extra logic to send data via sockets if fields are private
+
+    id = "player-1";
+    pos = {
 		x: 100,
 		y: 100,
 	};
-    id = "player-1";
     name = null;
     shift = null;
-    maxPosition = {
+    maxPos = {
         x: 1920 - 30,
         y: 1080 - 30,
     }
@@ -33,13 +35,13 @@ export default class Player {
         this.id = id
 	}
 
-    setStatus(status) {
-        this.status = status;
-    }
-
-    getStatus() {
-        return this.status;
-    }
+    // setStatus(status) {
+    //     this.status = status;
+    // }
+    //
+    // getStatus() {
+    //     return this.status;
+    // }
 
     canRespawn(currentTime) {
         return (currentTime - this.deathTime) >= this.deathCooldown;
@@ -57,31 +59,41 @@ export default class Player {
         this.lastShotTime = currentTime;
     }
 
-    get getPosition() {
+    get position() {
         return this.pos;
     }
 
-    get getShift() {
-        return this.shift;
+    set position({x, y}) {
+        this.pos = {
+            x: x,
+            y: y,
+        }
     }
 
-    get getMaxPosition() {
-        return this.maxPosition;
+    // get getShift() {
+    //     return this.shift;
+    // }
+    //
+    get maxPosition() {
+        return this.maxPos;
     }
 
-    setHp(hp) {
-        this.hp = hp;
+    set maxPosition({ x, y }) {
+        this.maxPos = {
+            x: x,
+            y: y,
+        }
     }
 
-    getHp() {
-        return this.hp;
-    }
+    // setHp(hp) {
+    //     this.hp = hp;
+    // }
+    //
+    // getHp() {
+    //     return this.hp;
+    // }
 
-    setShift(data) {
-        this.shift = data;
-    }
-
-    setPosition(pos) {
-        this.pos = pos;
-    }
+    // setShift(data) {
+    //     this.shift = data;
+    // }
 }

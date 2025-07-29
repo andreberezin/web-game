@@ -12,7 +12,7 @@ export default class GameService {
 	updateBulletModel(timestamp, newBulletData, bulletId) {
 		let bullet = this.#clientManager.game.state.bullets[bulletId];
 
-		if (!bullet.getElement) {
+		if (!bullet.element) {
 			return;
 		}
 
@@ -20,8 +20,8 @@ export default class GameService {
 	}
 
 	updateElementPosition(bullet) {
-		bullet.getElement.style.top = `${bullet.getPosition.y}px`
-		bullet.getElement.style.left = `${bullet.getPosition.x}px`
+		bullet.element.style.top = `${bullet.position.y}px`
+		bullet.element.style.left = `${bullet.position.x}px`
 	}
 
 	createBulletModel(bulletData, bulletId) {
@@ -32,7 +32,11 @@ export default class GameService {
 
 		const bullet = this.#clientManager.game.state.bullets[bulletId];
 
-		this.setPosition(bullet, bulletData);
+		//console.log("Bulletdata: ", bulletData);
+		//bullet.position = {x: bulletData.position.x, y: bulletData.position.y};
+		bullet.position = bulletData.position;
+
+		//this.setPosition(bullet, bulletData);
 		const bulletElement = this.createElement(bullet);
 		this.appendToGameField(bulletElement);
 	}
@@ -45,21 +49,22 @@ export default class GameService {
 	createElement(bullet) {
 		const bulletElement = document.createElement("div")
 		bulletElement.classList.add("bullet")
-		bulletElement.id = bullet.getId();
-		bulletElement.style.top = `${bullet.getPosition.y}px`
-		bulletElement.style.left = `${bullet.getPosition.x}px`
+		bulletElement.id = bullet.id;
+		bulletElement.style.top = `${bullet.position.y}px`
+		bulletElement.style.left = `${bullet.position.x}px`
 		bulletElement.tabIndex = 0;
 
 		// for (const property in bullet.styles) {
 		// 	bulletElement.style[property] = bullet.styles[property]
 		// }
 
-		bullet.setElement(bulletElement);
+		bullet.element = bulletElement;
 		return bulletElement;
 	}
 
 	setPosition(bullet, bulletData) {
-		bullet.getPosition.x = bulletData.pos.x;
-		bullet.getPosition.y = bulletData.pos.y;
+		console.log("bulletData:", bulletData);
+		bullet.position.x = bulletData.position.x;
+		bullet.position.y = bulletData.position.y;
 	}
 }
