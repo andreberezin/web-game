@@ -28,7 +28,7 @@ export default class Player {
     shotCooldown = 250;
     hp = 100;
     deathCooldown = 5000;
-    respawnTime = null;
+    respawnTimer = null;
     deathTime = 0;
     status = {
         alive: true
@@ -84,13 +84,13 @@ export default class Player {
         }
     }
 
-    get respawnTimer() {
-        return this.respawnTime;
-    }
-
-    set respawnTimer(time) {
-        this.respawnTime = time;
-    }
+    // get respawnTimer() {
+    //     return this.respawnTime;
+    // }
+    //
+    // set respawnTimer(time) {
+    //     this.respawnTime = time;
+    // }
 
 
     // get getShift() {
