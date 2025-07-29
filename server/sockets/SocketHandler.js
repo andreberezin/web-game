@@ -34,11 +34,11 @@ export default class SocketHandler {
 				this.joinGame(socket, gameId, hostId);
 
 				const game = this.#gamesManager.games.get(gameId);
-				socket.emit("createGameSuccess", gameId, game.getState, game.getSettings);
+				socket.emit("createGameSuccess", gameId, game.state, game.settings);
 				socket.emit("joinGameSuccess", {
 					gameId,
-					players: game.getState.players,
-					myPlayer: game.getState.players[hostId],
+					players: game.state.players,
+					myPlayer: game.state.players[hostId],
 				});
 			})
 
@@ -54,8 +54,8 @@ export default class SocketHandler {
 
 				socket.emit("joinGameSuccess", {
 					gameId,
-					players: game.getState.players,
-					myPlayer: game.getState.players[playerId],
+					players: game.state.players,
+					myPlayer: game.state.players[playerId],
 				});
 
 				socket.to(gameId).emit("playerJoined", playerId);
@@ -69,7 +69,7 @@ export default class SocketHandler {
 				const game = this.#gamesManager.games.get(gameId);
 				if (!game) return;
 
-				const gameState = game.getState;
+				const gameState = game.state;
 
 				if (gameState.players[playerId]) {
 					console.log('Disconnecting player: ', playerId);
@@ -81,7 +81,7 @@ export default class SocketHandler {
 					this.#gamesManager.games.delete(gameId);
 				}
 
-				if (!game.getSettings.private) {
+				if (!game.settings.private) {
 					this.#io.emit('updateAvailableGames', this.getPublicGameList());
 				}
 			});
@@ -101,21 +101,22 @@ export default class SocketHandler {
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
 		const game = this.#gamesManager.games.get(gameId);
-		const gameState = game.getState;
+		const gameState = game.state;
 
 		console.log("Player: ", playerId, " joined game: ", gameId);
 
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
 
 		socket.on('updateMyPlayerData', (input, shift, maxPosition) => {
-			if (gameState.players[playerId]) {
-				gameState.players[playerId].input = input;
-				gameState.players[playerId].shift = shift;
-				gameState.players[playerId].maxPosition = maxPosition;
+			const player = gameState.players[playerId];
+			if (player) {
+				player.input = input;
+				player.shift = shift;
+				player.maxPosition = maxPosition;
 			}
 		});
 
-		if (!game.getSettings.private) {
+		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
 
@@ -146,11 +147,11 @@ export default class SocketHandler {
 	getPublicGameList() {
 		return Array.from(this.#gamesManager.games.entries())
 			//eslint-disable-next-line
-			.filter(([_, game]) => !game.getSettings.private)
+			.filter(([_, game]) => !game.settings.private)
 			.map(([id, game]) => ({
 				id: id,
-				settings: game.getSettings,
-				players: Object.keys(game.getState.players).length,
+				settings: game.settings,
+				players: Object.keys(game.state.players).length,
 			}));
 	}
 }

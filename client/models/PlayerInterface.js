@@ -5,11 +5,11 @@ export default class PlayerInterface {
 	constructor() {
 	}
 
-	get getPlayerId() {
+	get playerId() {
 		return this.#playerId;
 	}
 
-	setGameId(playerId) {
+	set gameId(playerId) {
 		this.#playerId = playerId;
 	}
 }

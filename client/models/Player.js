@@ -33,73 +33,77 @@ export default class Player {
         return this.#id;
     }
 
-    set input(input) {
-        this.#input = input;
-    }
 
     get input() {
         return this.#input;
     }
 
-    set hp(hp) {
-        this.#hp = hp;
+    set input(input) {
+        this.#input = input;
     }
 
     get hp() {
         return this.#hp;
     }
 
-    get getId() {
-        return this.#id;
+    set hp(hp) {
+        this.#hp = hp;
     }
 
-    get getPosition() {
+    get position() {
         return this.#pos;
     }
 
-    get getShift() {
+    set position({x, y}) {
+        this.#pos = {
+            x: x,
+            y: y,
+        }
+    }
+
+    get shift() {
         return this.#shift;
     }
 
-    get getElement() {
+    set shift(data) {
+        this.#shift = data;
+    }
+
+    get element() {
         return this.#element;
     }
 
-    setElement(element) {
+    set element(element) {
         this.#element = element;
     }
 
-    get getMaxPosition() {
+    get maxPosition() {
         return this.#maxPosition;
     }
 
-    setMaxPosition({ x, y }) {
+    set maxPosition({ x, y }) {
         this.#maxPosition = {
             x: x,
             y: y,
         }
     }
 
-    get getSize() {
+    get size() {
         return this.#size;
     }
 
-    setSize({ width, height }) {
+    set size({ width, height }) {
         this.#size = {
             width: width,
             height: height,
         }
     }
 
-    setName(name) {
+    get name() {
+        return this.#name;
+    }
+
+    set name(name) {
         this.#name = name;
-    }
-
-    setShift(data) {
-        this.#shift = data;
-    }
-
-    setPosition(pos) {
-        this.#pos = pos;
     }
 }

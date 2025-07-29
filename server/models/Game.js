@@ -21,11 +21,19 @@ export default class Game {
 		};
 	}
 
-	get getState() {
+	get id() {
+		return this.#id;
+	}
+
+	set id(newId) {
+		this.#id = newId;
+	}
+
+	get state() {
 		return this.#state;
 	}
 
-	set setState(updatedState) {
+	set state(updatedState) {
 		this.#state = updatedState;
 	}
 
@@ -33,23 +41,15 @@ export default class Game {
 		this.#state = {...this.#state, ...updatedState};
 	}
 
-	get getSettings() {
+	get settings() {
 		return this.#settings;
 	}
 
-	set setSettings(updatedSettings) {
+	set settings(updatedSettings) {
 		this.#settings = updatedSettings;
 	}
 
 	updateSettings(updatedSettings) {
 		this.#settings = {...this.#settings, ...updatedSettings};
-	}
-
-	get getId() {
-		return this.#id;
-	}
-
-	set setId(newId) {
-		this.#id = newId;
 	}
 }

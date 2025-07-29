@@ -109,7 +109,6 @@ export default class SocketHandler {
 
 		// todo refactor this socket connection
 		socket.on('updateGameState', (gameId, updatedGameState) => {
-			//console.log("updating game state: ", gameId);
 			const currentGameState = this.#clientManager.game.state;
 
 			if (!currentGameState) {
@@ -117,7 +116,7 @@ export default class SocketHandler {
 				return;
 			}
 
-			this.#gameInterface.setGameId(gameId);
+			this.#gameInterface.gameId = gameId;
 			this.#clientManager.game.id = gameId;
 
 			// Respawning
@@ -137,21 +136,24 @@ export default class SocketHandler {
 				}
 
 				if (currentGameState.players[playerID]) {
-					currentGameState.players[playerID].setPosition(updatedGameState.players[playerID].pos);
-					currentGameState.players[playerID].setShift(updatedGameState.players[playerID].shift);
-					currentGameState.players[playerID].hp =(updatedGameState.players[playerID].hp);
+					const player = currentGameState.players[playerID]
+					const updatedPlayer = updatedGameState.players[playerID]
+
+					player.position = updatedPlayer.pos;
+					player.shift = updatedPlayer.shift;
+					player.hp = updatedPlayer.hp;
 				}
 			}
 
 			for (const bulletID in updatedGameState.bullets) {
 
 				if (!currentGameState.bullets[bulletID]) {
-					let bullet = new Bullet(bulletID);
 
-					currentGameState.bullets[bulletID] = bullet;
+					currentGameState.bullets[bulletID] = new Bullet(bulletID);
+					//console.log("updatedgamestate.bullets: ", updatedGameState.bullets);
 					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
 				}  else {
-					currentGameState.bullets[bulletID].setPosition(updatedGameState.bullets[bulletID].pos);
+					currentGameState.bullets[bulletID].position = updatedGameState.bullets[bulletID].position;
 				}
 			}
 

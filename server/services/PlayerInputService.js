@@ -11,8 +11,8 @@ export default class PlayerInputService {
     }
 
     handlePlayerMovement(game) {
-        for (let playerID in game.getState.players) {
-            const player = game.getState.players[playerID]
+        for (let playerID in game.state.players) {
+            const player = game.state.players[playerID]
 
             if (!player.input) continue;
 
@@ -34,39 +34,40 @@ export default class PlayerInputService {
 
     movePlayer(player, axis, multiplier, direction) {
         const distance = multiplier * player.shift;
-        const newPosition = player.pos[axis] + distance;
+        const newPosition = player.position[axis] + distance;
         // player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
-        player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
+
+        player.position[axis] = clamp(0, newPosition, player.maxPosition[axis]);
         player.direction = direction;
     }
 
     handlePlayerRespawning(game, currentTime) {
 
-        const deadPlayers = game.getState.deadPlayers;
+        const deadPlayers = game.state.deadPlayers;
 
         for (let playerID in deadPlayers) {
             const player = deadPlayers[playerID];
 
                 if (player.canRespawn(currentTime)) {
-                    player.setHp(100);
-                    player.setStatus("alive");
-                    player.pos = { x: 100, y: 100 };
+                    player.hp(100);
+                    player.status("alive");
+                    player.position = { x: 100, y: 100 };
 
-                    game.getState.players[playerID] = player;
-                    delete game.getState.deadPlayers[playerID];
+                    game.state.players[playerID] = player;
+                    delete game.state.deadPlayers[playerID];
                 }
         }
     }
 
     handlePlayerShooting(game, currentTime) {
-        const players = game.getState.players;
+        const players = game.state.players;
 
         for (let playerID in players) {
             const player = players[playerID];
 
             if (player.input && player.input.space === true) {
                 if (player.canShoot(currentTime)) {
-                    this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game);
+                    this.#gameService.createBulletAt(player.position.x, player.position.y, player.direction, game);
                     player.lastBulletShotAt(currentTime);
                 }
             }
