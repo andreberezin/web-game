@@ -24,25 +24,32 @@ export default class GameService {
     }
 
     updateGameState(game, currentTime) {
+
+        if (Object.keys(game.state.bullets).length > 1) {
+            //console.time("UpdateGameState")
+        }
+
         this.updateBullets(game);
 
-        // todo refactor so this function iterates over game.state.players and then applies all these next functions. Currently all these functions iterate over game.state.players over and over again
-        this.playerInputService.handlePlayerMovement(game);
-        this.playerInputService.handlePlayerShooting(game, currentTime);
-        this.checkForCollisions(game, currentTime);
-        this.playerInputService.handlePlayerRespawning(game, currentTime);
-        this.playerInputService.handlePlayerRespawnTimer(game, currentTime);
+        for (const playerID in game.state.players) {
+            const player = game.state.players[playerID];
+
+            this.checkForCollisions(player, currentTime, game.state);
+            this.playerInputService.handlePlayerMovement(player);
+            this.playerInputService.handlePlayerShooting(player, currentTime, game);
+            this.playerInputService.handlePlayerRespawning(game.state, currentTime);
+            this.playerInputService.handlePlayerRespawnTimer(player, currentTime);
+        }
+
+        if (Object.keys(game.state.bullets).length > 1) {
+            //console.timeEnd("UpdateGameState")
+        }
     }
 
-    checkForCollisions(game, currentTime) {
-        const players = game.state.players;
-        const bullets = game.state.bullets;
+    checkForCollisions(player, currentTime, {bullets, deadPlayers}) {
         const bulletsToDelete = [];
 
-        for (let playerID in players) {
-            if (players[playerID].status.alive) {
-                const player = players[playerID];
-
+            if (player.status.alive) {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
 
@@ -53,7 +60,7 @@ export default class GameService {
                             // Player dies if hp is 0
                             player.status.alive = false;
                             player.diedAt(currentTime);
-                            game.state.deadPlayers[playerID] = player;
+                            deadPlayers[player.id] = player;
                             //delete game.state.players[playerID];
                         }
 
@@ -61,10 +68,9 @@ export default class GameService {
                     }
                 }
             }
-        }
 
         bulletsToDelete.forEach(bulletID => {
-            delete game.state.bullets[bulletID];
+            delete bullets[bulletID];
         });
     }
 
