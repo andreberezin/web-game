@@ -1,32 +1,35 @@
 export default class Player {
     // todo make fields private and use setters, getters? Needs extra logic to send data via sockets if fields are private
-
     id = "player-1";
     pos = {
 		x: 100,
 		y: 100,
 	};
     name = null;
-    shift = null;
+    shift = 0;
     maxPos = {
         x: 1920 - 30,
         y: 1080 - 30,
     }
     size = {
-        width: 0,
-        height: 0,
+        width: 30,
+        height: 30,
     }
     input = {
-        arrowUp: false,
-        arrowDown: false,
-        arrowRight: false,
-        arrowLeft: false,
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowRight: false,
+        ArrowLeft: false,
         space: false
     }
     direction = "up";
     lastShotTime = 0;
     shotCooldown = 250;
     hp = 100;
+    speed = 10;
+    maxSpeed = 5;
+    acceleration = 1000 // in ms, less is more
+    movementStart = null;
     deathCooldown = 5000;
     respawnTimer = null;
     deathTime = 0;

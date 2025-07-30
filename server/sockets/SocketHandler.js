@@ -107,40 +107,34 @@ export default class SocketHandler {
 
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
 
-		socket.on('updateMyPlayerData', (input, shift, maxPosition) => {
+		// socket.on('updateMyPlayerData', (input) => {
+		// 	const player = gameState.players[playerId];
+		// 	if (player) {
+		// 		player.input = input;
+		// 		//player.shift = shift;
+		// 		//player.maxPosition = maxPosition;
+		// 	}
+		// });
+
+		socket.on('updateMyPlayerInput', (data) => {
+			let {key, type} = data;
 			const player = gameState.players[playerId];
-			if (player) {
-				player.input = input;
-				player.shift = shift;
-				player.maxPosition = maxPosition;
+
+			if (!player) {
+				console.log("Player not found: ", playerId);
+				return;
 			}
-		});
+
+			const input = player.input
+
+			if (key === " ") key = "space"
+
+			type === "keydown" ? input[key] = true : input[key] = false;
+		})
 
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
-
-		// if (!socket.hasDisconnectHandler) {
-		// 	socket.on('disconnect', () => {
-		// 		if (gameState.players[playerId]) {
-		// 			console.log('Disconnecting player: ', playerId);
-		// 			delete gameState.players[playerId];
-		// 			socket.to(gameId).emit("playerLeft", playerId);
-		// 		}
-		// 		if (Object.keys(gameState.players).length === 0) {
-		// 			console.log("Deleting game: ", gameId);
-		// 			this.#gamesManager.games.delete(gameId);
-		// 		}
-		// 		const gamesList = Array.from(this.#gamesManager.games.entries()).map(([id, game]) => ({
-		// 			id: id,
-		// 			settings: game.getSettings,
-		// 			players: Object.keys(game.getState.players).length,
-		// 		}))
-		//
-		// 		this.#io.emit('updateAvailableGames', gamesList);
-		// 	});
-		// 	socket.hasDisconnectHandler = true;
-		// }
 	}
 
 	// todo possibly create a DTO for this?

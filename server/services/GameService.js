@@ -58,6 +58,14 @@ export default class GameService {
                         player.hp = player.hp - 20;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
+                            player.input = {
+                                space: false,
+                                ArrowUp: false,
+                                ArrowRight: false,
+                                ArrowLeft: false,
+                                ArrowDown: false};
+                            player.shift = 0;
+                            player.movementStart = undefined;
                             player.status.alive = false;
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
@@ -95,17 +103,28 @@ export default class GameService {
         game.state.players[playerId] = player;
     }
 
-    createBulletAt(x, y, direction, game) {
+    createBulletAt(x, y, direction, game, playerWidth) {
         const id = Math.floor(Math.random() * 10000);
-        if (direction === "up") {
-            game.state.bullets[id] = new Bullet(id, x, y-6, "up");
-        } else if (direction === "down") {
-            game.state.bullets[id] = new Bullet(id, x, y+26, "down");
-        } else if (direction === "left") {
-            game.state.bullets[id] = new Bullet(id, x-6, y, "left");
-        } else if (direction === "right") {
-            game.state.bullets[id] = new Bullet(id, x+26, y, "right");
+        const offset = 24;
+
+        let bulletX = x + playerWidth / 2;
+        let bulletY = y + playerWidth / 2;
+
+        switch(direction) {
+            case "up":
+                bulletY -= offset;
+                break;
+            case "down":
+                bulletY += offset;
+                break;
+            case "left":
+                bulletX -= offset;
+                break;
+            case "right":
+                bulletX += offset;
+                break;
         }
+        game.state.bullets[id] = new Bullet(id, bulletX, bulletY, direction);
     }
 
     updateBullets(game) {

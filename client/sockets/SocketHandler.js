@@ -140,17 +140,18 @@ export default class SocketHandler {
 
 				if (player) {
 					player.position = updatedPlayer.pos;
-					player.shift = updatedPlayer.shift;
 					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;
 					player.respawnTimer = updatedPlayer.respawnTimer;
+					player.size = updatedPlayer.size;
+					player.maxPosition = updatedPlayer.maxPos;
+					player.deathCooldown = updatedPlayer.deathCooldown;
 				}
 			}
 
 			for (const bulletID in updatedGameState.bullets) {
 
 				if (!currentGameState.bullets[bulletID]) {
-
 					currentGameState.bullets[bulletID] = new Bullet(bulletID);
 					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
 				}  else {
