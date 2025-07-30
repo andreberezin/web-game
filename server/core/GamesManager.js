@@ -29,6 +29,8 @@ export default class GamesManager {
 		console.log("Creating game with id: ", hostId);
 		const game = this.gameService.createGame(hostId, settings);
 		game.updateState({ isRunning: true});
+
+		// todo games doesn't need to hold the whole game object
 		this.games.set(game.id, game);
 
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);

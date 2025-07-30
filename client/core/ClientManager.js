@@ -1,4 +1,5 @@
 export default class ClientManager {
+	// todo refactor so current game data is not duplicated. Currently in game and games[currentGameId]}
 	game = {
 		id: null,
 		state: {
@@ -6,8 +7,11 @@ export default class ClientManager {
 			interfaces: {},
 			bullets: {}
 		},
+		settings: {
+		}
 	};
 	myID = null;
+	currentGameId = null;
 	#renderLoopId = null;
 	games = null;
 
@@ -40,6 +44,15 @@ export default class ClientManager {
 				if (playerID && players[playerID] != null) {
 					this.playerService.updatePlayerModel(timestamp, players[playerID], playerID);
 				}
+				// todo refactor - this should be done on the backend
+				if (!players[playerID].status.alive) {
+					players[playerID].input.space = false;
+					players[playerID].input.arrowUp = false;
+					players[playerID].input.arrowDown = false;
+					players[playerID].input.arrowLeft = false;
+					players[playerID].input.arrowRight = false;
+					players[playerID].shift = 0;
+				}
 			}
 
 			for (let bulletID in bullets) {
@@ -51,7 +64,7 @@ export default class ClientManager {
 
 			if (this.myID && players[this.myID]) {
 				const me =  players[this.myID];
-				this.socketHandler.socket.emit("updateMyPlayerData", me.input, me.shift, me.maxPosition);
+				//this.socketHandler.socket.emit("updateMyPlayerData", me.input); // me.maxPosition me.shift
 				this.playerInterfaceService.updatePlayerUI(me);
 			}
 

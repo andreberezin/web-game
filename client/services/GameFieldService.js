@@ -2,7 +2,8 @@ export default class GameFieldService {
 
 	constructor() {}
 
-	createElement() {
+	createElement(gameFieldType) {
+		console.log("game field type", gameFieldType);
 		const root = document.getElementById('root');
 		const game = document.createElement('div');
 		game.id = 'game';

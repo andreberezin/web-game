@@ -4,6 +4,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 	const gameSettings = useRef({
 		private: false,
 		maxPlayers: 4,
+		gameField: "empty",
 		duration: 600000,
 	});
 
@@ -34,6 +35,20 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 						type="checkbox"
 						onChange={() => gameSettings.current.private = !gameSettings.current.private}
 					/>
+				</label>
+
+				<label>
+					Game field
+					<select
+						id={"game-field"}
+						name={"game-field"}
+						onChange={(e) => {
+							gameSettings.current.gameField = e.target.value;
+						}}
+					>
+						<option value="empty">Empty</option>
+						<option value="simple">Simple</option>
+					</select>
 				</label>
 
 				<button
