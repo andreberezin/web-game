@@ -18,10 +18,10 @@ export default class Player {
         height: 0,
     }
     #input = {
-        arrowUp: false,
-        arrowDown: false,
-        arrowRight: false,
-        arrowLeft: false,
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowRight: false,
+        ArrowLeft: false,
         space: false
     }
     direction = null;

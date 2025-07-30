@@ -1,5 +1,6 @@
 export default class PlayerService {
 	#clientManager;
+	#socketHandler;
 
 	constructor({playerInputService}) {
 		this.playerInputService = playerInputService;
@@ -7,6 +8,10 @@ export default class PlayerService {
 
 	setClientManager(clientManager) {
 		this.#clientManager = clientManager;
+	}
+
+	setSocketHandler(handler) {
+		this.#socketHandler = handler;
 	}
 
 	updatePlayerModel(timestamp, newPlayerData, playerId) {
@@ -37,8 +42,8 @@ export default class PlayerService {
 		// this.setMaxPosition(player);
 
 		// todo users setters and getters
-		const elapsed = timestamp - player.start;
-		player.shift = Math.min(0.001 * elapsed, 10);
+		// const elapsed = timestamp - player.start;
+		// player.shift = Math.min(0.001 * elapsed, 10);
 
 		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
@@ -92,34 +97,55 @@ export default class PlayerService {
 			return;
 		}
 
+		// if (document.getElementsByClassName("me").length > 1) {
+		// 	console.log("Player already exists!");
+		// 	return;
+		// }
+
 		const player = this.#clientManager.game.state.players[playerId];
 		player.position = playerData.pos;
 
         const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length;
 
  		const playerElement = this.createElement(player, numberOfPlayers, playerId);
-		this.addEventListeners(playerElement, player);
+		this.addEventListeners(playerId);
 		player.element = playerElement;
 
 		// console.log("players", this.#clientManager.game.state.players);
 		this.appendToGameField(playerElement, playerId);
 	}
 
-	appendToGameField(playerElement, playerId) {
+	appendToGameField(playerElement) {
 		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(playerElement);
-		if (playerId === this.#clientManager.myID) {
-			playerElement.focus();
-		}
+		// if (playerId === this.#clientManager.myID) {
+		// 	playerElement.focus();
+		// }
 	}
 
-	addEventListeners(playerElement, player) {
-		playerElement.addEventListener("keydown", (event) => {
-			this.playerInputService.handleKeyDown(event, player);
+	addEventListeners(playerId) {
+		window.addEventListener("keydown", (event) => {
+			//this.playerInputService.handleKeyDown(event, player);
+			this.handleKeyPress(event, playerId);
 		})
 
-		playerElement.addEventListener("keyup", (event) => {
-			this.playerInputService.handleKeyUp(event, player);
+		window.addEventListener("keyup", (event) => {
+			//this.playerInputService.handleKeyUp(event, player);
+			this.handleKeyPress(event, playerId);
+		})
+	}
+
+	handleKeyPress(event) {
+		//if (event.type === 'keydown' && event.repeat) return;
+
+		//if (event.repeat) return;
+
+		const socket = this.#socketHandler.socket
+
+		socket.emit('updateMyPlayerInput', {
+			// playerId: playerId,
+			key: event.key,
+			type: event.type,
 		})
 	}
 

@@ -11,4 +11,5 @@ export default function manualDI() {
 	socketHandler.setGameService(gameService);
 	gameService.setClientManager(clientManager);
 	playerService.setClientManager(clientManager);
+	playerService.setSocketHandler(socketHandler);
 }
