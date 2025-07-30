@@ -13,8 +13,8 @@ export default class Player {
         y: 1080 - 30,
     }
     size = {
-        width: 0,
-        height: 0,
+        width: 30,
+        height: 30,
     }
     input = {
         arrowUp: false,

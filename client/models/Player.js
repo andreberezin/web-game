@@ -10,8 +10,8 @@ export default class Player {
     };
     #start = null;
     #maxPos = {
-        x: 1920 - 30,
-        y: 1080 - 30,
+        x: 0,
+        y: 0,
     }
     #size = {
         width: 0,
@@ -25,10 +25,10 @@ export default class Player {
         space: false
     }
     direction = null;
-    #hp = 100;
+    #hp = 0;
     // lastShotTime = 0;
     // shotCooldown = 250;
-    #deathCooldown = 5000;
+    #deathCooldown = 0;
     #respawnTime = null;
     // deathTime = 0;
     #status = {

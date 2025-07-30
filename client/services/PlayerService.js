@@ -46,6 +46,7 @@ export default class PlayerService {
 		}
 
 		this.updateElementPosition(player);
+		this.updateElementWidth(player);
 	}
 
 	noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft) {
@@ -79,6 +80,10 @@ export default class PlayerService {
 	updateElementPosition(player) {
 		player.element.style.top = `${player.position.y}px`
 		player.element.style.left = `${player.position.x}px`
+	}
+
+	updateElementWidth(player) {
+		player.element.style.width = `${player.size.width}px`
 	}
 
 	createPlayerModel(playerData, playerId) {
@@ -124,6 +129,7 @@ export default class PlayerService {
 		playerElement.id = `${playerId}`
 		playerElement.style.top = `${player.position.y}px`
 		playerElement.style.left = `${player.position.x}px`
+		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 
 		// css variable for styling
