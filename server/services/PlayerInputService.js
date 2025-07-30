@@ -112,11 +112,10 @@ export default class PlayerInputService {
 
 
     handlePlayerShooting(player, currentTime, game) {
+        // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                const playerCenterX = player.position.x + player.size.width / 2;
-                const playerCenterY = player.position.y + player.size.height / 2;
-                this.#gameService.createBulletAt(playerCenterX, playerCenterY, player.direction, game, player.size.width);
+                this.#gameService.createBulletAt(player.position.x, player.position.y, player.direction, game, player.size.width);
                 player.lastBulletShotAt(currentTime);
             }
         }

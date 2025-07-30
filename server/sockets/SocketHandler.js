@@ -117,7 +117,7 @@ export default class SocketHandler {
 		// });
 
 		socket.on('updateMyPlayerInput', (data) => {
-			const {key, type} = data;
+			let {key, type} = data;
 			const player = gameState.players[playerId];
 
 			if (!player) {
@@ -126,6 +126,8 @@ export default class SocketHandler {
 			}
 
 			const input = player.input
+
+			if (key === " ") key = "space"
 
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})
