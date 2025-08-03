@@ -35,7 +35,7 @@ export default class GameService {
             const player = game.state.players[playerID];
 
             this.checkForCollisions(player, currentTime, game.state);
-            this.playerInputService.handlePlayerMovement(player);
+            this.playerInputService.handlePlayerMovement(player, game);
             this.playerInputService.handlePlayerShooting(player, currentTime, game);
             this.playerInputService.handlePlayerRespawning(game.state, currentTime);
             this.playerInputService.handlePlayerRespawnTimer(player, currentTime);

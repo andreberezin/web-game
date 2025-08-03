@@ -30,7 +30,7 @@ export default class PlayerInputService {
     //         }
     // }
 
-    handlePlayerMovement(player) {
+    handlePlayerMovement(player, game) {
         if (!player.input) return;
 
         const input = player.input;
@@ -64,26 +64,87 @@ export default class PlayerInputService {
         const speed = player.speed;
 
         if (input.ArrowUp) {
-            this.movePlayer(player, 'y', -speed, "up");
+            this.movePlayer(player, 'y', -speed, "up", game);
         }
         if (input.ArrowDown) {
-            this.movePlayer(player, 'y', speed, "down");
+            this.movePlayer(player, 'y', speed, "down", game);
         }
         if (input.ArrowLeft) {
-            this.movePlayer(player, 'x', -speed, "left");
+            this.movePlayer(player, 'x', -speed, "left", game);
         }
         if (input.ArrowRight) {
-            this.movePlayer(player, 'x', speed, "right");
+            this.movePlayer(player, 'x', speed, "right", game);
         }
     }
 
-    movePlayer(player, axis, speed, direction) {
+    movePlayer(player, axis, speed, direction, game) {
         const distance = speed * player.shift;
         const newPosition = player.position[axis] + distance;
         // player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
 
+        const playerSize = player.size?.width || 20;
+
+        let testX = player.position.x;
+        let testY = player.position.y;
+
+        if (axis === 'x') {
+            testX = newPosition;
+        } else {
+            testY = newPosition;
+        }
+
+        if (this.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+            return;
+        }
+
         player.position[axis] = clamp(0, newPosition, player.maxPosition[axis]);
         player.direction = direction;
+    }
+
+    wouldCollideWithWalls(x, y, playerSize, game) {
+        if (!game || !game.map) {
+            return false;
+        }
+
+        const TILE_SIZE = 40;
+        const TILES_X = 48;
+
+        // Convert pixel coordinates to tile coordinates
+        const topLeft = {
+            x: Math.floor(x / TILE_SIZE),
+            y: Math.floor(y / TILE_SIZE)
+        };
+
+        const bottomRight = {
+            x: Math.floor((x + playerSize - 1) / TILE_SIZE),
+            y: Math.floor((y + playerSize - 1) / TILE_SIZE)
+        };
+
+        for (let tileY = topLeft.y; tileY <= bottomRight.y; tileY++) {
+            for (let tileX = topLeft.x; tileX <= bottomRight.x; tileX++) {
+                if (this.getTileAt(game.map, tileX, tileY, TILES_X)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    getTileAt(mapArray, tileX, tileY, tilesX) {
+        // Check bounds (treat out-of-bounds as walls)
+        if (tileX < 0 || tileX >= tilesX || tileY < 0) {
+            return true; // Wall
+        }
+
+        const index = tileY * tilesX + tileX;
+
+        // Check if index is valid
+        if (index >= mapArray.length) {
+            return true; // Wall
+        }
+
+        return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
     }
 
     handlePlayerRespawning({deadPlayers, players}, currentTime) {
