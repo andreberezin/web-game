@@ -12,8 +12,7 @@ export default class SocketHandler {
 	#gameFieldService;
 	#clientManager;
 	#gameService;
-	#onUpdateAvailableGames = null;
-	#onError = null;
+	#listeners = {}
 
 	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService}) {
 		this.#playerService = playerService;
@@ -63,13 +62,28 @@ export default class SocketHandler {
 		this.#clientManager.startRenderLoop();
 	}
 
-	onUpdateAvailableGames(callback) {
-		this.#onUpdateAvailableGames = callback;
+	on(event, callback) {
+		if (this.#listeners[event]) {
+			this.socket.off(event, this.#listeners[event]);
+		}
+		this.#listeners[event] = callback;
+
+		if (callback) {
+			this.socket.on(event, callback);
+		}
 	}
 
-	onError(callback) {
-		this.#onError = callback;
-	}
+	// onUpdateAvailableGames(callback) {
+	// 	this.#onUpdateAvailableGames = callback;
+	// }
+	//
+	// onJoinGameSuccess(callback) {
+	// 	this.#onJoinGameSuccess = callback;
+	// }
+	//
+	// onError(callback) {
+	// 	this.#onError = callback;
+	// }
 
 	connectToServer() {
 		this.socket = io();
@@ -87,8 +101,8 @@ export default class SocketHandler {
 
 			console.log("Updating available games: ", this.#clientManager.games);
 
-			if (this.#onUpdateAvailableGames) {
-				this.#onUpdateAvailableGames(gamesList)
+			if (this.#listeners["updateAvailableGames"]) {
+				this.#listeners["updateAvailableGames"](gamesList);
 			}
 		})
 
@@ -99,6 +113,10 @@ export default class SocketHandler {
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
+
+			if (this.#listeners["joinGameSuccess"]) {
+				this.#listeners["joinGameSuccess"]();
+			}
 
 			this.#clientManager.currentGameId = gameId;
 
@@ -112,8 +130,8 @@ export default class SocketHandler {
 		socket.on('error', (message) => {
 			console.log("Error:", message);
 
-			if (this.#onError) {
-				this.#onError(message)
+			if (this.#listeners["error"]) {
+				this.#listeners["error"](message);
 			}
 
 		})

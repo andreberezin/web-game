@@ -7,17 +7,23 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 
 
 	useEffect(() => {
-		//const socket = clientManager.socketHandler.socket;
+		const socketHandler = clientManager.socketHandler;
 
-		clientManager.socketHandler.onError((message) => {
+		socketHandler.on("error", (message) => {
 			setError(message)
 		});
 
+		socketHandler.on("JoinGameSuccess", () => {
+			setIsGameStarted(true);
+			setIsCreatePlayer(false);
+		});
+
 		return () => {
-			clientManager.socketHandler.onError(null);
+			socketHandler.on("error", null);
+			socketHandler.on("JoinGameSuccess", null);
 		}
 
-	}, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
+	}, [clientManager.socketHandler, setIsCreatePlayer, setIsGameStarted]); // empty deps now fine because no external dependencies used in handlers
 
 
 	useEffect(() => {
@@ -42,13 +48,8 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			return;
 		}
 
-		if (gameId && name) {
-			console.log("Joining game", gameId);
-			const socket = clientManager.socketHandler.socket;
-			socket.emit('joinGame', gameId, name);
-			setIsGameStarted(true);
-			setIsCreatePlayer(false);
-		}
+		const socket = clientManager.socketHandler.socket;
+		socket.emit('joinGame', gameId, name);
 	}
 
 	return (

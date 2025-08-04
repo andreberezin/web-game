@@ -11,14 +11,14 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId}) 
 	useEffect(() => {
 		//const socket = clientManager.socketHandler.socket;
 
-		clientManager.socketHandler.onUpdateAvailableGames((gamesList) => {
+		clientManager.socketHandler.on("updateAvailableGames", (gamesList) => {
 			const gamesObj = Object.fromEntries(gamesList.map((game) => [game.id, game]));
 
 			setGames(gamesObj);
 		});
 
 		return () => {
-			clientManager.socketHandler.onUpdateAvailableGames(null);
+			clientManager.socketHandler.on("updateAvailableGames", null);
 		}
 
 	}, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
