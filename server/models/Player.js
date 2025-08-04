@@ -26,8 +26,8 @@ export default class Player {
     lastShotTime = 0;
     shotCooldown = 250;
     hp = 100;
-    speed = 10;
-    maxSpeed = 5;
+    speed = 5;
+    maxSpeed = 1;
     acceleration = 1000 // in ms, less is more
     movementStart = null;
     deathCooldown = 5000;
@@ -37,8 +37,9 @@ export default class Player {
         alive: true
     };
 
-	constructor(id) {
-        this.id = id
+	constructor(id, name) {
+        this.id = id;
+        this.name = name;
 	}
 
     // setStatus(status) {

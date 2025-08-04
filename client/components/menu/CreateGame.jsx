@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 
 export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 	const gameSettings = useRef({
@@ -7,12 +7,13 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 		map: "empty",
 		duration: 600000,
 	});
+	const [name, setName] = useState(null)
 
-	function startGame(gameSettings) {
+	function startGame() {
 		setIsGameStarted(true);
 
 		const socket = clientManager.socketHandler.socket;
-		socket.emit('createGame', socket.id, gameSettings);
+		socket.emit('createGame', socket.id, gameSettings.current, name);
 
 		// clientManager.gameInterfaceService.createGameUI();
 		// clientManager.startRenderLoop();
@@ -26,7 +27,27 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 			<form id={"create"}
 				onSubmit={(e) => {
 					e.preventDefault();
-					startGame(gameSettings.current);}}>
+					startGame();}}>
+				<label>
+					Player name*
+					<input
+						id={"name"}
+						name={"name"}
+						type="text"
+						required={true}
+						minLength={3}
+						maxLength={10}
+						placeholder={"3-10 characters"}
+						autoComplete={"false"}
+						onChange={(e) => {
+							const value = e.target.value;
+
+							if (value.length >= 3 && value.length <= 10) {
+								setName(value);
+							}
+						}}
+					/>
+				</label>
 				<label>
 					Private
 					<input
@@ -53,14 +74,18 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 
 				<button
 					className={"submit"}
-					type={"submit"}>
+					type={"submit"}
+					disabled={!name}
+
+				>
 					Start
 				</button>
 			</form>
 
 			<button
 				id={"back"}
-				onClick={() => {setIsCreateGame(false)}}>
+				onClick={() => {setIsCreateGame(false)}}
+			>
 				Back
 			</button>
 

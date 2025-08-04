@@ -38,7 +38,7 @@ export default class SocketHandler {
 		const gameState = this.#clientManager.game.state;
 
 		for (const playerID in players) {
-			gameState.players[playerID] = new Player(playerID);
+			gameState.players[playerID] = new Player(playerID, players[playerID].name);
 			console.log("gameState.players[playerID]:", gameState.players[playerID]);
 			this.#playerService.createPlayerModel(players[playerID], playerID);
 
@@ -144,6 +144,7 @@ export default class SocketHandler {
 				}
 
 				if (player) {
+					player.name = updatedPlayer.name;
 					player.position = updatedPlayer.pos;
 					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;

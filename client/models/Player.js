@@ -35,8 +35,9 @@ export default class Player {
         alive: true,
     };
 
-	constructor(id) {
-        this.#id = id
+	constructor(id, name) {
+        this.#id = id;
+        this.#name = name;
 	}
 
     get id() {

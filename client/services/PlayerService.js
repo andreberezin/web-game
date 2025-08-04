@@ -183,7 +183,7 @@ export default class PlayerService {
 		playerElement.tabIndex = 0;
 
 		// css variable for styling
-		playerElement.style.setProperty("--name", `"${playerId.substring(0, 5)}"`)
+		playerElement.style.setProperty("--name", `"${player.name}"`)
 		playerElement.setAttribute("number", numberOfPlayers);
 
 		// Set a real HTML attribute (for DOM querying)

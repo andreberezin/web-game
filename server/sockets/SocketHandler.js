@@ -26,12 +26,12 @@ export default class SocketHandler {
 				socket.emit('updateAvailableGames', this.getPublicGameList());
 			})
 
-			socket.on('createGame', (hostId, settings) => {
+			socket.on('createGame', (hostId, settings, playerName) => {
 				const gameId = hostId;
 
 				this.#gamesManager.createGame(socket, gameId, settings);
 
-				this.joinGame(socket, gameId, hostId);
+				this.joinGame(socket, gameId, hostId, playerName);
 
 				const game = this.#gamesManager.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.state, game.settings);
@@ -50,7 +50,7 @@ export default class SocketHandler {
 				}
 
 				const playerId = socket.id;
-				this.joinGame(socket, gameId, playerId);
+				this.joinGame(socket, gameId, playerId, playerName);
 
 				socket.emit("joinGameSuccess", {
 					gameId,
@@ -93,11 +93,11 @@ export default class SocketHandler {
 	}
 
 
-	joinGame(socket, gameId, playerId) {
+	joinGame(socket, gameId, playerId, playerName) {
 		socket.join(gameId);
 		socket.gameId = gameId;
 
-		const player = new Player(playerId);
+		const player = new Player(playerId, playerName);
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
 		const game = this.#gamesManager.games.get(gameId);
