@@ -50,13 +50,13 @@ export default class SocketHandler {
 		}
 	}
 
-	initializeGameField() {
-		this.#gameFieldService.createElement();
+	initializeGameField(gameFieldType) {
+		this.#gameFieldService.createElement(gameFieldType);
 	}
 
-	startGame(players, myPlayer) {
+	startGame(settings, players, myPlayer) {
 		console.log("Starting game");
-		this.initializeGameField();
+		this.initializeGameField(settings.gameField);
 		this.initializePlayers(players, myPlayer);
 		this.#gameInterfaceService.createGameUI();
 		this.#clientManager.startRenderLoop();
@@ -84,15 +84,19 @@ export default class SocketHandler {
 			}
 		})
 
-		socket.on('createGameSuccess', (gameId, gameState, gameSettings) => {
-			this.#clientManager.games.set(gameId, {gameState, gameSettings});
-			console.log("Game created: ", gameId, this.#clientManager.games.get(gameId));
+		socket.on('createGameSuccess', (gameId, state, settings) => {
+			this.#clientManager.games.set(gameId, {state, settings});
+			console.log("Game created: ", gameId, this.#clientManager.games);
 		})
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
-			this.startGame(players, myPlayer);
+			this.#clientManager.currentGameId = gameId;
+
+			const game = this.#clientManager.games.get(gameId);
+
+			this.startGame(game.settings, players, myPlayer);
 		})
 
 		socket.on('joinGameFailed', (gameId) => {
@@ -123,6 +127,7 @@ export default class SocketHandler {
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
 					currentGameState.players[playerID] = new Player(playerID);
+					console.log("Creating player model");
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}

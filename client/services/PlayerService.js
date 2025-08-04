@@ -1,6 +1,9 @@
 export default class PlayerService {
 	#clientManager;
 	#socketHandler;
+	keydownHandler = null;
+	keyupHandler = null;
+	#hasListeners = false;
 
 	constructor({playerInputService}) {
 		this.playerInputService = playerInputService;
@@ -124,15 +127,36 @@ export default class PlayerService {
 	}
 
 	addEventListeners(playerId) {
-		window.addEventListener("keydown", (event) => {
-			//this.playerInputService.handleKeyDown(event, player);
-			this.handleKeyPress(event, playerId);
-		})
+		console.log("Adding event listeners");
 
-		window.addEventListener("keyup", (event) => {
-			//this.playerInputService.handleKeyUp(event, player);
-			this.handleKeyPress(event, playerId);
-		})
+		if (this.#hasListeners) return;
+		this.#hasListeners = true;
+
+
+		this.keydownHandler = (event) => this.handleKeyPress(event, playerId);
+		this.keyupHandler = (event) => this.handleKeyPress(event, playerId);
+
+		window.addEventListener("keydown", this.keydownHandler);
+		window.addEventListener("keyup", this.keyupHandler);
+
+		// window.addEventListener("keydown", (event) => {
+		// 	//this.playerInputService.handleKeyDown(event, player);
+		// 	this.handleKeyPress(event, playerId);
+		// })
+		//
+		// window.addEventListener("keyup", (event) => {
+		// 	//this.playerInputService.handleKeyUp(event, player);
+		// 	this.handleKeyPress(event, playerId);
+		// })
+	}
+
+	removeEventListeners() {
+		if (!this.#hasListeners) return;
+		window.removeEventListener("keydown", this.keydownHandler);
+		window.removeEventListener("keyup", this.keyupHandler);
+		this.#hasListeners = false;
+		this.keydownHandler = null;
+		this.keyupHandler = null;
 	}
 
 	handleKeyPress(event) {

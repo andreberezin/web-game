@@ -26,10 +26,10 @@ export default class SocketHandler {
 				socket.emit('updateAvailableGames', this.getPublicGameList());
 			})
 
-			socket.on('createGame', (hostId, gameSettings) => {
+			socket.on('createGame', (hostId, settings) => {
 				const gameId = hostId;
 
-				this.#gamesManager.createGame(socket, gameId, gameSettings);
+				this.#gamesManager.createGame(socket, gameId, settings);
 
 				this.joinGame(socket, gameId, hostId);
 
@@ -69,14 +69,14 @@ export default class SocketHandler {
 				const game = this.#gamesManager.games.get(gameId);
 				if (!game) return;
 
-				const gameState = game.state;
+				const players = game.state.players;
 
-				if (gameState.players[playerId]) {
+				if (players[playerId]) {
 					console.log('Disconnecting player: ', playerId);
-					delete gameState.players[playerId];
+					delete players[playerId];
 					socket.to(gameId).emit("playerLeft", playerId);
 				}
-				if (Object.keys(gameState.players).length === 0) {
+				if (Object.keys(players).length === 0) {
 					console.log("Deleting game: ", gameId);
 					this.#gamesManager.games.delete(gameId);
 				}

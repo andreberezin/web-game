@@ -1,4 +1,5 @@
 export default class ClientManager {
+	// todo refactor so current game data is not duplicated. Currently in game and games[currentGameId]}
 	game = {
 		id: null,
 		state: {
@@ -6,8 +7,11 @@ export default class ClientManager {
 			interfaces: {},
 			bullets: {}
 		},
+		settings: {
+		}
 	};
 	myID = null;
+	currentGameId = null;
 	#renderLoopId = null;
 	games = null;
 
@@ -105,6 +109,9 @@ export default class ClientManager {
 		}
 
 		this.myID = null;
+
+		this.playerService.removeEventListeners();
+
 	}
 
 	setupCleanup() {
