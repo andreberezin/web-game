@@ -11,7 +11,7 @@ export default class Game {
 		private: false,
 		duration: 60000, // milliseconds = 1 minute
 		maxPlayers: 4,
-		gameField: "empty"
+		map: "empty"
 	}
 
 	constructor(id, settings = {}) {

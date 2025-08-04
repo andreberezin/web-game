@@ -4,7 +4,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 	const gameSettings = useRef({
 		private: false,
 		maxPlayers: 4,
-		gameField: "empty",
+		map: "empty",
 		duration: 600000,
 	});
 
@@ -38,10 +38,10 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 				</label>
 
 				<label>
-					Game field
+					Map
 					<select
-						id={"game-field"}
-						name={"game-field"}
+						id={"map"}
+						name={"map"}
 						onChange={(e) => {
 							gameSettings.current.gameField = e.target.value;
 						}}
