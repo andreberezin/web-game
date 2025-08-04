@@ -14,7 +14,6 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 		});
 
 		socketHandler.on("joinGameSuccess", () => {
-			console.log("Joined game");
 			setIsGameStarted(true);
 			setIsCreatePlayer(false);
 		});

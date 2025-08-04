@@ -181,6 +181,7 @@ export default class PlayerService {
 		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 
+		console.log("player:", player);
 		// css variable for styling
 		playerElement.style.setProperty("--name", `"${player.name}"`)
 		playerElement.setAttribute("number", numberOfPlayers);

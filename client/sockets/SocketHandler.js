@@ -88,7 +88,7 @@ export default class SocketHandler {
 
 		socket.on('updateAvailableGames', (gamesList) => {
 			this.#clientManager.games = new Map(
-				gamesList.map(game => [game.id, { state: game.state, settings: game.settings }])
+				gamesList.map(game => [game.id, { settings: game.settings }])
 			);
 
 			console.log("Updating available games: ", this.#clientManager.games);
@@ -151,8 +151,8 @@ export default class SocketHandler {
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
-					currentGameState.players[playerID] = new Player(playerID);
-					console.log("Creating player model");
+					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
+					console.log("Creating player model for:", updatedGameState.players[playerID]);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}
