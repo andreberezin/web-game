@@ -13,6 +13,7 @@ export default class SocketHandler {
 	#clientManager;
 	#gameService;
 	#onUpdateAvailableGames = null;
+	#onError = null;
 
 	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService}) {
 		this.#playerService = playerService;
@@ -50,20 +51,24 @@ export default class SocketHandler {
 		}
 	}
 
-	initializeGameField(gameFieldType) {
-		this.#gameFieldService.createElement(gameFieldType);
+	initializeGameField(mapType) {
+		this.#gameFieldService.createElement(mapType);
 	}
 
-	startGame(settings, players, myPlayer) {
+	startGame(gameId, settings, players, myPlayer) {
 		console.log("Starting game");
-		this.initializeGameField(settings.gameField);
+		this.initializeGameField(settings.mapType);
 		this.initializePlayers(players, myPlayer);
-		this.#gameInterfaceService.createGameUI();
+		this.#gameInterfaceService.createGameUI(gameId, players);
 		this.#clientManager.startRenderLoop();
 	}
 
 	onUpdateAvailableGames(callback) {
 		this.#onUpdateAvailableGames = callback;
+	}
+
+	onError(callback) {
+		this.#onError = callback;
 	}
 
 	connectToServer() {
@@ -76,8 +81,11 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			//console.log("Updating available games");
-			this.#clientManager.games = new Map(gamesList);
+			this.#clientManager.games = new Map(
+				gamesList.map(game => [game.id, { state: game.state, settings: game.settings }])
+			);
+
+			console.log("Updating available games: ", this.#clientManager.games);
 
 			if (this.#onUpdateAvailableGames) {
 				this.#onUpdateAvailableGames(gamesList)
@@ -96,11 +104,18 @@ export default class SocketHandler {
 
 			const game = this.#clientManager.games.get(gameId);
 
-			this.startGame(game.settings, players, myPlayer);
+			console.log("games:", this.#clientManager.games);
+
+			this.startGame(gameId, game.settings, players, myPlayer);
 		})
 
-		socket.on('joinGameFailed', (gameId) => {
-			console.log("Failed to join game: ", gameId);
+		socket.on('error', (message) => {
+			console.log("Error:", message);
+
+			if (this.#onError) {
+				this.#onError(message)
+			}
+
 		})
 
 		socket.on('playerJoined', (playerId) => {

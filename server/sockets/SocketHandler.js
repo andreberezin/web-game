@@ -42,11 +42,22 @@ export default class SocketHandler {
 				});
 			})
 
-			socket.on('joinGame', (gameId) => {
+			socket.on('joinGame', (gameId, playerName) => {
 				const game = this.#gamesManager.games.get(gameId);
 				if (!game) {
-					socket.emit('joinGameFailed', gameId);
+					const message = "Failed to join game"
+					socket.emit('error', message);
 					return;
+				}
+
+				for (const playerId in game.state.players) {
+					const player = game.state.players[playerId];
+
+					if (player.name === playerName) {
+						const message = "Player with name '"+ playerName + "' already exists in game";
+						socket.emit('error', message)
+						return;
+					}
 				}
 
 				const playerId = socket.id;

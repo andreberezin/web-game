@@ -127,11 +127,10 @@ export default class PlayerService {
 	}
 
 	addEventListeners(playerId) {
-		console.log("Adding event listeners");
-
 		if (this.#hasListeners) return;
 		this.#hasListeners = true;
 
+		console.log("Adding event listeners");
 
 		this.keydownHandler = (event) => this.handleKeyPress(event, playerId);
 		this.keyupHandler = (event) => this.handleKeyPress(event, playerId);

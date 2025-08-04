@@ -1,7 +1,9 @@
 import {useEffect, useState} from 'react';
 
-export function JoinGame({clientManager, setIsGameStarted}) {
+export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId}) {
 	const [games, setGames] = useState({});
+	// const [gameId, setGameId] = useState(null);
+	const [error, setError] = useState(null);
 
 	// todo get only public games
 	// todo private games should not be automatically fetched
@@ -34,7 +36,10 @@ export function JoinGame({clientManager, setIsGameStarted}) {
 						<li
 							key={gameId}
 							className="list-item"
-							onClick={() => { joinGame(gameId); }}
+							onClick={() => {
+								setGameId(gameId);
+								// joinGame();
+							}}
 						>
 							<div className="game">
 								<div className="game-id">
@@ -58,39 +63,52 @@ export function JoinGame({clientManager, setIsGameStarted}) {
 		)
 	}
 
-	function joinGame(gameId) {
-		setIsGameStarted(true);
-
-		if (gameId) {
-			const socket = clientManager.socketHandler.socket;
-			socket.emit('joinGame', gameId);
-		} else {
-			alert('Invalid game ID');
-		}
-	}
+	// function joinGame() {
+	// 	setIsGameStarted(true);
+	//
+	// 	if (gameId) {
+	// 		const socket = clientManager.socketHandler.socket;
+	// 		socket.emit('joinGame', gameId);
+	// 	} else {
+	// 		setError("Game not found")
+	// 	}
+	// }
 
 	return (
 		<div
 			id={"join-game"}
 			className={"menu-item"}
 		>
-			<form onSubmit={(event) => {
+			<form
+				id="join-game-form"
+				onSubmit={(event) => {
 				event.preventDefault();
-				joinGame(event.target[0].value)
+				// joinGame(event.target[0].value)
 			}}>
 				<label>
 					<input
 						id="game-name-input"
 						placeholder={"Enter a game ID"}
 						type={"text"}
+						autoComplete={"off"}
+						onChange={(e) => {
+							setGameId(e.target.value);
+						}}
 					/>
 				</label>
-				<button type={"submit"}>
+				<button
+					type={"button"}
+					id={"join-game-button"}
+					disabled={!gameId}
+					onClick={() => {
+						setIsCreatePlayer(true);
+					}}
+				>
 					Join
 				</button>
 			</form>
 			<div id={"games-list-container"}>
-				<p id={"games-list-title"}>Available games:</p>
+				<p id={"games-list-title"}>Available games</p>
 				<ul id={"games-list"}>
 					<ShowAvailableGames/>
 				</ul>

@@ -1,10 +1,11 @@
 import {useRef, useState} from 'react';
+import {IoChevronBackCircleOutline} from 'react-icons/io5';
 
 export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 	const gameSettings = useRef({
 		private: false,
 		maxPlayers: 4,
-		map: "empty",
+		mapType: "empty",
 		duration: 600000,
 	});
 	const [name, setName] = useState(null)
@@ -24,7 +25,18 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 			id={"create-game"}
 			className={"menu-item"}
 		>
-			<form id={"create"}
+
+			<div className={"back-button-container"}>
+				<button
+					className={"back"}
+					onClick={() => setIsCreateGame(false)}
+					type="button"
+				>
+					<IoChevronBackCircleOutline />
+				</button>
+			</div>
+
+			<form id={"create-game-form"}
 				onSubmit={(e) => {
 					e.preventDefault();
 					startGame();}}>
@@ -38,7 +50,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 						minLength={3}
 						maxLength={10}
 						placeholder={"3-10 characters"}
-						autoComplete={"false"}
+						autoComplete={"off"}
 						onChange={(e) => {
 							const value = e.target.value;
 
@@ -48,6 +60,21 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 						}}
 					/>
 				</label>
+
+				<label>
+					Map
+					<select
+						id={"map"}
+						name={"map"}
+						onChange={(e) => {
+							gameSettings.current.mapType = e.target.value;
+						}}
+					>
+						<option value="empty">Empty</option>
+						<option value="simple">Simple</option>
+					</select>
+				</label>
+
 				<label>
 					Private
 					<input
@@ -57,36 +84,16 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 						onChange={() => gameSettings.current.private = !gameSettings.current.private}
 					/>
 				</label>
-
-				<label>
-					Map
-					<select
-						id={"map"}
-						name={"map"}
-						onChange={(e) => {
-							gameSettings.current.gameField = e.target.value;
-						}}
-					>
-						<option value="empty">Empty</option>
-						<option value="simple">Simple</option>
-					</select>
-				</label>
-
-				<button
-					className={"submit"}
-					type={"submit"}
-					disabled={!name}
-
-				>
-					Start
-				</button>
 			</form>
 
 			<button
-				id={"back"}
-				onClick={() => {setIsCreateGame(false)}}
+				className={"submit"}
+				type={"submit"}
+				form={"create-game-form"}
+				disabled={!name}
+
 			>
-				Back
+				Start
 			</button>
 
 		</div>
