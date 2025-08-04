@@ -11,6 +11,7 @@ export default class Game {
 		private: false,
 		duration: 60000, // milliseconds = 1 minute
 		maxPlayers: 4,
+		mapType: "empty"
 	};
 	#map = [
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

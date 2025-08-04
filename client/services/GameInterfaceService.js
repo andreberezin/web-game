@@ -5,7 +5,7 @@ export default class GameInterfaceService {
 		this.#gameInterface = gameInterface;
 	}
 
-	createGameUI() {
+	createGameUI(gameId, players) {
 		const exisitingUI = document.getElementById("game-ui");
 		if (exisitingUI) return;
 
@@ -15,28 +15,55 @@ export default class GameInterfaceService {
 
 		const game = document.getElementById("game");
 
-		const idElement = this.createGameIdElement();
-		const playerCountElement = this.createPlayerCountElement();
+		const idElement = this.createGameIdElement(gameId);
+		const playerCountElement = this.createPlayerCountElement(players);
 
 		game.appendChild(gameUI);
 		gameUI.appendChild(idElement);
 		gameUI.appendChild(playerCountElement);
 	}
 
-	createGameIdElement() {
-		const gameIdElement = document.createElement("div")
-		gameIdElement.id = "game-id"
+	createGameIdElement(gameId) {
+		const gameIdElement = document.createElement("div");
+		gameIdElement.id = "game-id";
 		gameIdElement.className = "ui-item";
-		gameIdElement.innerHTML = `Game id: <span id="game-id-value" class="value"></span>`;
 
+		const label = document.createElement("span");
+		label.textContent = "Game ID: ";
+
+		const button = document.createElement("button");
+		button.id = "game-id-value";
+		button.className = "value";
+		button.type = "button";
+		button.title = "Click to copy";
+		button.textContent = gameId;
+
+		button.addEventListener("dblclick", () => {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(gameId)
+					.then(() => {
+						button.textContent = "Copied!";
+						setTimeout(() => { button.textContent = gameId; }, 1000);
+					})
+					.catch(() => alert("Failed to copy!"));
+			} else {
+				alert("Clipboard not supported");
+			}
+		});
+
+		gameIdElement.append(label, button);
 		return gameIdElement;
 	}
 
-	createPlayerCountElement() {
+	createPlayerCountElement(players) {
+
+		const playerCount = Object.keys(players).length;
+
 		const playerCountElement = document.createElement("div")
 		playerCountElement.id = "player-count"
 		playerCountElement.className = "ui-item";
-		playerCountElement.innerHTML = `Players: <span id="player-count-value" class="value"></span>`;
+		playerCountElement.innerHTML = `Players: <span id="player-count-value" class="value">${playerCount}</span>`;
+		// playerCountElement.textContent = `Players: ${playerCount}`;
 
 		return playerCountElement;
 	}
@@ -45,7 +72,7 @@ export default class GameInterfaceService {
 		const gameUI = document.getElementById("game-ui");
 		if (!gameUI) return;
 
-		this.updateGameIdElement(gameId);
+		// this.updateGameIdElement(gameId);
 		this.updatePlayerCountElement(playersCount);
 
 	}
@@ -61,7 +88,7 @@ export default class GameInterfaceService {
 	updatePlayerCountElement(playerCount) {
 		const playerCountElement = document.getElementById("player-count");
 		const playerCountValueElement = document.getElementById("player-count-value");
-		if (!playerCountElement || !playerCountValueElement) return;
+		if (!playerCountElement || playerCountValueElement) return;
 
 		playerCountValueElement.textContent = playerCount;
 	}

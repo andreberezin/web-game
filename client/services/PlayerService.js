@@ -127,11 +127,10 @@ export default class PlayerService {
 	}
 
 	addEventListeners(playerId) {
-		console.log("Adding event listeners");
-
 		if (this.#hasListeners) return;
 		this.#hasListeners = true;
 
+		console.log("Adding event listeners");
 
 		this.keydownHandler = (event) => this.handleKeyPress(event, playerId);
 		this.keyupHandler = (event) => this.handleKeyPress(event, playerId);
@@ -182,8 +181,9 @@ export default class PlayerService {
 		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 
+		console.log("player:", player);
 		// css variable for styling
-		playerElement.style.setProperty("--name", `"${playerId.substring(0, 5)}"`)
+		playerElement.style.setProperty("--name", `"${player.name}"`)
 		playerElement.setAttribute("number", numberOfPlayers);
 
 		// Set a real HTML attribute (for DOM querying)

@@ -12,7 +12,7 @@ export default class SocketHandler {
 	#gameFieldService;
 	#clientManager;
 	#gameService;
-	#onUpdateAvailableGames = null;
+	#listeners = {}
 
 	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService}) {
 		this.#playerService = playerService;
@@ -38,7 +38,7 @@ export default class SocketHandler {
 		const gameState = this.#clientManager.game.state;
 
 		for (const playerID in players) {
-			gameState.players[playerID] = new Player(playerID);
+			gameState.players[playerID] = new Player(playerID, players[playerID].name);
 			console.log("gameState.players[playerID]:", gameState.players[playerID]);
 			this.#playerService.createPlayerModel(players[playerID], playerID);
 
@@ -50,20 +50,31 @@ export default class SocketHandler {
 		}
 	}
 
-	initializeGameField(gameFieldType) {
-		this.#gameFieldService.createElement(gameFieldType);
+	initializeGameField(mapType) {
+		this.#gameFieldService.createElement(mapType);
 	}
 
-	startGame(settings, players, myPlayer) {
+	startGame(gameId, settings, players, myPlayer) {
 		console.log("Starting game");
-		this.initializeGameField(settings.gameField);
+		this.initializeGameField(settings.mapType);
 		this.initializePlayers(players, myPlayer);
-		this.#gameInterfaceService.createGameUI();
+		this.#gameInterfaceService.createGameUI(gameId, players);
 		this.#clientManager.startRenderLoop();
 	}
 
-	onUpdateAvailableGames(callback) {
-		this.#onUpdateAvailableGames = callback;
+	on(event, callback) {
+		if (callback === null) {
+			delete this.#listeners[event];
+		}
+
+		if (this.#listeners[event]) {
+			this.socket.off(event, this.#listeners[event]);
+		}
+		this.#listeners[event] = callback;
+
+		if (callback) {
+			this.socket.on(event, callback);
+		}
 	}
 
 	connectToServer() {
@@ -76,11 +87,14 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			//console.log("Updating available games");
-			this.#clientManager.games = new Map(gamesList);
+			this.#clientManager.games = new Map(
+				gamesList.map(game => [game.id, { settings: game.settings }])
+			);
 
-			if (this.#onUpdateAvailableGames) {
-				this.#onUpdateAvailableGames(gamesList)
+			console.log("Updating available games: ", this.#clientManager.games);
+
+			if (this.#listeners["updateAvailableGames"]) {
+				this.#listeners["updateAvailableGames"](gamesList);
 			}
 		})
 
@@ -92,15 +106,26 @@ export default class SocketHandler {
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
 			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
 
+			if (this.#listeners["joinGameSuccess"]) {
+				this.#listeners["joinGameSuccess"]();
+			}
+
 			this.#clientManager.currentGameId = gameId;
 
 			const game = this.#clientManager.games.get(gameId);
 
-			this.startGame(game.settings, players, myPlayer);
+			console.log("games:", this.#clientManager.games);
+
+			this.startGame(gameId, game.settings, players, myPlayer);
 		})
 
-		socket.on('joinGameFailed', (gameId) => {
-			console.log("Failed to join game: ", gameId);
+		socket.on('error', (message) => {
+			console.log("Error:", message);
+
+			if (this.#listeners["error"]) {
+				this.#listeners["error"](message);
+			}
+
 		})
 
 		socket.on('playerJoined', (playerId) => {
@@ -126,8 +151,8 @@ export default class SocketHandler {
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
-					currentGameState.players[playerID] = new Player(playerID);
-					console.log("Creating player model");
+					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
+					console.log("Creating player model for:", updatedGameState.players[playerID]);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}
@@ -144,6 +169,7 @@ export default class SocketHandler {
 				}
 
 				if (player) {
+					player.name = updatedPlayer.name;
 					player.position = updatedPlayer.pos;
 					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;

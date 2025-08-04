@@ -28,11 +28,11 @@ function App() {
                         // Join the first available game
                         const firstGameId = gamesList[0].id
                         console.log("Joining game:", firstGameId);
-                        socket.emit('joinGame', firstGameId);
+                        socket.emit('joinGame', firstGameId, socket.id);
                     } else {
                         // Create a new game
                         console.log("Creating new game with ID:", socket.id);
-                        socket.emit('createGame', socket.id);
+                        socket.emit('createGame', socket.id, socket.id);
                     }
                 });
             });
