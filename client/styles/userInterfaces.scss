@@ -31,6 +31,15 @@
 
     &#game-id {
 
+      #game-id-value {
+        all: unset;
+
+        &:hover {
+          scale: 1.025;
+          cursor: pointer;
+        }
+      }
+
     }
 
     &#player-count {
