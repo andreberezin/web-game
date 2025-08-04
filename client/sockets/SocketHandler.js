@@ -127,6 +127,7 @@ export default class SocketHandler {
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
 					currentGameState.players[playerID] = new Player(playerID);
+					console.log("Creating player model");
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}

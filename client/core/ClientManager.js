@@ -109,6 +109,9 @@ export default class ClientManager {
 		}
 
 		this.myID = null;
+
+		this.playerService.removeEventListeners();
+
 	}
 
 	setupCleanup() {
