@@ -13,7 +13,8 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			setError(message)
 		});
 
-		socketHandler.on("JoinGameSuccess", () => {
+		socketHandler.on("joinGameSuccess", () => {
+			console.log("Joined game");
 			setIsGameStarted(true);
 			setIsCreatePlayer(false);
 		});

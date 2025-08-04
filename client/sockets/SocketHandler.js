@@ -63,6 +63,10 @@ export default class SocketHandler {
 	}
 
 	on(event, callback) {
+		if (callback === null) {
+			delete this.#listeners[event];
+		}
+
 		if (this.#listeners[event]) {
 			this.socket.off(event, this.#listeners[event]);
 		}
@@ -72,18 +76,6 @@ export default class SocketHandler {
 			this.socket.on(event, callback);
 		}
 	}
-
-	// onUpdateAvailableGames(callback) {
-	// 	this.#onUpdateAvailableGames = callback;
-	// }
-	//
-	// onJoinGameSuccess(callback) {
-	// 	this.#onJoinGameSuccess = callback;
-	// }
-	//
-	// onError(callback) {
-	// 	this.#onError = callback;
-	// }
 
 	connectToServer() {
 		this.socket = io();
