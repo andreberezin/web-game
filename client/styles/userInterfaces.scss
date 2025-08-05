@@ -19,6 +19,11 @@
   }
 
   .ui-item {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
 
 
     &#player-id {
@@ -33,6 +38,7 @@
 
       #game-id-value {
         all: unset;
+        margin-left: 5px;
 
         &:hover {
           scale: 1.025;
@@ -47,6 +53,7 @@
 
     .value {
       width: 5px;
+      margin-left: 5px;
     }
   }
 }
