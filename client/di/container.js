@@ -8,6 +8,7 @@ import PlayerInterfaceService from '../services/PlayerInterfaceService.js';
 import SocketHandler from '../sockets/SocketHandler.js';
 import ClientManager from '../core/ClientManager.js';
 import GameFieldService from '../services/GameFieldService.js';
+import clientStore from '../stores/clientStore.js';
 
 const container = createContainer();
 
@@ -21,6 +22,7 @@ container.register({
 	playerInterfaceService: asClass(PlayerInterfaceService).singleton(),
 	socketHandler: asClass(SocketHandler).singleton(),
 	clientManager: asClass(ClientManager).singleton(),
+	clientStore: asClass(clientStore).singleton(),
 });
 
 

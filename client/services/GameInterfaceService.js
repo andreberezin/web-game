@@ -1,8 +1,12 @@
+import clientStore from '../stores/clientStore.js';
+
 export default class GameInterfaceService {
 	#gameInterface
+	#clientStore
 
-	constructor({gameInterface}) {
+	constructor({gameInterface, clientStore}) {
 		this.#gameInterface = gameInterface;
+		this.#clientStore = clientStore;
 	}
 
 	createGameUI(gameId, players) {
@@ -17,10 +21,12 @@ export default class GameInterfaceService {
 
 		const idElement = this.createGameIdElement(gameId);
 		const playerCountElement = this.createPlayerCountElement(players);
+		const fullscreenButton = this.createFullscreenButton();
 
 		game.appendChild(gameUI);
 		gameUI.appendChild(idElement);
 		gameUI.appendChild(playerCountElement);
+		gameUI.appendChild(fullscreenButton);
 	}
 
 	createGameIdElement(gameId) {
@@ -53,6 +59,44 @@ export default class GameInterfaceService {
 
 		gameIdElement.append(label, button);
 		return gameIdElement;
+	}
+
+	createFullscreenButton() {
+		const fullscreenButton = document.createElement("button");
+		fullscreenButton.id = "fullscreen-button";
+		fullscreenButton.innerHTML = `<i class="fa-solid fa-expand"></i>`
+
+		const page = document.documentElement;
+
+		fullscreenButton.addEventListener("click", async () => {
+
+			try {
+				const isFullscreen = this.#clientStore.get("isFullscreen");
+
+				if (isFullscreen) {
+					await document.exitFullscreen();
+				} else {
+					await page.requestFullscreen();
+				}
+
+				this.#clientStore.update({isFullscreen: !isFullscreen});
+			} catch (e) {
+				console.error(e);
+			}
+		})
+
+		document.addEventListener("fullscreenchange", () => {
+			const isFullscreen = !!document.fullscreenElement;
+			this.#clientStore.update({isFullscreen});
+
+			if (isFullscreen) {
+				fullscreenButton.innerHTML = `<i class="fa-solid fa-compress"></i>`
+			} else {
+				fullscreenButton.innerHTML = `<i class="fa-solid fa-expand"></i>`
+			}
+		})
+
+		return fullscreenButton;
 	}
 
 	createPlayerCountElement(players) {
