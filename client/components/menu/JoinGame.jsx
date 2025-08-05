@@ -1,27 +1,26 @@
 import {useEffect, useState} from 'react';
 
-export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId}) {
-	const [games, setGames] = useState({});
+export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, games}) {
 	// const [gameId, setGameId] = useState(null);
 	const [error, setError] = useState(null);
 
-	// todo get only public games
-	// todo private games should not be automatically fetched
 
-	useEffect(() => {
-		//const socket = clientManager.socketHandler.socket;
-
-		clientManager.socketHandler.on("updateAvailableGames", (gamesList) => {
-			const gamesObj = Object.fromEntries(gamesList.map((game) => [game.id, game]));
-
-			setGames(gamesObj);
-		});
-
-		return () => {
-			clientManager.socketHandler.on("updateAvailableGames", null);
-		}
-
-	}, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
+	// const [games, setGames] = useState({});
+	//
+	// useEffect(() => {
+	// 	//const socket = clientManager.socketHandler.socket;
+	//
+	// 	clientManager.socketHandler.on("updateAvailableGames", (gamesList) => {
+	// 		const gamesObj = Object.fromEntries(gamesList.map((game) => [game.id, game]));
+	//
+	// 		setGames(gamesObj);
+	// 	});
+	//
+	// 	return () => {
+	// 		clientManager.socketHandler.on("updateAvailableGames", null);
+	// 	}
+	//
+	// }, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
 
 	// todo don't display private games
 	function ShowAvailableGames() {
