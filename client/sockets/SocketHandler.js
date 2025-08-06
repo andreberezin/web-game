@@ -4,7 +4,9 @@ import Bullet from '../models/Bullet.js';
 import PlayerInterface from '../models/PlayerInterface.js';
 
 export default class SocketHandler {
-	socket;
+	#socket;
+	#listeners = {}
+
 	#playerService;
 	#playerInterfaceService;
 	#gameInterface
@@ -12,14 +14,23 @@ export default class SocketHandler {
 	#gameFieldService;
 	#clientManager;
 	#gameService;
-	#listeners = {}
+	#clientStore;
 
-	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService}) {
+	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
 		this.#gameInterfaceService = gameInterfaceService;
 		this.#gameFieldService = gameFieldService;
+		this.#clientStore = clientStore;
+	}
+
+	get socket() {
+		return this.#socket;
+	}
+
+	set socket(socket) {
+		this.#socket = socket;
 	}
 
 	setClientManager(clientManager) {
@@ -31,21 +42,22 @@ export default class SocketHandler {
 	}
 
 	initializePlayers(players, myPlayer) {
-		if (!this.#clientManager.myID) {
-			this.#clientManager.myID = myPlayer.id;
+		if (!this.#clientStore.myId) {
+			this.#clientStore.myId = myPlayer.id;
 		}
 
-		const gameState = this.#clientManager.game.state;
+		const gameState = this.#clientStore.currentGame.state;
 
 		for (const playerID in players) {
 			gameState.players[playerID] = new Player(playerID, players[playerID].name);
 			console.log("gameState.players[playerID]:", gameState.players[playerID]);
 			this.#playerService.createPlayerModel(players[playerID], playerID);
 
+			// todo I don't think it's necessary to create the playerInterface object and save it for each player
 			gameState.interfaces[playerID] = new PlayerInterface(playerID);
 
 			if (playerID === myPlayer.id) {
-				this.#playerInterfaceService.createPlayerUI();
+				this.#playerInterfaceService.createPlayerUI(playerID);
 			}
 		}
 	}
@@ -87,11 +99,11 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			this.#clientManager.games = new Map(
+			this.#clientStore.games = new Map(
 				gamesList.map(game => [game.id, { settings: game.settings }])
 			);
 
-			console.log("Updating available games: ", this.#clientManager.games);
+			console.log("Updating available games: ", this.#clientStore.games);
 
 			if (this.#listeners["updateAvailableGames"]) {
 				this.#listeners["updateAvailableGames"](gamesList);
@@ -99,8 +111,10 @@ export default class SocketHandler {
 		})
 
 		socket.on('createGameSuccess', (gameId, state, settings) => {
-			this.#clientManager.games.set(gameId, {state, settings});
-			console.log("Game created: ", gameId, this.#clientManager.games);
+
+			// todo use updateGames method instead
+			this.#clientStore.games.set(gameId, {state, settings});
+			console.log("Game created: ", gameId, this.#clientStore.games);
 		})
 
 		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
@@ -110,11 +124,11 @@ export default class SocketHandler {
 				this.#listeners["joinGameSuccess"]();
 			}
 
-			this.#clientManager.currentGameId = gameId;
+			this.#clientStore.gameId = gameId;
 
-			const game = this.#clientManager.games.get(gameId);
+			const game = this.#clientStore.games.get(gameId);
 
-			console.log("games:", this.#clientManager.games);
+			// console.log("games:", this.#clientStore.games);
 
 			this.startGame(gameId, game.settings, players, myPlayer);
 		})
@@ -138,15 +152,16 @@ export default class SocketHandler {
 
 		// todo refactor this socket connection
 		socket.on('updateGameState', (gameId, updatedGameState) => {
-			const currentGameState = this.#clientManager.game.state;
+			const currentGameState = this.#clientStore.currentGame.state;
 
 			if (!currentGameState) {
 				console.warn(`No game found with ID ${gameId}`);
 				return;
 			}
 
+			// todo probably don't need to hold the same value in both places
 			this.#gameInterface.gameId = gameId;
-			this.#clientManager.game.id = gameId;
+			this.#clientStore.currentGame.id = gameId;
 
 			// Respawning
 			for (const playerID in updatedGameState.players) {
@@ -169,13 +184,13 @@ export default class SocketHandler {
 				}
 
 				if (player) {
-					player.name = updatedPlayer.name;
+					// player.name = updatedPlayer.name;
 					player.position = updatedPlayer.pos;
 					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;
 					player.respawnTimer = updatedPlayer.respawnTimer;
 					player.size = updatedPlayer.size;
-					player.maxPosition = updatedPlayer.maxPos;
+					// player.maxPosition = updatedPlayer.maxPos;
 					player.deathCooldown = updatedPlayer.deathCooldown;
 				}
 			}

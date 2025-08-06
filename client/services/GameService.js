@@ -1,20 +1,20 @@
 export default class GameService {
-	#clientManager;
+	// #clientManager;
+	#clientStore;
 
-	constructor({playerInputService}) {
+	constructor({playerInputService, clientStore}) {
 		this.playerInputService = playerInputService;
+		this.#clientStore = clientStore;
 	}
 
-	setClientManager(clientManager) {
-		this.#clientManager = clientManager;
-	}
+	// setClientManager(clientManager) {
+	// 	this.#clientManager = clientManager;
+	// }
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
-		let bullet = this.#clientManager.game.state.bullets[bulletId];
+		let bullet = this.#clientStore.currentGame.state.bullets[bulletId];
 
-		if (!bullet.element) {
-			return;
-		}
+		if (!bullet.element) return;
 
 		this.updateElementPosition(bullet);
 	}
@@ -25,18 +25,12 @@ export default class GameService {
 	}
 
 	createBulletModel(bulletData, bulletId) {
-		if (document.getElementById(bulletId) !== null) {
-			console.log("Bullet already exists!");
-			return;
-		}
+		if (document.getElementById(bulletId) !== null) return;
 
-		const bullet = this.#clientManager.game.state.bullets[bulletId];
+		const bullet = this.#clientStore.currentGame.state.bullets[bulletId];
 
-		//console.log("Bulletdata: ", bulletData);
-		//bullet.position = {x: bulletData.position.x, y: bulletData.position.y};
 		bullet.position = bulletData.position;
 
-		//this.setPosition(bullet, bulletData);
 		const bulletElement = this.createElement(bullet);
 		this.appendToGameField(bulletElement);
 	}

@@ -1,5 +1,6 @@
 export default class Player {
     // todo make fields private and use setters, getters? Needs extra logic to send data via sockets if fields are private
+    // todo restructure data into fewer objects with related values to make more sense
     id = "player-1";
     pos = {
 		x: 100,

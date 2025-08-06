@@ -1,24 +1,79 @@
 export default class clientStore {
+	#uiState = {
+		renderLoopId: null,
+		isFullscreen: false,
+	}
+	#myId = null;
+	#gameId = null;
+	#games = {};
+	#currentGame = {
+		id: null,
+		state: {
+			players: {},
+			interfaces: {},
+			bullets: {},
+		},
+		settings: {},
+	}
 
-	constructor() {
-		this.state = {
-			playerId: null,
-			gameId: null,
-			settings: {},
-			games: {},
-			isFullscreen: false,
+	get uiState() {
+		return this.#uiState;
+	}
+
+	set uiState(state) {
+		this.#uiState = state;
+	}
+
+	updateUIState(state) {
+		this.#uiState = {
+			...this.#uiState,
+			...state,
 		};
 	}
 
-	set(key, value) {
-		this.state[key] = value;
+	get myId() {
+		return this.#myId;
 	}
 
-	get(key) {
-		return this.state[key];
+	set myId(id) {
+		this.#myId = id;
 	}
 
-	update(updates) {
-		Object.assign(this.state, updates);
+	get gameId() {
+		return this.#gameId;
+	}
+
+	set gameId(id) {
+		this.#gameId = id;
+	}
+
+	get games() {
+		return this.#games;
+	}
+
+	set games(games) {
+		this.#games = games;
+	}
+
+	updateGames(games) {
+		this.#games = {
+			...this.#games,
+			...games,
+		};
+	}
+
+	get currentGame() {
+		return this.#currentGame;
+	}
+
+	set currentGame(game) {
+		this.#currentGame = game;
+	}
+
+	updateCurrentGame(game) {
+		this.#currentGame = {
+			...this.#currentGame,
+			...game,
+		};
 	}
 }
