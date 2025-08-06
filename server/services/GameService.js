@@ -2,25 +2,13 @@ import Game from '../models/Game.js';
 import Bullet from "../models/Bullet.js";
 
 export default class GameService {
-    // #gamesManager;
     #playerInputService
     #serverStore
-
-    static GAME_BOUNDS = {
-        MIN_X: 0,
-        MAX_X: 1920,
-        MIN_Y: 0,
-        MAX_Y: 1080,
-    }
 
     constructor({playerInputService, serverStore}) {
         this.#playerInputService = playerInputService;
         this.#serverStore = serverStore;
     }
-
-    // setGamesManager(gamesManager) {
-    //     this.#gamesManager = gamesManager;
-    // }
 
     createGame(hostId, settings) {
         return new Game(hostId, settings);
@@ -166,7 +154,7 @@ export default class GameService {
 	}
 
     isOutOfBounds(pos) {
-        const { MIN_X, MAX_X, MIN_Y, MAX_Y } = GameService.GAME_BOUNDS;
+        const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
         return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
     }
 }

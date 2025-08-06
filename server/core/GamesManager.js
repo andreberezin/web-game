@@ -1,14 +1,10 @@
 export default class GamesManager {
-	// #TICK_RATE = 1000/60;
-	// games = null;
-
 	#io
 	#gameService
 	#socketHandler
 	#serverStore
 
 	constructor({io, gameService, socketHandler, serverStore}) {
-		// this.games = new Map();
 		this.#io = io;
 		this.#gameService = gameService;
 		this.#socketHandler = socketHandler;
