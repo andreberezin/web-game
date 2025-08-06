@@ -28,7 +28,6 @@ export default class Bullet {
     }
 
     set pos(pos) {
-        console.log("position:", pos);
         this.#pos = pos;
     }
 

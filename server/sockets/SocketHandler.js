@@ -40,7 +40,6 @@ export default class SocketHandler {
 
 				const game = this.#serverStore.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.state, game.settings);
-				console.log("game settings:", settings);
 				socket.emit("joinGameSuccess", {
 					gameId,
 					players: game.state.players,
