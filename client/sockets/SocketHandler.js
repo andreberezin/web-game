@@ -152,6 +152,7 @@ export default class SocketHandler {
 
 		// todo refactor this socket connection
 		socket.on('updateGameState', (gameId, updatedGameState) => {
+			// console.log("updated state:", gameId, updatedGameState);
 			const currentGameState = this.#clientStore.currentGame.state;
 
 			if (!currentGameState) {
@@ -185,23 +186,25 @@ export default class SocketHandler {
 
 				if (player) {
 					// player.name = updatedPlayer.name;
-					player.position = updatedPlayer.pos;
+					player.pos = updatedPlayer.pos;
 					player.hp = updatedPlayer.hp;
 					player.status = updatedPlayer.status;
 					player.respawnTimer = updatedPlayer.respawnTimer;
 					player.size = updatedPlayer.size;
-					// player.maxPosition = updatedPlayer.maxPos;
+					// player.maxPos = updatedPlayer.maxPos;
 					player.deathCooldown = updatedPlayer.deathCooldown;
 				}
 			}
 
 			for (const bulletID in updatedGameState.bullets) {
+				const bullet = updatedGameState.bullets[bulletID];
 
 				if (!currentGameState.bullets[bulletID]) {
-					currentGameState.bullets[bulletID] = new Bullet(bulletID);
-					this.#gameService.createBulletModel(updatedGameState.bullets[bulletID], bulletID);
+					currentGameState.bullets[bulletID] = new Bullet(bulletID, bullet.pos.x, bullet.pos.y, bullet.direction);
+					this.#gameService.createBulletModel(bullet, bulletID);
 				}  else {
-					currentGameState.bullets[bulletID].position = updatedGameState.bullets[bulletID].position;
+					// console.log(updatedGameState.bullets[bulletID].position);
+					currentGameState.bullets[bulletID].pos = bullet.pos;
 				}
 			}
 

@@ -31,7 +31,7 @@ export default class SocketHandler {
 				socket.emit('updateAvailableGames', this.getPublicGameList());
 			})
 
-			socket.on('createGame', (hostId, settings, playerName) => {
+			socket.on('createGame', (hostId, playerName, settings = {}) => {
 				const gameId = hostId;
 
 				this.#gamesManager.createGame(socket, gameId, settings);
@@ -40,6 +40,7 @@ export default class SocketHandler {
 
 				const game = this.#serverStore.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.state, game.settings);
+				console.log("game settings:", settings);
 				socket.emit("joinGameSuccess", {
 					gameId,
 					players: game.state.players,

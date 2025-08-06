@@ -32,6 +32,7 @@ export default class GamesManager {
 		console.log("Creating game with id: ", hostId);
 		const game = this.#gameService.createGame(hostId, settings);
 		game.updateState({ isRunning: true});
+		// game.updateSettings({...settings});
 
 		// todo games doesn't need to hold the whole game object
 		this.#serverStore.updateGames(game.id, game);
@@ -50,7 +51,7 @@ export default class GamesManager {
 		const game = this.#serverStore.games.get(gameId);
 		if (!game) return;
 
-
+		// console.log("game:", game.state);
 		this.#io.to(gameId).emit('updateGameState', gameId, game.state);
 
 		// const players = game.state.players;

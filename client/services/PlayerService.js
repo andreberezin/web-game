@@ -92,8 +92,8 @@ export default class PlayerService {
 	// }
 
 	updateElementPosition(player) {
-		player.element.style.top = `${player.position.y}px`
-		player.element.style.left = `${player.position.x}px`
+		player.element.style.top = `${player.pos.y}px`
+		player.element.style.left = `${player.pos.x}px`
 	}
 
 	updateElementWidth(player) {
@@ -113,7 +113,7 @@ export default class PlayerService {
 		// }
 
 		const player = this.#clientStore.currentGame.state.players[playerId];
-		player.position = playerData.pos;
+		player.pos = playerData.pos;
 		player.maxPos = playerData.maxPos;
 		player.name = playerData.name || playerId;
 		player.hp = playerData.hp;
@@ -189,8 +189,8 @@ export default class PlayerService {
 		console.log("player width:", player.size.width);
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
-		playerElement.style.top = `${player.position.y}px`
-		playerElement.style.left = `${player.position.x}px`
+		playerElement.style.top = `${player.pos.y}px`
+		playerElement.style.left = `${player.pos.x}px`
 		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 

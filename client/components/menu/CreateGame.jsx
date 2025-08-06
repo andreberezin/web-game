@@ -14,7 +14,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 		setIsGameStarted(true);
 
 		const socket = clientManager.socketHandler.socket;
-		socket.emit('createGame', socket.id, gameSettings.current, name);
+		socket.emit('createGame', socket.id, name, gameSettings.current);
 
 		// clientManager.gameInterfaceService.createGameUI();
 		// clientManager.startRenderLoop();

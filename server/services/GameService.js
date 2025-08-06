@@ -44,7 +44,7 @@ export default class GameService {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
 
-                    if (bullet.position.x + 5 > player.position.x && bullet.position.x < player.position.x + 20 && bullet.position.y + 5 > player.position.y && bullet.position.y < player.position.y + 20) {
+                    if (bullet.pos.x + 5 > player.pos.x && bullet.pos.x < player.pos.x + 20 && bullet.pos.y + 5 > player.pos.y && bullet.pos.y < player.pos.y + 20) {
                         //console.log("PLAYER GOT HIT REMOVING 20 HP");
                         player.hp = player.hp - 20;
                         if (player.hp <= 0) {
@@ -133,7 +133,7 @@ export default class GameService {
 
             this.moveBulletByVelocity(bullet, directionValues);
 
-            if (this.isOutOfBounds(bullet.position)) {
+            if (this.isOutOfBounds(bullet.pos)) {
                 bulletsToDelete.push(bulletId);
             }
         });
@@ -143,7 +143,7 @@ export default class GameService {
 
 	moveBulletByVelocity(bullet, directionValues) {
             if (directionValues) {
-                bullet.position[directionValues.coord] += bullet.velocity * directionValues.multiplier;
+                bullet.pos[directionValues.coord] += bullet.velocity * directionValues.multiplier;
             }
 	}
 

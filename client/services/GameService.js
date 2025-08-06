@@ -20,8 +20,8 @@ export default class GameService {
 	}
 
 	updateElementPosition(bullet) {
-		bullet.element.style.top = `${bullet.position.y}px`
-		bullet.element.style.left = `${bullet.position.x}px`
+		bullet.element.style.top = `${bullet.pos.y}px`
+		bullet.element.style.left = `${bullet.pos.x}px`
 	}
 
 	createBulletModel(bulletData, bulletId) {
@@ -29,7 +29,7 @@ export default class GameService {
 
 		const bullet = this.#clientStore.currentGame.state.bullets[bulletId];
 
-		bullet.position = bulletData.position;
+		bullet.pos = bulletData.pos;
 
 		const bulletElement = this.createElement(bullet);
 		this.appendToGameField(bulletElement);
@@ -44,8 +44,8 @@ export default class GameService {
 		const bulletElement = document.createElement("div")
 		bulletElement.classList.add("bullet")
 		bulletElement.id = bullet.id;
-		bulletElement.style.top = `${bullet.position.y}px`
-		bulletElement.style.left = `${bullet.position.x}px`
+		bulletElement.style.top = `${bullet.pos.y}px`
+		bulletElement.style.left = `${bullet.pos.x}px`
 		bulletElement.tabIndex = 0;
 
 		// for (const property in bullet.styles) {

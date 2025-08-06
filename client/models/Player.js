@@ -61,11 +61,11 @@ export default class Player {
         this.#hp = hp;
     }
 
-    get position() {
+    get pos() {
         return this.#pos;
     }
 
-    set position({x, y}) {
+    set pos({x, y}) {
         this.#pos = {
             x: x,
             y: y,
