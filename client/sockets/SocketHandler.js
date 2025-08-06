@@ -112,7 +112,6 @@ export default class SocketHandler {
 
 		socket.on('createGameSuccess', (gameId, state, settings) => {
 
-			// todo use updateGames method instead
 			this.#clientStore.games.set(gameId, {state, settings});
 			console.log("Game created: ", gameId, this.#clientStore.games);
 		})

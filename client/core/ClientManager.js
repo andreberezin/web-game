@@ -41,15 +41,6 @@ export default class ClientManager {
 				if (playerID && players[playerID] != null) {
 					this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);
 				}
-				// todo refactor - this should be done on the backend
-				if (!players[playerID].status.alive) {
-					players[playerID].input.space = false;
-					players[playerID].input.arrowUp = false;
-					players[playerID].input.arrowDown = false;
-					players[playerID].input.arrowLeft = false;
-					players[playerID].input.arrowRight = false;
-					players[playerID].shift = 0;
-				}
 			}
 
 			for (let bulletID in bullets) {

@@ -38,23 +38,10 @@ export default class PlayerService {
 			playerElement.hidden = false;
 		}
 
-		// if (player) {
-		// 	// player.name = playerData.name;
-		// 	player.position = playerData.pos;
-		// 	player.hp = playerData.hp;
-		// 	player.status = playerData.status;
-		// 	player.respawnTimer = playerData.respawnTimer;
-		// 	player.size = playerData.size;
-		// 	// player.maxPosition = playerData.maxPos;
-		// 	player.deathCooldown = playerData.deathCooldown;
-		// }
-
-		// todo users setters and getters
 		if (this.playerIsNotMoving(player)) {
 			this.resetAcceleration(player, timestamp);
 		}
 
-		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
 			player.start = undefined;
 		}
@@ -74,22 +61,6 @@ export default class PlayerService {
 	playerIsNotMoving(player) {
 		return player.start === undefined;
 	}
-
-	// todo should be part of Player.js
-	// setMaxPosition(player) {
-	//
-	// 	const gameInner = document.getElementById('game-inner')
-	// 	const rect = gameInner.getBoundingClientRect();
-	//
-	// 	const playerElement = document.getElementsByClassName("player")[0];
-	//
-	// 	player.maxPosition = ({
-	// 		x: rect.width - playerElement.offsetWidth,
-	// 		y: rect.height - playerElement.offsetHeight,
-	// 	})
-	// 	// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
-	// 	// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
-	// }
 
 	updateElementPosition(player) {
 		player.element.style.top = `${player.pos.y}px`
@@ -186,7 +157,6 @@ export default class PlayerService {
 
 	createElement(player, numberOfPlayers, playerId) {
 		const playerElement = document.createElement("div")
-		console.log("player width:", player.size.width);
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
 		playerElement.style.top = `${player.pos.y}px`

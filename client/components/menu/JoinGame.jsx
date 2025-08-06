@@ -4,25 +4,6 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 	// const [gameId, setGameId] = useState(null);
 	const [error, setError] = useState(null);
 
-
-	// const [games, setGames] = useState({});
-	//
-	// useEffect(() => {
-	// 	//const socket = clientManager.socketHandler.socket;
-	//
-	// 	clientManager.socketHandler.on("updateAvailableGames", (gamesList) => {
-	// 		const gamesObj = Object.fromEntries(gamesList.map((game) => [game.id, game]));
-	//
-	// 		setGames(gamesObj);
-	// 	});
-	//
-	// 	return () => {
-	// 		clientManager.socketHandler.on("updateAvailableGames", null);
-	// 	}
-	//
-	// }, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
-
-	// todo don't display private games
 	function ShowAvailableGames() {
 		return(
 			// Array.from(games.entries()).map(([gameData]) => (
