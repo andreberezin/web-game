@@ -1,11 +1,10 @@
 export default class PlayerInterfaceService {
 	#uiParts = ["id", "hp", "respawnTimer"]
-	//#uiParts = ["id", "hp"]
 
 	constructor() {
 	}
 
-	createPlayerUI() {
+	createPlayerUI(playerID) {
 		const exisitingUI = document.getElementById("player-ui");
 		if (exisitingUI) return;
 
@@ -31,6 +30,7 @@ export default class PlayerInterfaceService {
 
 	updatePlayerUI(player) {
 		const playerUI = document.getElementById("player-ui");
+
 		if (!playerUI) return;
 
 		this.#uiParts.forEach(key => {

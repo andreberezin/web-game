@@ -2,21 +2,12 @@ import Game from '../models/Game.js';
 import Bullet from "../models/Bullet.js";
 
 export default class GameService {
-    #gamesManager;
+    #playerInputService
+    #serverStore
 
-    static GAME_BOUNDS = {
-        MIN_X: 0,
-        MAX_X: 1920,
-        MIN_Y: 0,
-        MAX_Y: 1080,
-    }
-
-    constructor({playerInputService}) {
-        this.playerInputService = playerInputService;
-    }
-
-    setGamesManager(gamesManager) {
-        this.#gamesManager = gamesManager;
+    constructor({playerInputService, serverStore}) {
+        this.#playerInputService = playerInputService;
+        this.#serverStore = serverStore;
     }
 
     createGame(hostId, settings) {
@@ -35,10 +26,10 @@ export default class GameService {
             const player = game.state.players[playerID];
 
             this.checkForCollisions(player, currentTime, game.state);
-            this.playerInputService.handlePlayerMovement(player, game);
-            this.playerInputService.handlePlayerShooting(player, currentTime, game);
-            this.playerInputService.handlePlayerRespawning(game.state, currentTime);
-            this.playerInputService.handlePlayerRespawnTimer(player, currentTime);
+            this.#playerInputService.handlePlayerMovement(player, game);
+            this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+            this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
+            this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
         }
 
         if (Object.keys(game.state.bullets).length > 1) {
@@ -53,7 +44,7 @@ export default class GameService {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
 
-                    if (bullet.position.x + 5 > player.position.x && bullet.position.x < player.position.x + 20 && bullet.position.y + 5 > player.position.y && bullet.position.y < player.position.y + 20) {
+                    if (bullet.pos.x + 5 > player.pos.x && bullet.pos.x < player.pos.x + 20 && bullet.pos.y + 5 > player.pos.y && bullet.pos.y < player.pos.y + 20) {
                         //console.log("PLAYER GOT HIT REMOVING 20 HP");
                         player.hp = player.hp - 20;
                         if (player.hp <= 0) {
@@ -83,7 +74,7 @@ export default class GameService {
     }
 
     addPlayerToGame(gameId, playerId, player) {
-        const game = this.#gamesManager.games.get(gameId);
+        const game = this.#serverStore.games.get(gameId);
         if (!game) {
             throw new Error("Game not found, cannot add player");
         }
@@ -142,7 +133,7 @@ export default class GameService {
 
             this.moveBulletByVelocity(bullet, directionValues);
 
-            if (this.isOutOfBounds(bullet.position)) {
+            if (this.isOutOfBounds(bullet.pos)) {
                 bulletsToDelete.push(bulletId);
             }
         });
@@ -152,7 +143,7 @@ export default class GameService {
 
 	moveBulletByVelocity(bullet, directionValues) {
             if (directionValues) {
-                bullet.position[directionValues.coord] += bullet.velocity * directionValues.multiplier;
+                bullet.pos[directionValues.coord] += bullet.velocity * directionValues.multiplier;
             }
 	}
 
@@ -163,7 +154,7 @@ export default class GameService {
 	}
 
     isOutOfBounds(pos) {
-        const { MIN_X, MAX_X, MIN_Y, MAX_Y } = GameService.GAME_BOUNDS;
+        const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
         return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
     }
 }

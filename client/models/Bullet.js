@@ -1,17 +1,12 @@
 export default class Bullet {
-    #id = "bullet-1";
+    #id = null;
     #pos = {
-        x: 100,
-        y: 100,
+        x: 0,
+        y: 0,
     };
-    #direction = "up";
-    #velocity = 100;
+    #direction = "";
+    #velocity = 0;
     #element = null;
-
-    // styles = {
-    //     width: "5px",
-    //     height: "5px",
-    // }
 
     constructor(id, x, y, direction) {
         this.#id = id;
@@ -28,12 +23,12 @@ export default class Bullet {
         this.#id = id;
     }
 
-    get position() {
+    get pos() {
         return this.#pos;
     }
 
-    set position({ x, y }) {
-        this.#pos = { x, y };
+    set pos(pos) {
+        this.#pos = pos;
     }
 
     get direction() {

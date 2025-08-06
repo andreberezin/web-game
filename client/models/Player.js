@@ -1,5 +1,5 @@
 export default class Player {
-
+    // todo restructure data into fewer objects with related values to make more sense
     #id = null;
     #name = null;
     #shift = null;
@@ -24,7 +24,7 @@ export default class Player {
         ArrowLeft: false,
         space: false
     }
-    direction = null;
+    #direction = null;
     #hp = 0;
     // lastShotTime = 0;
     // shotCooldown = 250;
@@ -61,11 +61,11 @@ export default class Player {
         this.#hp = hp;
     }
 
-    get position() {
+    get pos() {
         return this.#pos;
     }
 
-    set position({x, y}) {
+    set pos({x, y}) {
         this.#pos = {
             x: x,
             y: y,
@@ -88,11 +88,11 @@ export default class Player {
         this.#element = element;
     }
 
-    get maxPosition() {
+    get maxPos() {
         return this.#maxPos;
     }
 
-    set maxPosition({ x, y }) {
+    set maxPos({ x, y }) {
         this.#maxPos = {
             x: x,
             y: y,
@@ -148,5 +148,13 @@ export default class Player {
 
     set respawnTimer(time) {
         this.#respawnTime = time;
+    }
+
+    get direction() {
+        return this.#direction;
+    }
+
+    set direction(direction) {
+        this.#direction = direction;
     }
 }

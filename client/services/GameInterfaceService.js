@@ -1,5 +1,3 @@
-import clientStore from '../stores/clientStore.js';
-
 export default class GameInterfaceService {
 	#gameInterface
 	#clientStore
@@ -62,6 +60,8 @@ export default class GameInterfaceService {
 	}
 
 	createFullscreenButton() {
+		const store = this.#clientStore;
+
 		const fullscreenButton = document.createElement("button");
 		fullscreenButton.id = "fullscreen-button";
 		fullscreenButton.innerHTML = `<i class="fa-solid fa-expand"></i>`
@@ -71,7 +71,7 @@ export default class GameInterfaceService {
 		fullscreenButton.addEventListener("click", async () => {
 
 			try {
-				const isFullscreen = this.#clientStore.get("isFullscreen");
+				const isFullscreen = store.uiState.isFullscreen;
 
 				if (isFullscreen) {
 					await document.exitFullscreen();
@@ -79,7 +79,7 @@ export default class GameInterfaceService {
 					await page.requestFullscreen();
 				}
 
-				this.#clientStore.update({isFullscreen: !isFullscreen});
+				store.updateUIState({isFullscreen: !isFullscreen});
 			} catch (e) {
 				console.error(e);
 			}
@@ -87,7 +87,7 @@ export default class GameInterfaceService {
 
 		document.addEventListener("fullscreenchange", () => {
 			const isFullscreen = !!document.fullscreenElement;
-			this.#clientStore.update({isFullscreen});
+			store.updateUIState({isFullscreen: isFullscreen});
 
 			if (isFullscreen) {
 				fullscreenButton.innerHTML = `<i class="fa-solid fa-compress"></i>`

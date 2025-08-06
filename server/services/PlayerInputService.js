@@ -1,7 +1,6 @@
 import {clamp} from '../utils/clamp.js';
 
 export default class PlayerInputService {
-
     #gameService;
 
     constructor() {}
@@ -79,13 +78,13 @@ export default class PlayerInputService {
 
     movePlayer(player, axis, speed, direction, game) {
         const distance = speed * player.shift;
-        const newPosition = player.position[axis] + distance;
+        const newPosition = player.pos[axis] + distance;
         // player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
 
         const playerSize = player.size?.width || 20;
 
-        let testX = player.position.x;
-        let testY = player.position.y;
+        let testX = player.pos.x;
+        let testY = player.pos.y;
 
         if (axis === 'x') {
             testX = newPosition;
@@ -97,7 +96,7 @@ export default class PlayerInputService {
             return;
         }
 
-        player.position[axis] = clamp(0, newPosition, player.maxPosition[axis]);
+        player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
         player.direction = direction;
     }
 
@@ -155,7 +154,7 @@ export default class PlayerInputService {
                 if (player.canRespawn(currentTime)) {
                     player.hp = 100;
                     player.status.alive = true;
-                    player.position = { x: 100, y: 100 };
+                    player.pos = { x: 100, y: 100 };
 
                     delete deadPlayers[playerID];
                 }
@@ -176,7 +175,7 @@ export default class PlayerInputService {
         // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                this.#gameService.createBulletAt(player.position.x, player.position.y, player.direction, game, player.size.width);
+                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width);
                 player.lastBulletShotAt(currentTime);
             }
         }

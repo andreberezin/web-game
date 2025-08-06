@@ -1,29 +1,30 @@
 export default class PlayerService {
-	#clientManager;
+	// #clientManager;
 	#socketHandler;
-	keydownHandler = null;
-	keyupHandler = null;
+	#clientStore
+	#keydownHandler = null;
+	#keyupHandler = null;
 	#hasListeners = false;
 
-	constructor({playerInputService}) {
+	constructor({playerInputService, clientStore}) {
 		this.playerInputService = playerInputService;
+		this.#clientStore = clientStore;
 	}
 
-	setClientManager(clientManager) {
-		this.#clientManager = clientManager;
-	}
+	// setClientManager(clientManager) {
+	// 	this.#clientManager = clientManager;
+	// }
 
 	setSocketHandler(handler) {
 		this.#socketHandler = handler;
 	}
 
-	updatePlayerModel(timestamp, newPlayerData, playerId) {
-		let player = this.#clientManager.game.state.players[playerId];
+	// todo what is PlayerData and what is player? do we need both?
+	updatePlayerModel(timestamp, playerData, playerId) { // newPLayerData
+		let player = this.#clientStore.currentGame.state.players[playerId];
 		const {arrowDown, arrowUp, arrowRight, arrowLeft} = player.input;
 
-		if (!player.element) {
-			return;
-		}
+		if (!player.element) return;
 
 		const playerElement = document.getElementById(playerId);
 		if (player.status.alive === false && playerElement) {
@@ -37,18 +38,10 @@ export default class PlayerService {
 			playerElement.hidden = false;
 		}
 
-		// todo users setters and getters
 		if (this.playerIsNotMoving(player)) {
 			this.resetAcceleration(player, timestamp);
 		}
 
-		// this.setMaxPosition(player);
-
-		// todo users setters and getters
-		// const elapsed = timestamp - player.start;
-		// player.shift = Math.min(0.001 * elapsed, 10);
-
-		// todo users setters and getters
 		if (this.noInputFound(arrowDown, arrowUp, arrowRight, arrowLeft)) {
 			player.start = undefined;
 		}
@@ -69,30 +62,15 @@ export default class PlayerService {
 		return player.start === undefined;
 	}
 
-	// todo should be part of Player.js
-	// setMaxPosition(player) {
-	//
-	// 	const gameInner = document.getElementById('game-inner')
-	// 	const rect = gameInner.getBoundingClientRect();
-	//
-	// 	const playerElement = document.getElementsByClassName("player")[0];
-	//
-	// 	player.maxPosition = ({
-	// 		x: rect.width - playerElement.offsetWidth,
-	// 		y: rect.height - playerElement.offsetHeight,
-	// 	})
-	// 	// player.getMaxPosition.x = player.getMaxPosition.x - playerElement.offsetWidth;
-	// 	// player.getMaxPosition.y = player.getMaxPosition.x - playerElement.offsetWidth;
-	// }
-
 	updateElementPosition(player) {
-		player.element.style.top = `${player.position.y}px`
-		player.element.style.left = `${player.position.x}px`
+		player.element.style.top = `${player.pos.y}px`
+		player.element.style.left = `${player.pos.x}px`
 	}
 
 	updateElementWidth(player) {
 		player.element.style.width = `${player.size.width}px`
 	}
+
 
 	createPlayerModel(playerData, playerId) {
 		if (document.getElementById(playerId) !== null) {
@@ -105,10 +83,15 @@ export default class PlayerService {
 		// 	return;
 		// }
 
-		const player = this.#clientManager.game.state.players[playerId];
-		player.position = playerData.pos;
+		const player = this.#clientStore.currentGame.state.players[playerId];
+		player.pos = playerData.pos;
+		player.maxPos = playerData.maxPos;
+		player.name = playerData.name || playerId;
+		player.hp = playerData.hp;
 
-        const numberOfPlayers = Object.keys(this.#clientManager.game.state.players).length;
+		console.log("Player: ", player);
+
+        const numberOfPlayers = Object.keys(this.#clientStore.currentGame.state.players).length;
 
  		const playerElement = this.createElement(player, numberOfPlayers, playerId);
 		this.addEventListeners(playerId);
@@ -121,7 +104,7 @@ export default class PlayerService {
 	appendToGameField(playerElement) {
 		const gameField = document.getElementById("game-inner");
 		gameField.appendChild(playerElement);
-		// if (playerId === this.#clientManager.myID) {
+		// if (playerId === this.#clientStore.myID) {
 		// 	playerElement.focus();
 		// }
 	}
@@ -132,11 +115,11 @@ export default class PlayerService {
 
 		console.log("Adding event listeners");
 
-		this.keydownHandler = (event) => this.handleKeyPress(event, playerId);
-		this.keyupHandler = (event) => this.handleKeyPress(event, playerId);
+		this.#keydownHandler = (event) => this.handleKeyPress(event, playerId);
+		this.#keyupHandler = (event) => this.handleKeyPress(event, playerId);
 
-		window.addEventListener("keydown", this.keydownHandler);
-		window.addEventListener("keyup", this.keyupHandler);
+		window.addEventListener("keydown", this.#keydownHandler);
+		window.addEventListener("keyup", this.#keyupHandler);
 
 		// window.addEventListener("keydown", (event) => {
 		// 	//this.playerInputService.handleKeyDown(event, player);
@@ -151,11 +134,11 @@ export default class PlayerService {
 
 	removeEventListeners() {
 		if (!this.#hasListeners) return;
-		window.removeEventListener("keydown", this.keydownHandler);
-		window.removeEventListener("keyup", this.keyupHandler);
+		window.removeEventListener("keydown", this.#keydownHandler);
+		window.removeEventListener("keyup", this.#keyupHandler);
 		this.#hasListeners = false;
-		this.keydownHandler = null;
-		this.keyupHandler = null;
+		this.#keydownHandler = null;
+		this.#keyupHandler = null;
 	}
 
 	handleKeyPress(event) {
@@ -176,12 +159,12 @@ export default class PlayerService {
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
-		playerElement.style.top = `${player.position.y}px`
-		playerElement.style.left = `${player.position.x}px`
+		playerElement.style.top = `${player.pos.y}px`
+		playerElement.style.left = `${player.pos.x}px`
 		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 
-		console.log("player:", player);
+		// console.log("player:", player);
 		// css variable for styling
 		playerElement.style.setProperty("--name", `"${player.name}"`)
 		playerElement.setAttribute("number", numberOfPlayers);
@@ -191,7 +174,7 @@ export default class PlayerService {
 
 		//player.textContent = playerData.name;
 
-		if (playerId === this.#clientManager.myID) {
+		if (playerId === this.#clientStore.myId) {
 			playerElement.classList.add("me")
 		}
 

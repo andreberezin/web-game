@@ -14,6 +14,6 @@ export default function manualDI(io) {
 	const gamesManager = container.resolve('gamesManager');
 
 	socketHandler.setGamesManager(gamesManager);
-	gameService.setGamesManager(gamesManager);
+	socketHandler.setGameService(gameService);
 	playerInputService.setGameService(gameService);
 }
