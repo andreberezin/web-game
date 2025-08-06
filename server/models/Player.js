@@ -1,7 +1,7 @@
 export default class Player {
     // todo make fields private and use setters, getters? Needs extra logic to send data via sockets if fields are private
     // todo restructure data into fewer objects with related values to make more sense
-    id = "player-1";
+    id = null;
     pos = {
 		x: 100,
 		y: 100,
@@ -37,6 +37,26 @@ export default class Player {
     status = {
         alive: true
     };
+
+    // movement = {
+    //     pos: {},
+    //     maxPos: {},
+    //     direction: "up",
+    //     shift: 0,
+    //     speed: 0,
+    //     maxSpeed: 0,
+    //     acceleration: 1000,
+    //     startTime: null,
+    // }
+    // shooting = {
+    //     lastShotTime: 0,
+    //     shotCooldown: 0,
+    // }
+    // death = {
+    //     time: null,
+    //     cooldown: 5000,
+    //     timer: null,
+    // }
 
 	constructor(id, name) {
         this.id = id;

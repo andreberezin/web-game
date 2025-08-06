@@ -2,7 +2,9 @@ import Game from '../models/Game.js';
 import Bullet from "../models/Bullet.js";
 
 export default class GameService {
-    #gamesManager;
+    // #gamesManager;
+    #playerInputService
+    #serverStore
 
     static GAME_BOUNDS = {
         MIN_X: 0,
@@ -11,13 +13,14 @@ export default class GameService {
         MAX_Y: 1080,
     }
 
-    constructor({playerInputService}) {
-        this.playerInputService = playerInputService;
+    constructor({playerInputService, serverStore}) {
+        this.#playerInputService = playerInputService;
+        this.#serverStore = serverStore;
     }
 
-    setGamesManager(gamesManager) {
-        this.#gamesManager = gamesManager;
-    }
+    // setGamesManager(gamesManager) {
+    //     this.#gamesManager = gamesManager;
+    // }
 
     createGame(hostId, settings) {
         return new Game(hostId, settings);
@@ -35,10 +38,10 @@ export default class GameService {
             const player = game.state.players[playerID];
 
             this.checkForCollisions(player, currentTime, game.state);
-            this.playerInputService.handlePlayerMovement(player, game);
-            this.playerInputService.handlePlayerShooting(player, currentTime, game);
-            this.playerInputService.handlePlayerRespawning(game.state, currentTime);
-            this.playerInputService.handlePlayerRespawnTimer(player, currentTime);
+            this.#playerInputService.handlePlayerMovement(player, game);
+            this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+            this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
+            this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
         }
 
         if (Object.keys(game.state.bullets).length > 1) {
@@ -83,7 +86,7 @@ export default class GameService {
     }
 
     addPlayerToGame(gameId, playerId, player) {
-        const game = this.#gamesManager.games.get(gameId);
+        const game = this.#serverStore.games.get(gameId);
         if (!game) {
             throw new Error("Game not found, cannot add player");
         }

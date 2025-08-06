@@ -56,10 +56,9 @@ export default class clientStore {
 	}
 
 	updateGames(games) {
-		this.#games = {
-			...this.#games,
-			...games,
-		};
+		for (const [key, value] of games) {
+			this.#games.set(key, value);
+		}
 	}
 
 	get currentGame() {

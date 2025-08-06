@@ -1,17 +1,22 @@
 import Player from '../models/Player.js';
 
 export default class SocketHandler {
-	#io = null;
-	#gamesManager = null;
-	#gameService = null;
+	#io
+	#gamesManager
+	#gameService
+	#serverStore
 
-	constructor({io}) {
+	constructor({io, serverStore}) {
 		this.#io = io;
+		this.#serverStore = serverStore;
 	}
 
 	setGamesManager(gamesManager) {
 		this.#gamesManager = gamesManager;
-		this.#gameService = this.#gamesManager.gameService;
+	}
+
+	setGameService(gameService) {
+		this.#gameService = gameService;
 	}
 
 	createSocketConnection() {
@@ -33,7 +38,7 @@ export default class SocketHandler {
 
 				this.joinGame(socket, gameId, hostId, playerName);
 
-				const game = this.#gamesManager.games.get(gameId);
+				const game = this.#serverStore.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.state, game.settings);
 				socket.emit("joinGameSuccess", {
 					gameId,
@@ -43,7 +48,7 @@ export default class SocketHandler {
 			})
 
 			socket.on('joinGame', (gameId, playerName) => {
-				const game = this.#gamesManager.games.get(gameId);
+				const game = this.#serverStore.games.get(gameId);
 				if (!game) {
 					socket.emit('error', "Game not found");
 					return;
@@ -74,7 +79,7 @@ export default class SocketHandler {
 				const gameId = socket.gameId;
 				if (!gameId) return;
 
-				const game = this.#gamesManager.games.get(gameId);
+				const game = this.#serverStore.games.get(gameId);
 				if (!game) return;
 
 				const players = game.state.players;
@@ -86,7 +91,7 @@ export default class SocketHandler {
 				}
 				if (Object.keys(players).length === 0) {
 					console.log("Deleting game: ", gameId);
-					this.#gamesManager.games.delete(gameId);
+					this.#serverStore.games.delete(gameId);
 				}
 
 				if (!game.settings.private) {
@@ -106,9 +111,10 @@ export default class SocketHandler {
 		socket.gameId = gameId;
 
 		const player = new Player(playerId, playerName);
+
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
-		const game = this.#gamesManager.games.get(gameId);
+		const game = this.#serverStore.games.get(gameId);
 		const gameState = game.state;
 
 		console.log("Player: ", playerId, " joined game: ", gameId);
@@ -147,7 +153,7 @@ export default class SocketHandler {
 
 	// todo possibly create a DTO for this?
 	getPublicGameList() {
-		return Array.from(this.#gamesManager.games.entries())
+		return Array.from(this.#serverStore.games.entries())
 			//eslint-disable-next-line
 			.filter(([_, game]) => !game.settings.private)
 			.map(([id, game]) => ({

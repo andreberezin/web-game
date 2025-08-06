@@ -1,25 +1,32 @@
 export default class GamesManager {
-	#TICK_RATE = 1000/60;
-	#io = null;
-	games = null;
+	// #TICK_RATE = 1000/60;
+	// games = null;
 
-	constructor({io, gameService, socketHandler}) {
-		this.games = new Map();
+	#io
+	#gameService
+	#socketHandler
+	#serverStore
+
+	constructor({io, gameService, socketHandler, serverStore}) {
+		// this.games = new Map();
 		this.#io = io;
-		this.gameService = gameService;
-		this.socketHandler = socketHandler;
+		this.#gameService = gameService;
+		this.#socketHandler = socketHandler;
+		this.#serverStore = serverStore;
 	}
 
 	startGameLoop(gameId) {
+		const store = this.#serverStore
+
 		console.log("Starting Game Loop");
 		const gameLoop = () => {
-			const game = this.games.get(gameId);
+			const game = store.games.get(gameId);
 
 			if (game && game.state.isRunning) {
 				const currentTime = Date.now();
 				this.updateGame(gameId, currentTime);
 				this.broadcastGameState(gameId)
-				setTimeout(gameLoop, this.#TICK_RATE);
+				setTimeout(gameLoop, store.TICK_RATE);
 			}
 		}
 		gameLoop();
@@ -27,11 +34,11 @@ export default class GamesManager {
 
 	createGame(socket, hostId, settings = {}) {
 		console.log("Creating game with id: ", hostId);
-		const game = this.gameService.createGame(hostId, settings);
+		const game = this.#gameService.createGame(hostId, settings);
 		game.updateState({ isRunning: true});
 
 		// todo games doesn't need to hold the whole game object
-		this.games.set(game.id, game);
+		this.#serverStore.updateGames(game.id, game);
 
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
 		//socket.emit("gameCreated", hostId, game.getState, game.getSettings);
@@ -44,7 +51,7 @@ export default class GamesManager {
 	}
 
 	broadcastGameState(gameId) {
-		const game = this.games.get(gameId);
+		const game = this.#serverStore.games.get(gameId);
 		if (!game) return;
 
 
@@ -66,9 +73,9 @@ export default class GamesManager {
 	// todo broadcast game settings if needed
 
 	updateGame(gameId, currentTime) {
-		const game = this.games.get(gameId);
+		const game = this.#serverStore.games.get(gameId);
 		if (game && game.state.isRunning) {
-			this.gameService.updateGameState(game, currentTime);
+			this.#gameService.updateGameState(game, currentTime);
 		}
 	}
 }

@@ -1,7 +1,6 @@
 import {clamp} from '../utils/clamp.js';
 
 export default class PlayerInputService {
-
     #gameService;
 
     constructor() {}
