@@ -21,7 +21,9 @@ export default class PlayerService {
 
 	// todo what is PlayerData and what is player? do we need both?
 	updatePlayerModel(timestamp, playerData, playerId) { // newPLayerData
-		let player = this.#clientStore.currentGame.state.players[playerId];
+		const store = this.#clientStore;
+
+		let player = store.games.get(store.gameId).state.players[playerId];
 		const {arrowDown, arrowUp, arrowRight, arrowLeft} = player.input;
 
 		if (!player.element) return;
@@ -83,15 +85,17 @@ export default class PlayerService {
 		// 	return;
 		// }
 
-		const player = this.#clientStore.currentGame.state.players[playerId];
+		const store  = this.#clientStore;
+
+		const player = store.games.get(store.gameId).state.players[playerId];
 		player.pos = playerData.pos;
 		player.maxPos = playerData.maxPos;
 		player.name = playerData.name || playerId;
 		player.hp = playerData.hp;
 
-		console.log("Player: ", player);
+		//console.log("Player: ", player);
 
-        const numberOfPlayers = Object.keys(this.#clientStore.currentGame.state.players).length;
+        const numberOfPlayers = Object.keys(store.games.get(store.gameId).state.players).length;
 
  		const playerElement = this.createElement(player, numberOfPlayers, playerId);
 		this.addEventListeners(playerId);
@@ -113,7 +117,7 @@ export default class PlayerService {
 		if (this.#hasListeners) return;
 		this.#hasListeners = true;
 
-		console.log("Adding event listeners");
+		//console.log("Adding event listeners");
 
 		this.#keydownHandler = (event) => this.handleKeyPress(event, playerId);
 		this.#keyupHandler = (event) => this.handleKeyPress(event, playerId);

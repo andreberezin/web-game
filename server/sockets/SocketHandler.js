@@ -31,7 +31,7 @@ export default class SocketHandler {
 				socket.emit('updateAvailableGames', this.getPublicGameList());
 			})
 
-			socket.on('createGame', (hostId, playerName, settings = {}) => {
+			socket.on('createGame', (hostId, playerName, settings) => {
 				const gameId = hostId;
 
 				this.#gamesManager.createGame(socket, gameId, settings);
@@ -40,11 +40,7 @@ export default class SocketHandler {
 
 				const game = this.#serverStore.games.get(gameId);
 				socket.emit("createGameSuccess", gameId, game.state, game.settings);
-				socket.emit("joinGameSuccess", {
-					gameId,
-					players: game.state.players,
-					myPlayer: game.state.players[hostId],
-				});
+				socket.emit("joinGameSuccess", gameId, game.state, game.settings, hostId);
 			})
 
 			socket.on('joinGame', (gameId, playerName) => {
@@ -65,11 +61,16 @@ export default class SocketHandler {
 				const playerId = socket.id;
 				this.joinGame(socket, gameId, playerId, playerName);
 
-				socket.emit("joinGameSuccess", {
-					gameId,
-					players: game.state.players,
-					myPlayer: game.state.players[playerId],
-				});
+				console.log("game state:", game.state);
+
+				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
+
+				// socket.emit("joinGameSuccess", {
+				// 	gameId,
+				// 	state: game.state,
+				// 	settings: game.settings,
+				// 	myId: playerId,
+				// });
 
 				socket.to(gameId).emit("playerJoined", playerId);
 			})

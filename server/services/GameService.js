@@ -20,6 +20,10 @@ export default class GameService {
             //console.time("UpdateGameState")
         }
 
+        if (game.state.isRunning && game.state.timeRemaining > 0) {
+            this.handleGameTimer(game, currentTime);
+        }
+
         this.updateBullets(game);
 
         for (const playerID in game.state.players) {
@@ -34,6 +38,21 @@ export default class GameService {
 
         if (Object.keys(game.state.bullets).length > 1) {
             //console.timeEnd("UpdateGameState")
+        }
+    }
+
+    handleGameTimer(game, currentTime) {
+        const timer = setTimeout(countdown, 1000);
+
+        function countdown() {
+            const elapsed = currentTime - game.state.startTime;
+            game.state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
+            //console.log("Time remaining:", game.state.timeRemaining);
+
+            if (game.state.timeRemaining === 0) {
+                clearTimeout(timer)
+                console.log("Timer has finished: ", game.state.timeRemaining);
+            }
         }
     }
 

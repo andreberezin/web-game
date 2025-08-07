@@ -2,9 +2,10 @@ export default class Game {
 	#id = null;
 	#state = {
 		isRunning: false,
+		timeRemaining: 0,
+		startTime: null,
 		players: {},
 		deadPlayers: {},
-		timeRemaining: 0,
 		bullets: {}
 	};
 	#settings = {
@@ -49,6 +50,10 @@ export default class Game {
 			...this.#settings,
 			...settings
 		};
+		this.#state.timeRemaining = settings.duration;
+
+		// todo assign a value to startTime when "start game" is pressed by player
+		this.#state.startTime = Date.now();
 	}
 
 	get id() {
