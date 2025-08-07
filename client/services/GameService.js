@@ -12,7 +12,9 @@ export default class GameService {
 	// }
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
-		let bullet = this.#clientStore.currentGame.state.bullets[bulletId];
+		const store  = this.#clientStore;
+
+		let bullet = store.games.get(store.gameId).state.bullets[bulletId];
 
 		if (!bullet.element) return;
 
@@ -27,7 +29,9 @@ export default class GameService {
 	createBulletModel(bulletData, bulletId) {
 		if (document.getElementById(bulletId) !== null) return;
 
-		const bullet = this.#clientStore.currentGame.state.bullets[bulletId];
+		const store  = this.#clientStore;
+
+		const bullet = store.games.get(store.gameId).state.bullets[bulletId];
 
 		bullet.pos = bulletData.pos;
 

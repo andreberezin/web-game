@@ -7,7 +7,7 @@ export default class GameInterfaceService {
 		this.#clientStore = clientStore;
 	}
 
-	createGameUI(gameId, players) {
+	createGameUI(gameId, game, players) {
 		const exisitingUI = document.getElementById("game-ui");
 		if (exisitingUI) return;
 
@@ -15,14 +15,21 @@ export default class GameInterfaceService {
 		gameUI.id= "game-ui" ;
 		gameUI.className = 'ui'
 
-		const game = document.getElementById("game");
+		const gameElement = document.getElementById("game");
 
 		const idElement = this.createGameIdElement(gameId);
 		const playerCountElement = this.createPlayerCountElement(players);
+
+		console.log();
+
+		const timeRemaining = this.#clientStore.games.get(gameId).state.timeRemaining;
+
+		const countdownElement = this.createCountdownElement(timeRemaining);
 		const fullscreenButton = this.createFullscreenButton();
 
-		game.appendChild(gameUI);
+		gameElement.appendChild(gameUI);
 		gameUI.appendChild(idElement);
+		gameUI.appendChild(countdownElement);
 		gameUI.appendChild(playerCountElement);
 		gameUI.appendChild(fullscreenButton);
 	}
@@ -32,8 +39,8 @@ export default class GameInterfaceService {
 		gameIdElement.id = "game-id";
 		gameIdElement.className = "ui-item";
 
-		const label = document.createElement("span");
-		label.textContent = "Game ID: ";
+		// const label = document.createElement("span");
+		// label.textContent = "Game ID: ";
 
 		const button = document.createElement("button");
 		button.id = "game-id-value";
@@ -55,7 +62,7 @@ export default class GameInterfaceService {
 			}
 		});
 
-		gameIdElement.append(label, button);
+		gameIdElement.append(button);
 		return gameIdElement;
 	}
 
@@ -99,6 +106,16 @@ export default class GameInterfaceService {
 		return fullscreenButton;
 	}
 
+	createCountdownElement(timeRemaining) {
+		const countdownElement = document.createElement("div");
+		countdownElement.id = "countdown";
+		countdownElement.className = "ui-item";
+		const time = (timeRemaining / 1000).toFixed(2);
+		countdownElement.textContent = time;
+
+		return countdownElement;
+	}
+
 	createPlayerCountElement(players) {
 
 		const playerCount = Object.keys(players).length;
@@ -112,22 +129,15 @@ export default class GameInterfaceService {
 		return playerCountElement;
 	}
 
-	updateGameUI(gameId, playersCount) {
+	updateGameUI(currentGame, playersCount) {
 		const gameUI = document.getElementById("game-ui");
 		if (!gameUI) return;
 
 		// this.updateGameIdElement(gameId);
 		this.updatePlayerCountElement(playersCount);
-
+		this.updateCountdownElement(currentGame.state.timeRemaining);
 	}
 
-	updateGameIdElement(gameId) {
-		const gameIdElement = document.getElementById("game-id");
-		const gameIdValueElement = document.getElementById("game-id-value");
-		if (!gameIdElement || !gameIdValueElement) return;
-
-		gameIdValueElement.textContent = gameId
-	}
 
 	updatePlayerCountElement(playerCount) {
 		const playerCountElement = document.getElementById("player-count");
@@ -135,6 +145,17 @@ export default class GameInterfaceService {
 		if (!playerCountElement || playerCountValueElement) return;
 
 		playerCountValueElement.textContent = playerCount;
+	}
+
+	updateCountdownElement(timeRemaining) {
+		const countdownElement = document.getElementById("countdown");
+		if (!countdownElement) return;
+		const time = (timeRemaining / 1000).toFixed(2);
+		countdownElement.textContent = time;
+
+		if (time <= 10000 && countdownElement.style.color !== "red") {
+			countdownElement.style.color = "red";
+		}
 	}
 
 	getNumberOfPlayers(players) {

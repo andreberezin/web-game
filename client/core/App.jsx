@@ -3,7 +3,7 @@ import '../styles/player.scss'
 import '../styles/bullet.css'
 import '../styles/userInterfaces.scss'
 import {Menu} from '../components/menu/Menu.jsx';
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {createClientManager} from './createClientManager.js';
 
 const clientManager = createClientManager();
@@ -12,6 +12,13 @@ clientManager.socketHandler.connectToServer();
 function App() {
     const [isGameStarted, setIsGameStarted] = useState(false);
     const SHOW_MENU = import.meta.env.VITE_SHOW_MENU;
+
+    const gameSettings = useRef({
+        private: false,
+        maxPlayers: 4,
+        mapType: "empty",
+        duration: 6000,
+    });
 
     useEffect(() => {
         console.log("SHOW MENU: ", SHOW_MENU);
@@ -32,7 +39,7 @@ function App() {
                     } else {
                         // Create a new game
                         console.log("Creating new game with ID:", socket.id);
-                        socket.emit('createGame', socket.id, socket.id);
+                        socket.emit('createGame', socket.id, socket.id, gameSettings.current);
                     }
                 });
             });

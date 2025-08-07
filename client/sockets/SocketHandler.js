@@ -1,7 +1,6 @@
 import {io} from 'socket.io-client';
 import Player from '../models/Player.js';
 import Bullet from '../models/Bullet.js';
-import PlayerInterface from '../models/PlayerInterface.js';
 
 export default class SocketHandler {
 	#socket;
@@ -41,12 +40,12 @@ export default class SocketHandler {
 		this.#gameService = gameService;
 	}
 
-	initializePlayers(players, myPlayer) {
+	initializePlayers(gameId, players, myPlayer) {
 		if (!this.#clientStore.myId) {
 			this.#clientStore.myId = myPlayer.id;
 		}
 
-		const gameState = this.#clientStore.currentGame.state;
+		const gameState = this.#clientStore.games.get(gameId).state;
 
 		for (const playerID in players) {
 			gameState.players[playerID] = new Player(playerID, players[playerID].name);
@@ -54,7 +53,7 @@ export default class SocketHandler {
 			this.#playerService.createPlayerModel(players[playerID], playerID);
 
 			// todo I don't think it's necessary to create the playerInterface object and save it for each player
-			gameState.interfaces[playerID] = new PlayerInterface(playerID);
+			//gameState.interfaces[playerID] = new PlayerInterface(playerID);
 
 			if (playerID === myPlayer.id) {
 				this.#playerInterfaceService.createPlayerUI(playerID);
@@ -66,11 +65,15 @@ export default class SocketHandler {
 		this.#gameFieldService.createElement(mapType);
 	}
 
-	startGame(gameId, settings, players, myPlayer) {
-		console.log("Starting game");
+	startGame(gameId, myId) {
+		const game  = this.#clientStore.games.get(gameId);
+
+		const players = game.state.players;
+		const settings = game.settings;
+
 		this.initializeGameField(settings.mapType);
-		this.initializePlayers(players, myPlayer);
-		this.#gameInterfaceService.createGameUI(gameId, players);
+		this.initializePlayers(gameId, players, players[myId]);
+		this.#gameInterfaceService.createGameUI(game.id, settings, players);
 		this.#clientManager.startRenderLoop();
 	}
 
@@ -88,6 +91,15 @@ export default class SocketHandler {
 			this.socket.on(event, callback);
 		}
 	}
+
+	// setCurrentGame(gameId, state, settings) {
+	// 	this.#clientStore.gameId = gameId;
+	// 	this.#clientStore.currentGame.id = gameId;
+	//
+	// 	// todo should have update functions for these
+	// 	this.#clientStore.currentGame.state = state;
+	// 	this.#clientStore.currentGame.settings = settings;
+	// }
 
 	connectToServer() {
 		this.socket = io();
@@ -112,24 +124,36 @@ export default class SocketHandler {
 
 		socket.on('createGameSuccess', (gameId, state, settings) => {
 
-			this.#clientStore.games.set(gameId, {state, settings});
-			console.log("Game created: ", gameId, this.#clientStore.games);
+			this.#clientStore.games.set(gameId, {id: gameId, state, settings});
+
+			// this.setCurrentGame(gameId, state, settings);
+
+			console.log("Game created: ", gameId);
 		})
 
-		socket.on('joinGameSuccess', ({gameId, players, myPlayer}) => {
-			console.log("Game:", gameId, "joined by player: ", myPlayer.id);
+		socket.on('joinGameSuccess', (gameId, state, settings, myId) => {
+			console.log("Game:", gameId, "joined by player: ", myId);
 
 			if (this.#listeners["joinGameSuccess"]) {
 				this.#listeners["joinGameSuccess"]();
 			}
 
+			// todo update the other parts of currentGame as
 			this.#clientStore.gameId = gameId;
+			// this.#clientStore.updateCurrentGame(game);
+			console.log("settings", settings);
 
-			const game = this.#clientStore.games.get(gameId);
+			// this.setCurrentGame(gameId, state, settings);
 
-			// console.log("games:", this.#clientStore.games);
+			// const currentGame = this.#clientStore.games.get(gameId);
 
-			this.startGame(gameId, game.settings, players, myPlayer);
+			// console.log("current game:", game);
+
+			// const currentGame = this.#clientStore.currentGame;
+
+			// console.log("current game: ", currentGame);
+
+			this.startGame(gameId, myId);
 		})
 
 		socket.on('error', (message) => {
@@ -152,22 +176,28 @@ export default class SocketHandler {
 		// todo refactor this socket connection
 		socket.on('updateGameState', (gameId, updatedGameState) => {
 			// console.log("updated state:", gameId, updatedGameState);
-			const currentGameState = this.#clientStore.currentGame.state;
 
-			if (!currentGameState) {
+			const game = this.#clientStore.games.get(gameId)
+
+			if (!game) {
 				console.warn(`No game found with ID ${gameId}`);
 				return;
 			}
 
+			const currentGameState = game.state;
+
+			currentGameState.timeRemaining = updatedGameState.timeRemaining;
+
+
 			// todo probably don't need to hold the same value in both places
-			this.#gameInterface.gameId = gameId;
-			this.#clientStore.currentGame.id = gameId;
+			// this.#gameInterface.gameId = gameId;
+			// this.#clientStore.currentGame.id = gameId;
 
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
 					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
-					console.log("Creating player model for:", updatedGameState.players[playerID]);
+					//console.log("Creating player model for:", updatedGameState.players[playerID]);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}
@@ -207,7 +237,7 @@ export default class SocketHandler {
 				}
 			}
 
-			// Delete bullet from client if not present in game state sent from server
+			// Delete the bullet from the client if not present in game state sent from server
 			for (const bulletID in currentGameState.bullets) {
 				if (!updatedGameState.bullets[bulletID]) {
 					const bulletElement = document.getElementById(bulletID);

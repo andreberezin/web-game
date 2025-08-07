@@ -22,7 +22,7 @@ export default class ClientManager {
 	startRenderLoop() {
 		const store = this.#clientStore;
 
-		if (!store.uiState.renderLoopId && store.currentGame) {
+		if (!store.uiState.renderLoopId && store.gameId) {
 			const id = requestAnimationFrame(this.renderLoop);
 			store.updateUIState({renderLoopId: id});
 		}
@@ -30,12 +30,14 @@ export default class ClientManager {
 
 	renderLoop = (timestamp) => {
 		const store = this.#clientStore;
-		const currentGame = store.currentGame
+		// const currentGameId = store.gameId
 
-		if (currentGame) {
-			const {players, bullets} = currentGame.state;
+		if (store.gameId) {
+			const game = store.games.get(store.gameId)
+
+			const {players, bullets} = game.state;
 			const playersCount = this.#gameInterfaceService.getNumberOfPlayers(players)
-			this.#gameInterfaceService.updateGameUI(store.gameId, playersCount);
+			this.#gameInterfaceService.updateGameUI(game, playersCount);
 
 			for (let playerID in players) {
 				if (playerID && players[playerID] != null) {
@@ -71,7 +73,9 @@ export default class ClientManager {
 	}
 
 	cleanup = () => {
-		const {players} = this.#clientStore.currentGame.state;
+		const store = this.#clientStore;
+
+		const {players} = store.games.get(store.gameId).state;
 
 		this.stopRenderLoop();
 

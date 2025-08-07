@@ -28,13 +28,13 @@ export default class GamesManager {
 		gameLoop();
 	}
 
-	createGame(socket, hostId, settings = {}) {
+	createGame(socket, hostId, settings) {
 		console.log("Creating game with id: ", hostId);
 		const game = this.#gameService.createGame(hostId, settings);
-		game.updateState({ isRunning: true});
-		// game.updateSettings({...settings});
 
-		// todo games doesn't need to hold the whole game object
+		// todo move this when starting and ending game is added
+		game.updateState({ isRunning: true});
+
 		this.#serverStore.updateGames(game.id, game);
 
 		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);

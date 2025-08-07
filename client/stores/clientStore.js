@@ -6,15 +6,15 @@ export default class clientStore {
 	#myId = null;
 	#gameId = null;
 	#games = {};
-	#currentGame = {
-		id: null,
-		state: {
-			players: {},
-			interfaces: {},
-			bullets: {},
-		},
-		settings: {},
-	}
+	// #currentGame = {
+	// 	id: null,
+	// 	state: {
+	// 		players: {},
+	// 		interfaces: {},
+	// 		bullets: {},
+	// 	},
+	// 	settings: {},
+	// }
 
 	get uiState() {
 		return this.#uiState;
@@ -61,18 +61,17 @@ export default class clientStore {
 		}
 	}
 
-	get currentGame() {
-		return this.#currentGame;
+	getCurrentGame(id) {
+		return this.#games.get(id);
 	}
 
-	set currentGame(game) {
-		this.#currentGame = game;
+	setCurrentGame(game) {
+		this.#games.set(id, game);
 	}
 
 	updateCurrentGame(game) {
-		this.#currentGame = {
-			...this.#currentGame,
-			...game,
-		};
+		for (const [key, value] of game) {
+			this.#games.set(key, value);
+		}
 	}
 }
