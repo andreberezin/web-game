@@ -35,7 +35,7 @@ export default class ClientManager {
 		if (store.gameId) {
 			const game = store.games.get(store.gameId)
 
-			const {players, bullets} = game.state;
+			const {players, bullets, powerups} = game.state;
 			const playersCount = this.#gameInterfaceService.getNumberOfPlayers(players)
 			this.#gameInterfaceService.updateGameUI(game, playersCount);
 

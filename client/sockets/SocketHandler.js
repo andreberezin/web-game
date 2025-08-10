@@ -1,6 +1,7 @@
 import {io} from 'socket.io-client';
 import Player from '../models/Player.js';
 import Bullet from '../models/Bullet.js';
+import Powerup from "../models/Powerup.js";
 
 export default class SocketHandler {
 	#socket;
@@ -245,6 +246,29 @@ export default class SocketHandler {
 						bulletElement.remove();
 					}
 					delete currentGameState.bullets[bulletID];
+				}
+			}
+
+			for (const powerupID in updatedGameState.powerups) {
+				const powerup = updatedGameState.powerups[powerupID];
+
+				if (!currentGameState.powerups[powerupID]) {
+					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
+					this.#gameService.createPowerupModel(powerup, powerupID);
+				}  else {
+					// console.log(updatedGameState.powerups[powerupID].position);
+					currentGameState.powerups[powerupID].pos = powerup.pos;
+				}
+			}
+
+			// Delete the powerup from the client if not present in game state sent from server
+			for (const powerupID in currentGameState.powerups) {
+				if (!updatedGameState.powerups[powerupID]) {
+					const powerupElement = document.getElementById(powerupID);
+					if (powerupElement) {
+						powerupElement.remove();
+					}
+					delete currentGameState.powerups[powerupID];
 				}
 			}
 		})

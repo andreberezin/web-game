@@ -7,9 +7,18 @@ export default class serverStore {
 		MAX_Y: 1080,
 	}
 	#games = null
+	#timeWhenLastPowerupWasCreated = 0;
 
 	constructor() {
 		this.#games = new Map();
+	}
+
+	get timeWhenLastPowerupWasCreated() {
+		return this.#timeWhenLastPowerupWasCreated;
+	}
+
+	set timeWhenLastPowerupWasCreated(newTime) {
+		this.#timeWhenLastPowerupWasCreated = newTime;
 	}
 
 	get TICK_RATE() {
