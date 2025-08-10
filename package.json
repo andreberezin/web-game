@@ -7,10 +7,12 @@
   "scripts": {
     "install": "cd server && npm install && cd .. && cd client && npm install",
     "server": "cd server && npm run dev",
+      "server:debug": "cd server && npm run debug",
     "client": "cd client && npm run dev",
       "client:host": "cd client && npm run dev:host",
     "dev": "concurrently \"npm run server\" \"npm run client\"",
       "dev:host": "concurrently \"npm run server\" \"npm run client:host\"",
+    "debug": "concurrently --raw \"npm run server:debug\" \"npm run client\"",
     "client:ngrok": "cross-env USE_NGROK=true npm run client",
     "dev:ngrok": "cross-env USE_NGROK=true concurrently \"npm run client\" \"npm run server\" \"node ngrok.js\"",
     "lint": "eslint ."
