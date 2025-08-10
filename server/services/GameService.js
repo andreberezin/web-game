@@ -149,10 +149,20 @@ export default class GameService {
 
         Object.entries(bullets).forEach(([bulletId, bullet]) => {
             const directionValues = directionMap[bullet.direction];
+            const bulletSize = bullet.size?.width || 20;
+            const newPosition = bullet.pos[directionValues.coord] + bullet.velocity * directionValues.multiplier;
+            let testX = bullet.pos.x;
+            let testY = bullet.pos.y;
+
+            if (directionMap[bullet.direction].coord === 'x') {
+                testX = newPosition;
+            } else {
+                testY = newPosition;
+            }
 
             this.moveBulletByVelocity(bullet, directionValues);
 
-            if (this.isOutOfBounds(bullet.pos)) {
+            if (this.wouldCollideWithWalls(testX, testY, bulletSize, game) || this.isOutOfBounds(bullet.pos)) {
                 bulletsToDelete.push(bulletId);
             }
         });
@@ -175,5 +185,51 @@ export default class GameService {
     isOutOfBounds(pos) {
         const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
         return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
+    }
+
+    wouldCollideWithWalls(x, y, objectSize, game) {
+        if (!game || !game.map) {
+            return false;
+        }
+
+        const TILE_SIZE = 40;
+        const TILES_X = 48;
+
+        // Convert pixel coordinates to tile coordinates
+        const topLeft = {
+            x: Math.floor(x / TILE_SIZE),
+            y: Math.floor(y / TILE_SIZE)
+        };
+
+        const bottomRight = {
+            x: Math.floor((x + objectSize - 1) / TILE_SIZE),
+            y: Math.floor((y + objectSize - 1) / TILE_SIZE)
+        };
+
+        for (let tileY = topLeft.y; tileY <= bottomRight.y; tileY++) {
+            for (let tileX = topLeft.x; tileX <= bottomRight.x; tileX++) {
+                if (this.getTileAt(game.map, tileX, tileY, TILES_X)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    getTileAt(mapArray, tileX, tileY, tilesX) {
+        // Check bounds (treat out-of-bounds as walls)
+        if (tileX < 0 || tileX >= tilesX || tileY < 0) {
+            return true; // Wall
+        }
+
+        const index = tileY * tilesX + tileX;
+
+        // Check if index is valid
+        if (index >= mapArray.length) {
+            return true; // Wall
+        }
+
+        return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
     }
 }
