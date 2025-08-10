@@ -35,8 +35,21 @@ export default class GameService {
 
 		bullet.pos = bulletData.pos;
 
-		const bulletElement = this.createElement(bullet);
+		const bulletElement = this.createElementForBullet(bullet);
 		this.appendToGameField(bulletElement);
+	}
+
+	createPowerupModel(powerupData, powerupId) {
+		if (document.getElementById(powerupId) !== null) return;
+
+		const store  = this.#clientStore;
+
+		const powerup = store.games.get(store.gameId).state.powerups[powerupId];
+
+		powerup.pos = powerupData.pos;
+
+		const powerupElement = this.createElementForPowerup(powerup);
+		this.appendToGameField(powerupElement);
 	}
 
 	appendToGameField(bulletElement) {
@@ -44,7 +57,7 @@ export default class GameService {
 		gameField.appendChild(bulletElement);
 	}
 
-	createElement(bullet) {
+	createElementForBullet(bullet) {
 		const bulletElement = document.createElement("div")
 		bulletElement.classList.add("bullet")
 		bulletElement.id = bullet.id;
@@ -58,6 +71,22 @@ export default class GameService {
 
 		bullet.element = bulletElement;
 		return bulletElement;
+	}
+
+	createElementForPowerup(powerup) {
+		const powerupElement = document.createElement("div")
+		powerupElement.classList.add("powerup")
+		powerupElement.id = powerup.id;
+		powerupElement.style.top = `${powerup.pos.y}px`
+		powerupElement.style.left = `${powerup.pos.x}px`
+		powerupElement.tabIndex = 0;
+
+		// for (const property in powerup.styles) {
+		// 	powerupElement.style[property] = powerup.styles[property]
+		// }
+
+		powerup.element = powerupElement;
+		return powerupElement;
 	}
 
 	// setPosition(bullet, bulletData) {

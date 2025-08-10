@@ -1,6 +1,7 @@
 import '../styles/gamefield.scss'
 import '../styles/player.scss'
 import '../styles/bullet.css'
+import '../styles/powerup.css'
 import '../styles/userInterfaces.scss'
 import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useRef, useState} from 'react';

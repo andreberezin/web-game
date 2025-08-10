@@ -1,5 +1,6 @@
 import Game from '../models/Game.js';
 import Bullet from "../models/Bullet.js";
+import Powerup from "../models/Powerup.js";
 
 export default class GameService {
     #playerInputService
@@ -25,6 +26,7 @@ export default class GameService {
         }
 
         this.updateBullets(game);
+        this.updatePowerups(game, currentTime);
 
         for (const playerID in game.state.players) {
             const player = game.state.players[playerID];
@@ -51,13 +53,14 @@ export default class GameService {
 
             if (game.state.timeRemaining === 0) {
                 clearTimeout(timer)
-                console.log("Timer has finished: ", game.state.timeRemaining);
+                //console.log("Timer has finished: ", game.state.timeRemaining);
             }
         }
     }
 
-    checkForCollisions(player, currentTime, {bullets, deadPlayers}) {
+    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
         const bulletsToDelete = [];
+        const powerupsToDelete = [];
 
             if (player.status.alive) {
                 for (let bulletID in bullets) {
@@ -65,9 +68,10 @@ export default class GameService {
 
                     if (bullet.pos.x + 5 > player.pos.x && bullet.pos.x < player.pos.x + 20 && bullet.pos.y + 5 > player.pos.y && bullet.pos.y < player.pos.y + 20) {
                         //console.log("PLAYER GOT HIT REMOVING 20 HP");
-                        player.hp = player.hp - 20;
+                        player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
+                            player.lives -= 1;
                             player.input = {
                                 space: false,
                                 ArrowUp: false,
@@ -85,10 +89,22 @@ export default class GameService {
                         bulletsToDelete.push(bulletID);
                     }
                 }
+
+                for (let powerupID in powerups) {
+                    const powerup = powerups[powerupID];
+
+                    if (powerup.pos.x + 10 > player.pos.x && powerup.pos.x < player.pos.x + 20 && powerup.pos.y + 10 > player.pos.y && powerup.pos.y < player.pos.y + 20) {
+                        powerup.givePowerup(player);
+                        powerupsToDelete.push(powerupID);
+                    }
+                }
             }
 
         bulletsToDelete.forEach(bulletID => {
             delete bullets[bulletID];
+        });
+        powerupsToDelete.forEach(powerupID => {
+            delete powerups[powerupID];
         });
     }
 
@@ -113,7 +129,37 @@ export default class GameService {
         game.state.players[playerId] = player;
     }
 
-    createBulletAt(x, y, direction, game, playerWidth) {
+    createPowerup(game) {
+        // TODO: add UUID generation instead of math.random
+        const id = Math.floor(Math.random() * 10000);
+        let x = Math.floor(Math.random() * 1919);
+        let y = Math.floor(Math.random() * 1079);
+        const typeOfPowerup = Math.floor(Math.random() * 2);
+        let foundCoordinatesNotInsideWalls = false;
+        while (foundCoordinatesNotInsideWalls == false) {
+            if (this.wouldCollideWithWalls(x, y, 20, game)) {
+                x = Math.floor(Math.random() * 1919);
+                y = Math.floor(Math.random() * 1079);
+            } else {
+                foundCoordinatesNotInsideWalls = true;
+            }
+        }
+        game.state.powerups[id] = new Powerup(id, x, y, typeOfPowerup);
+    }
+
+    updatePowerups(game, currentTime) {
+        const timeWhenLastPowerupWasCreated = this.#serverStore.timeWhenLastPowerupWasCreated;
+        let currentAmountOfPowerups = Object.keys(game.state.powerups).length;
+
+        //console.log(currentTime - timeWhenLastPowerupWasCreated);
+        if (currentAmountOfPowerups <= 5 && ((currentTime - timeWhenLastPowerupWasCreated) > 5000 || timeWhenLastPowerupWasCreated === 0)) {
+            this.createPowerup(game);
+            this.#serverStore.timeWhenLastPowerupWasCreated = currentTime;
+        }
+    }
+
+    createBulletAt(x, y, direction, game, playerWidth, damageMultiplier) {
+        // TODO: add UUID generation instead of math.random
         const id = Math.floor(Math.random() * 10000);
         const offset = 24;
 
@@ -134,7 +180,7 @@ export default class GameService {
                 bulletX += offset;
                 break;
         }
-        game.state.bullets[id] = new Bullet(id, bulletX, bulletY, direction);
+        game.state.bullets[id] = new Bullet(id, bulletX, bulletY, direction, damageMultiplier);
     }
 
     updateBullets(game) {

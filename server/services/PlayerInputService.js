@@ -175,7 +175,7 @@ export default class PlayerInputService {
         // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width);
+                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
                 player.lastBulletShotAt(currentTime);
             }
         }
