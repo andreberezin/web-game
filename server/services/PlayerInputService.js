@@ -92,7 +92,7 @@ export default class PlayerInputService {
             testY = newPosition;
         }
 
-        if (this.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+        if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
             return;
         }
 
@@ -100,7 +100,7 @@ export default class PlayerInputService {
         player.direction = direction;
     }
 
-    wouldCollideWithWalls(x, y, playerSize, game) {
+    /*wouldCollideWithWalls(x, y, playerSize, game) {
         if (!game || !game.map) {
             return false;
         }
@@ -144,7 +144,7 @@ export default class PlayerInputService {
         }
 
         return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
-    }
+    }*/
 
     handlePlayerRespawning({deadPlayers, players}, currentTime) {
 
