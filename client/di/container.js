@@ -9,6 +9,7 @@ import SocketHandler from '../sockets/SocketHandler.js';
 import ClientManager from '../core/ClientManager.js';
 import GameFieldService from '../services/GameFieldService.js';
 import clientStore from '../stores/clientStore.js';
+import {BulletService} from '../services/BulletService.js';
 
 const container = createContainer();
 
@@ -20,6 +21,7 @@ container.register({
 	gameInterface: asClass(GameInterface).singleton(),
 	gameInterfaceService: asClass(GameInterfaceService).singleton(),
 	playerInterfaceService: asClass(PlayerInterfaceService).singleton(),
+	bulletService: asClass(BulletService).singleton(),
 	socketHandler: asClass(SocketHandler).singleton(),
 	clientManager: asClass(ClientManager).singleton(),
 	clientStore: asClass(clientStore).singleton(),
