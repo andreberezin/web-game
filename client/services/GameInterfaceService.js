@@ -1,3 +1,5 @@
+import {existingUI} from '../utils/existingUI.js';
+
 export default class GameInterfaceService {
 	#gameInterface
 	#clientStore
@@ -8,8 +10,7 @@ export default class GameInterfaceService {
 	}
 
 	createGameUI(gameId, game, players) {
-		const exisitingUI = document.getElementById("game-ui");
-		if (exisitingUI) return;
+		if (existingUI("game-ui")) return;
 
 		const gameUI = document.createElement("div");
 		gameUI.id= "game-ui" ;
