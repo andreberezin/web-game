@@ -2,11 +2,13 @@ import {existingUI} from '../utils/existingUI.js';
 
 export default class GameService {
 	#clientStore;
-	#bulletService
+	#bulletService;
+	#socketHandler;
 
-	constructor({clientStore, bulletService}) {
+	constructor({clientStore, bulletService, socketHandler}) {
 		this.#clientStore = clientStore;
 		this.#bulletService = bulletService;
+		this.#socketHandler = socketHandler;
 	}
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
@@ -88,15 +90,19 @@ export default class GameService {
 		return powerupElement;
 	}
 
-	handleGameStart() {
+	startGame() {
+
+	}
+
+	pauseGame() {
 
 	}
 
 	updateGameState() {
-
+		// todo logic from SocketHandler into smaller methods
 	}
 
-	handleGamePause() {
+	finishGame() {
 
 	}
 
@@ -104,12 +110,9 @@ export default class GameService {
 	handleGameEnd(gameId) {
 		const game = this.#clientStore.games.get(gameId);
 
-		this.#bulletService.removeBullets(game.state.bullets);
-	}
+		// render div with game information, like player scores, winner etc
 
-	// setPosition(bullet, bulletData) {
-	// 	console.log("bulletData:", bulletData);
-	// 	bullet.position.x = bulletData.position.x;
-	// 	bullet.position.y = bulletData.position.y;
-	// }
+		// when player pressed button remove remove game related divs and take user back to main menu
+
+	}
 }

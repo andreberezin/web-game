@@ -39,17 +39,16 @@ export default class ClientManager {
 			const {players, bullets, powerups} = game.state;
 			this.#gameInterfaceService.updateGameUI(game);
 
+			for (let bulletID in bullets) {
+				if (bulletID && bullets[bulletID] != null) {
+					this.#gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
+				}
+			}
 
 			if (store.games.get(store.gameId).state.status !== "finished") {
 				for (let playerID in players) {
 					if (playerID && players[playerID] != null) {
 						this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);
-					}
-				}
-
-				for (let bulletID in bullets) {
-					if (bulletID && bullets[bulletID] != null) {
-						this.#gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
 					}
 				}
 

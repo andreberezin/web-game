@@ -22,11 +22,13 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 			setGames(gamesObj);
 		});
 
+		console.log("games: ", games);
+
 		return () => {
 			clientManager.socketHandler.on("updateAvailableGames", null);
 		}
 
-	}, [clientManager.socketHandler]); // empty deps now fine because no external dependencies used in handlers
+	}, [clientManager.socketHandler, games]); // empty deps now fine because no external dependencies used in handlers
 
 
 	return(

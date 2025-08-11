@@ -22,16 +22,19 @@ export default class GameService {
         // }
 
         this.updateBullets(game);
-        this.updatePowerups(game, currentTime);
 
-        for (const playerID in game.state.players) {
-            const player = game.state.players[playerID];
+        if (game.state.status !== "finished") {
+            this.updatePowerups(game, currentTime);
 
-            this.checkForCollisions(player, currentTime, game.state);
-            this.#playerInputService.handlePlayerMovement(player, game);
-            this.#playerInputService.handlePlayerShooting(player, currentTime, game);
-            this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
-            this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
+            for (const playerID in game.state.players) {
+                const player = game.state.players[playerID];
+
+                this.checkForCollisions(player, currentTime, game.state);
+                this.#playerInputService.handlePlayerMovement(player, game);
+                this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+                this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
+                this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
+            }
         }
     }
 
@@ -44,8 +47,8 @@ export default class GameService {
     }
 
     finishGame(gameId) {
-        const bullets = this.#serverStore.games.get(gameId).state.bullets;
-        this.deleteBullets(bullets, bullets)
+        // const bullets = this.#serverStore.games.get(gameId).state.bullets;
+        // this.deleteBullets(bullets, bullets)
     }
 
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
@@ -61,8 +64,8 @@ export default class GameService {
                 setTimeout(countdown, 10)
 
             } else {
-                game.state.status = "finished"
-                socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
+                // game.state.status = "finished"
+                // socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
                 console.log("Timer has finished: ", game.state.timeRemaining);
             }
         }

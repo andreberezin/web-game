@@ -154,16 +154,29 @@ export default class SocketHandler {
 		socket.on('gameStatusChange', (status) => {
 			game.state.status = status;
 
+			console.log("Game status changed: ", status);
+
 			switch (status) {
-
-			}
-
-			if (status === 'started') {
+			case "waiting":
+				break;
+			case "started":
 				game.state.startTime = Date.now();
 
 				if (game.state.timeRemaining > 0) {
 					this.#gameService.handleGameTimer(game, socket);
 				}
+
+				this.#io.emit('updateAvailableGames', this.getPublicGameList());
+
+				break;
+			case "paused":
+				break;
+			case "finished":
+				this.#gameService.finishGame(gameId);
+				break;
+			default:
+				console.log("default: ", status);
+
 			}
 
 			socket.emit('gameStatusChangeSuccess', gameId, game.state.status);
@@ -174,7 +187,8 @@ export default class SocketHandler {
 	getPublicGameList() {
 		return Array.from(this.#serverStore.games.entries())
 			//eslint-disable-next-line
-			.filter(([_, game]) => !game.settings.private)
+			// .filter(([_, game]) => !game.settings.private)
+			// .filter(([_, game]) => game.state.status === "waiting")
 			.map(([id, game]) => ({
 				id: id,
 				settings: game.settings,

@@ -82,7 +82,8 @@ export default class SocketHandler {
 		}
 	}
 
-	startGame(gameId, myId) {
+	// todo probably should be part of GameService class instead
+	createGame(gameId, myId) {
 		const game  = this.#clientStore.games.get(gameId);
 
 		const players = game.state.players;
@@ -168,7 +169,7 @@ export default class SocketHandler {
 			game.state = {...game.state, ...state};
 			game.settings = {...game.settings, ...settings};
 
-			this.startGame(gameId, myId);
+			this.createGame(gameId, myId);
 		})
 
 		// todo more error handling
@@ -189,7 +190,7 @@ export default class SocketHandler {
 			console.log("Player:", playerId, "left the game");
 		})
 
-		// todo refactor this socket connection
+		// todo refactor this socket connection into smaller methods
 		socket.on('updateGameState', (gameId, updatedGameState) => {
 			// console.log("updated state:", gameId, updatedGameState);
 
@@ -200,10 +201,19 @@ export default class SocketHandler {
 				return;
 			}
 
+
 			const currentGameState = game.state;
 
+			// handle time remaining
 			if (currentGameState && updatedGameState) {
 				currentGameState.timeRemaining = updatedGameState.timeRemaining;
+
+				// handle timer end
+				if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+					socket.emit('gameStatusChange', "finished")
+					return;
+				}
+
 			} else {
 				console.error("Cannot update time remaining")
 			}
@@ -294,19 +304,16 @@ export default class SocketHandler {
 
 		socket.on('gameStatusChangeSuccess', (gameId, status) => {
 			this.#clientStore.games.get(gameId).state.status = status;
+			console.log("Game status changed: ", status);
 
 			switch (status) {
 				case "waiting":
-					console.log("Status changed: ", status);
 					break;
 				case "started":
-					console.log("Status changed: ", status);
 					break;
 				case "paused":
-					console.log("Status changed: ", status);
 					break;
 				case "finished":
-					console.log("Status changed: ", status);
 					this.#gameService.handleGameEnd(gameId);
 					break;
 				default:

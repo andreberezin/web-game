@@ -5,7 +5,6 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 	const [error, setError] = useState(null);
 
 	function ShowAvailableGames() {
-		console.log("games: ", games);
 		return(
 			// Array.from(games.entries()).map(([gameData]) => (
 			// 	<li key={gameData.id} className={"list-item"}>
@@ -13,7 +12,8 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 			// 	</li>
 			<>
 				{Object.keys(games).length > 0 ? (
-					Object.entries(games).map(([gameId, game]) => (
+					Object.entries(games)
+						.map(([gameId, game]) => (
 						<li
 							key={gameId}
 							className="list-item"
@@ -32,6 +32,9 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 									</div>
 									<div className="private">
 										{game.settings.private ? 'Private' : 'Public'}
+									</div>
+									<div className="status">
+										Status: {game.state.status}
 									</div>
 								</div>
 							</div>
