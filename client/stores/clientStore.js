@@ -5,7 +5,7 @@ export default class clientStore {
 	}
 	#myId = null;
 	#gameId = null;
-	#games = {};
+	#games = new Map();
 	// #currentGame = {
 	// 	id: null,
 	// 	state: {

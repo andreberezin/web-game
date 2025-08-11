@@ -80,10 +80,6 @@ export default class PlayerService {
 			return;
 		}
 
-		// if (document.getElementsByClassName("me").length > 1) {
-		// 	console.log("Player already exists!");
-		// 	return;
-		// }
 
 		const store  = this.#clientStore;
 
@@ -91,13 +87,12 @@ export default class PlayerService {
 		player.pos = playerData.pos;
 		player.maxPos = playerData.maxPos;
 		player.name = playerData.name || playerId;
-		player.hp = playerData.hp;
 
-		//console.log("Player: ", player);
 
-        const numberOfPlayers = Object.keys(store.games.get(store.gameId).state.players).length;
+        // const numberOfPlayers = Object.keys(store.games.get(store.gameId).state.players).length;
+		const indexOfPlayer = player.colorIndex || 1;
 
- 		const playerElement = this.createElement(player, numberOfPlayers, playerId);
+ 		const playerElement = this.createElement(player, indexOfPlayer, playerId);
 		this.addEventListeners(playerId);
 		player.element = playerElement;
 
@@ -159,7 +154,8 @@ export default class PlayerService {
 		})
 	}
 
-	createElement(player, numberOfPlayers, playerId) {
+	createElement(player, index, playerId) {
+		console.log("index:" + index);
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`
@@ -168,23 +164,13 @@ export default class PlayerService {
 		playerElement.style.width = `${player.size.width}px`
 		playerElement.tabIndex = 0;
 
-		// console.log("player:", player);
 		// css variable for styling
 		playerElement.style.setProperty("--name", `"${player.name}"`)
-		playerElement.setAttribute("number", numberOfPlayers);
-
-		// Set a real HTML attribute (for DOM querying)
-		//playerElement.setAttribute("data-player-id", playerId);
-
-		//player.textContent = playerData.name;
+		playerElement.setAttribute("number", index);
 
 		if (playerId === this.#clientStore.myId) {
 			playerElement.classList.add("me")
 		}
-
-		// for (const property in player.styles) {
-		// 	playerElement.style[property] = player.styles[property]
-		// }
 
 		return playerElement;
 	}
