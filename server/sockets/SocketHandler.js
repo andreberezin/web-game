@@ -154,6 +154,10 @@ export default class SocketHandler {
 		socket.on('gameStatusChange', (status) => {
 			game.state.status = status;
 
+			switch (status) {
+
+			}
+
 			if (status === 'started') {
 				game.state.startTime = Date.now();
 

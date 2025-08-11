@@ -32,31 +32,33 @@ export default class ClientManager {
 		const store = this.#clientStore;
 		// const currentGameId = store.gameId
 
-		if (store.gameId) {
+		if (store.gameId && this.#socketHandler.socket) { // && store.games.get(store.gameId).state.status !== "finished"
 			const game = store.games.get(store.gameId)
 
+			// todo we're updating some things here and some things in Sockethandler...
 			const {players, bullets, powerups} = game.state;
-			const playersCount = this.#gameInterfaceService.getNumberOfPlayers(players)
-			this.#gameInterfaceService.updateGameUI(game, playersCount);
+			this.#gameInterfaceService.updateGameUI(game);
 
-			for (let playerID in players) {
-				if (playerID && players[playerID] != null) {
-					this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);
+
+			if (store.games.get(store.gameId).state.status !== "finished") {
+				for (let playerID in players) {
+					if (playerID && players[playerID] != null) {
+						this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);
+					}
 				}
-			}
 
-			for (let bulletID in bullets) {
-				if (bulletID && bullets[bulletID] != null) {
-
-					this.#gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
+				for (let bulletID in bullets) {
+					if (bulletID && bullets[bulletID] != null) {
+						this.#gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
+					}
 				}
-			}
 
-			const myId = store.myId
-			if (myId && players[myId]) {
-				const me =  players[myId];
-				//this.socketHandler.socket.emit("updateMyPlayerData", me.input); // me.maxPosition me.shift
-				this.#playerInterfaceService.updatePlayerUI(me);
+				const myId = store.myId
+				if (myId && players[myId]) {
+					const me =  players[myId];
+					//this.socketHandler.socket.emit("updateMyPlayerData", me.input); // me.maxPosition me.shift
+					this.#playerInterfaceService.updatePlayerUI(me);
+				}
 			}
 		}
 

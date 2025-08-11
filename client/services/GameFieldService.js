@@ -79,13 +79,23 @@ export default class GameFieldService {
 	}
 
 	createStartMenu() {
+		if (existingUI('start-menu')) return;
+
 		const startMenu = document.createElement('div');
 		startMenu.id = 'start-menu';
+
+		const startButton = this.createStartButton();
+		const startPlayersCount = this.createStartPlayersCount();
+
+		startMenu.append(startButton);
+		startMenu.append(startPlayersCount);
+
 		return startMenu;
 	}
 
-	createStartButton(game) {
-		const startMenu = document.getElementById('start-menu')
+	createStartButton() {
+		if (existingUI('start-button')) return;
+
 
 		const startButton = document.createElement('button');
 		startButton.id = 'start-button';
@@ -95,8 +105,19 @@ export default class GameFieldService {
 
 			this.#socketHandler.socket.emit('gameStatusChange', "started")
 
+			const startMenu = document.getElementById('start-menu')
 			startMenu.style.display = 'none'
 		})
+
+		return startButton;
+	}
+
+	createStartPlayersCount() {
+		if (existingUI('start-players-count')) return;
+
+		const store = this.#clientStore
+
+		const game = store.games.get(store.gameId)
 
 		const playerCount = Object.keys(game.state.players).length;
 		const maxPlayers = game.settings.maxPlayers;
@@ -105,11 +126,8 @@ export default class GameFieldService {
 		startPlayersCount.id = 'start-players-count';
 		startPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
 
-		startMenu.append(startPlayersCount);
-		startMenu.append(startButton);
+		return startPlayersCount;
 	}
-
-	createSt
 
 	generateWalls() {
 		const gameInner = document.getElementById('game-inner');

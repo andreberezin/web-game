@@ -157,9 +157,13 @@ export default class SocketHandler {
 				this.#listeners["joinGameSuccess"]();
 			}
 			this.#clientStore.gameId = gameId;
+
+			// if the game object is not found in the Map then create the game object
 			if (!this.#clientStore.games.has(gameId)) {
 				this.#clientStore.games.set(gameId, {id: gameId, state: {}, settings: {}});
 			}
+
+			// update the Map so references are kept working
 			const game = this.#clientStore.games.get(gameId);
 			game.state = {...game.state, ...state};
 			game.settings = {...game.settings, ...settings};
@@ -289,6 +293,7 @@ export default class SocketHandler {
 		})
 
 		socket.on('gameStatusChangeSuccess', (gameId, status) => {
+			this.#clientStore.games.get(gameId).state.status = status;
 
 			switch (status) {
 				case "waiting":

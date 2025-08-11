@@ -2,7 +2,6 @@ export class BulletService {
 	constructor() {}
 
 	removeBullets(bullets) {
-		debugger
 		for (const bulletId in bullets) {
 
 			// if (bulletElement) {
@@ -14,7 +13,6 @@ export class BulletService {
 		const bulletElements = document.getElementsByClassName("bullet");
 
 		for (const bullet of bulletElements) {
-			debugger
 			bullet.remove();
 		}
 	}

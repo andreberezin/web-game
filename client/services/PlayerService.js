@@ -155,7 +155,6 @@ export default class PlayerService {
 	}
 
 	createElement(player, index, playerId) {
-		console.log("index:" + index);
 		const playerElement = document.createElement("div")
 		playerElement.classList.add("player")
 		playerElement.id = `${playerId}`

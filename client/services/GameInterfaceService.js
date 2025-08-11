@@ -128,13 +128,14 @@ export default class GameInterfaceService {
 		return playerCountElement;
 	}
 
-	updateGameUI(currentGame, playersCount) {
+	updateGameUI(game) {
 		const gameUI = document.getElementById("game-ui");
 		if (!gameUI) return;
 
-		// this.updateGameIdElement(gameId);
+
+		const playersCount = this.getNumberOfPlayers(game.state.players)
 		this.updatePlayerCountElement(playersCount);
-		this.updateCountdownElement(currentGame.state.timeRemaining);
+		this.updateCountdownElement(game.state.timeRemaining);
 	}
 
 

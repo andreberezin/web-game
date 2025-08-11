@@ -17,10 +17,6 @@ export default class GameService {
 
     updateGameState(game, currentTime) {
 
-        if (Object.keys(game.state.bullets).length > 1) {
-            //console.time("UpdateGameState")
-        }
-
         // if (game.state.status === "started" && game.state.timeRemaining > 0) {
         //     this.handleGameTimer(game, currentTime);
         // }
@@ -37,10 +33,6 @@ export default class GameService {
             this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
             this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
         }
-
-        if (Object.keys(game.state.bullets).length > 1) {
-            //console.timeEnd("UpdateGameState")
-        }
     }
 
     startGame() {
@@ -51,8 +43,9 @@ export default class GameService {
 
     }
 
-    finishGame() {
-
+    finishGame(gameId) {
+        const bullets = this.#serverStore.games.get(gameId).state.bullets;
+        this.deleteBullets(bullets, bullets)
     }
 
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
