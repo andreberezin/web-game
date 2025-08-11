@@ -61,8 +61,19 @@ export default class SocketHandler {
 		}
 	}
 
-	initializeGameField(mapType) {
-		this.#gameFieldService.createElement(mapType);
+	initializeGameField(mapType, gameId, myId) {
+		const gameField = this.#gameFieldService
+		gameField.createElement(mapType);
+
+		const game = this.#clientStore.games.get(gameId);
+		console.log("game:", gameId);
+
+		if (gameId === myId) {
+			// create and append start game button
+			gameField.createStartButton(game);
+		} else {
+			// create and append a message that says, "Waiting for the host to start the game..."
+		}
 	}
 
 	startGame(gameId, myId) {
@@ -71,7 +82,7 @@ export default class SocketHandler {
 		const players = game.state.players;
 		const settings = game.settings;
 
-		this.initializeGameField(settings.mapType);
+		this.initializeGameField(settings.mapType, gameId, myId);
 		this.initializePlayers(gameId, players, players[myId]);
 		this.#gameInterfaceService.createGameUI(game.id, settings, players);
 		this.#clientManager.startRenderLoop();
@@ -141,7 +152,6 @@ export default class SocketHandler {
 			// todo update the other parts of currentGame as
 			this.#clientStore.gameId = gameId;
 			// this.#clientStore.updateCurrentGame(game);
-			console.log("settings", settings);
 
 			// this.setCurrentGame(gameId, state, settings);
 
@@ -156,6 +166,7 @@ export default class SocketHandler {
 			this.startGame(gameId, myId);
 		})
 
+		// todo more error handling
 		socket.on('error', (message) => {
 			console.log("Error:", message);
 
@@ -186,7 +197,12 @@ export default class SocketHandler {
 
 			const currentGameState = game.state;
 
-			currentGameState.timeRemaining = updatedGameState.timeRemaining;
+			if (currentGameState && updatedGameState) {
+				currentGameState.timeRemaining = updatedGameState.timeRemaining;
+			} else {
+				console.error("Cannot update time remaining")
+			}
+
 
 
 			// todo probably don't need to hold the same value in both places
@@ -248,6 +264,28 @@ export default class SocketHandler {
 				}
 			}
 		})
+
+		socket.on('gameStatusChangeSuccess', (gameId, status) => {
+
+			switch (status) {
+				case "waiting":
+					console.log("Status changed: ", status);
+					break;
+				case "started":
+					console.log("Status changed: ", status);
+					break;
+				case "paused":
+					console.log("Status changed: ", status);
+					break;
+				case "finished":
+					console.log("Status changed: ", status);
+					this.#gameService.handleGameEnd(gameId);
+					break;
+				default:
+					console.log("default: ", status);
+
+			}
+		});
 
 		socket.on('disconnect', () => {
 			console.log('Disconnected from the server ');

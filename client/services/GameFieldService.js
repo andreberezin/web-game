@@ -1,5 +1,10 @@
-export default class GameFieldService {
+import {existingUI} from '../utils/existingUI.js';
 
+export default class GameFieldService {
+	#clientStore
+	#socketHandler
+
+	// todo duplicate code. Maube have the tilemap layout in backend and when a game is created send the array to frontend depending on the player chosen map (currently either "empty" or "simple")
 	#map = [
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -36,10 +41,18 @@ export default class GameFieldService {
 		TILES_Y: 27,
 	};
 
-	constructor() {}
+	constructor({clientStore}) {
+		this.#clientStore = clientStore;
+	}
+
+	setSocketHandler(handler) {
+		this.#socketHandler = handler;
+	}
 
 	createElement(mapType) {
-		// console.log("Map type", mapType);
+		if (existingUI('game')) return;
+
+		//console.log("Map type", mapType);
 		const root = document.getElementById('root');
 		const game = document.createElement('div');
 		game.id = 'game';
@@ -55,12 +68,48 @@ export default class GameFieldService {
 		const gameInner = document.createElement('div');
 		gameInner.id = 'game-inner';
 
+		const startMenu = this.createStartMenu();
+
 		root.append(game);
 		game.append(gameField);
+		game.append(startMenu);
 		gameField.append(gameInner);
 
 		this.generateWalls();
 	}
+
+	createStartMenu() {
+		const startMenu = document.createElement('div');
+		startMenu.id = 'start-menu';
+		return startMenu;
+	}
+
+	createStartButton(game) {
+		const startMenu = document.getElementById('start-menu')
+
+		const startButton = document.createElement('button');
+		startButton.id = 'start-button';
+		startButton.textContent = 'Start';
+		startButton.addEventListener('click', () => {
+			console.log("Start!");
+
+			this.#socketHandler.socket.emit('gameStatusChange', "started")
+
+			startMenu.style.display = 'none'
+		})
+
+		const playerCount = Object.keys(game.state.players).length;
+		const maxPlayers = game.settings.maxPlayers;
+
+		const startPlayersCount = document.createElement('div');
+		startPlayersCount.id = 'start-players-count';
+		startPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
+
+		startMenu.append(startPlayersCount);
+		startMenu.append(startButton);
+	}
+
+	createSt
 
 	generateWalls() {
 		const gameInner = document.getElementById('game-inner');
@@ -75,6 +124,8 @@ export default class GameFieldService {
 
 			const wallDiv = document.createElement('div');
 			wallDiv.className = 'wall-tile';
+
+			// todo refactor this into scss
 			wallDiv.style.position = 'absolute';
 			wallDiv.style.left = `${x * TILE_SIZE}px`;
 			wallDiv.style.top = `${y * TILE_SIZE}px`;

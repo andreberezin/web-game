@@ -150,6 +150,20 @@ export default class SocketHandler {
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
+
+		socket.on('gameStatusChange', (status) => {
+			game.state.status = status;
+
+			if (status === 'started') {
+				game.state.startTime = Date.now();
+
+				if (game.state.timeRemaining > 0) {
+					this.#gameService.handleGameTimer(game, socket);
+				}
+			}
+
+			socket.emit('gameStatusChangeSuccess', gameId, game.state.status);
+		})
 	}
 
 	// todo possibly create a DTO for this?

@@ -1,15 +1,13 @@
+import {existingUI} from '../utils/existingUI.js';
+
 export default class GameService {
-	// #clientManager;
 	#clientStore;
+	#bulletService
 
-	constructor({playerInputService, clientStore}) {
-		this.playerInputService = playerInputService;
+	constructor({clientStore, bulletService}) {
 		this.#clientStore = clientStore;
+		this.#bulletService = bulletService;
 	}
-
-	// setClientManager(clientManager) {
-	// 	this.#clientManager = clientManager;
-	// }
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
 		const store  = this.#clientStore;
@@ -27,7 +25,8 @@ export default class GameService {
 	}
 
 	createBulletModel(bulletData, bulletId) {
-		if (document.getElementById(bulletId) !== null) return;
+		// if (document.getElementById(bulletId) !== null) return;
+		if (existingUI(bulletId)) return;
 
 		const store  = this.#clientStore;
 
@@ -58,6 +57,25 @@ export default class GameService {
 
 		bullet.element = bulletElement;
 		return bulletElement;
+	}
+
+	handleGameStart() {
+
+	}
+
+	updateGameState() {
+
+	}
+
+	handleGamePause() {
+
+	}
+
+
+	handleGameEnd(gameId) {
+		const game = this.#clientStore.games.get(gameId);
+
+		this.#bulletService.removeBullets(game.state.bullets);
 	}
 
 	// setPosition(bullet, bulletData) {

@@ -1,4 +1,5 @@
 import '../styles/gamefield.scss'
+import '../styles/startMenu.scss'
 import '../styles/player.scss'
 import '../styles/bullet.css'
 import '../styles/userInterfaces.scss'

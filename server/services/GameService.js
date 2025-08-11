@@ -20,9 +20,9 @@ export default class GameService {
             //console.time("UpdateGameState")
         }
 
-        if (game.state.isRunning && game.state.timeRemaining > 0) {
-            this.handleGameTimer(game, currentTime);
-        }
+        // if (game.state.status === "started" && game.state.timeRemaining > 0) {
+        //     this.handleGameTimer(game, currentTime);
+        // }
 
         this.updateBullets(game);
 
@@ -41,19 +41,38 @@ export default class GameService {
         }
     }
 
-    handleGameTimer(game, currentTime) {
-        const timer = setTimeout(countdown, 1000);
+    startGame() {
+
+    }
+
+    pauseGame() {
+
+    }
+
+    finishGame() {
+
+    }
+
+    // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
+    handleGameTimer(game, socket) {
+        // const timer = setTimeout(countdown, 10);
 
         function countdown() {
-            const elapsed = currentTime - game.state.startTime;
+            const elapsed = Date.now() - game.state.startTime;
             game.state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
             //console.log("Time remaining:", game.state.timeRemaining);
 
-            if (game.state.timeRemaining === 0) {
-                clearTimeout(timer)
+            if (game.state.timeRemaining > 0) {
+                setTimeout(countdown, 10)
+
+            } else {
+                game.state.status = "finished"
+                socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
                 console.log("Timer has finished: ", game.state.timeRemaining);
             }
         }
+
+        setTimeout(countdown, 10);
     }
 
     checkForCollisions(player, currentTime, {bullets, deadPlayers}) {
@@ -157,7 +176,7 @@ export default class GameService {
             }
         });
 
-        this.deleteBulletsOutOfBounds(bulletsToDelete, bullets);
+        this.deleteBullets(bulletsToDelete, bullets);
     }
 
 	moveBulletByVelocity(bullet, directionValues) {
@@ -166,7 +185,7 @@ export default class GameService {
             }
 	}
 
-	deleteBulletsOutOfBounds(bulletsToDelete, bullets) {
+	deleteBullets(bulletsToDelete, bullets) {
         bulletsToDelete.forEach(bulletId => {
             delete bullets[bulletId];
         });
@@ -176,4 +195,6 @@ export default class GameService {
         const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
         return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
     }
+
+
 }

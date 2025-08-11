@@ -71,7 +71,7 @@ export default class GamesManager {
 
 	updateGame(gameId, currentTime) {
 		const game = this.#serverStore.games.get(gameId);
-		if (game && game.state.isRunning) {
+		if (game && game.state.isRunning && game.state.status !== "finished") {
 			this.#gameService.updateGameState(game, currentTime);
 		}
 	}
