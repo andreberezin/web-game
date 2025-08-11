@@ -27,6 +27,7 @@ export default class Player {
     lastShotTime = 0;
     shotCooldown = 250;
     hp = 100;
+    lives = 3;
     speed = 5;
     maxSpeed = 1;
     acceleration = 1000 // in ms, less is more
@@ -34,9 +35,11 @@ export default class Player {
     deathCooldown = 5000;
     respawnTimer = null;
     deathTime = 0;
+    damageMultiplier = 1;
     status = {
         alive: true
     };
+    color = null;
 
     // movement = {
     //     pos: {},

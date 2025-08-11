@@ -7,6 +7,7 @@ export default class Bullet {
     };
     direction = null;
     velocity = 10;
+    damageMultiplier = 1;
     size = {
         width: 10,
         height: 10,

@@ -7,7 +7,8 @@ export default class Game {
 		startTime: null,
 		players: {},
 		deadPlayers: {},
-		bullets: {}
+		bullets: {},
+		powerups: {}
 	};
 	#settings = {
 		private: false,
@@ -44,6 +45,7 @@ export default class Game {
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	];
+	#playerColors = []
 
 	constructor(id, settings = {}) {
 		this.#id = id;

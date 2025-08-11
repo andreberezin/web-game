@@ -21,8 +21,6 @@ export default class GameInterfaceService {
 		const idElement = this.createGameIdElement(gameId);
 		const playerCountElement = this.createPlayerCountElement(players);
 
-		console.log();
-
 		const timeRemaining = this.#clientStore.games.get(gameId).state.timeRemaining;
 
 		const countdownElement = this.createCountdownElement(timeRemaining);
@@ -141,9 +139,10 @@ export default class GameInterfaceService {
 
 
 	updatePlayerCountElement(playerCount) {
+
 		const playerCountElement = document.getElementById("player-count");
 		const playerCountValueElement = document.getElementById("player-count-value");
-		if (!playerCountElement || playerCountValueElement) return;
+		if (!playerCountElement || !playerCountValueElement) return;
 
 		playerCountValueElement.textContent = playerCount;
 	}

@@ -92,7 +92,7 @@ export default class PlayerInputService {
             testY = newPosition;
         }
 
-        if (this.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+        if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
             return;
         }
 
@@ -100,7 +100,7 @@ export default class PlayerInputService {
         player.direction = direction;
     }
 
-    wouldCollideWithWalls(x, y, playerSize, game) {
+    /*wouldCollideWithWalls(x, y, playerSize, game) {
         if (!game || !game.map) {
             return false;
         }
@@ -144,7 +144,7 @@ export default class PlayerInputService {
         }
 
         return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
-    }
+    }*/
 
     handlePlayerRespawning({deadPlayers, players}, currentTime) {
 
@@ -175,7 +175,7 @@ export default class PlayerInputService {
         // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width);
+                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
                 player.lastBulletShotAt(currentTime);
             }
         }

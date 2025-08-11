@@ -39,7 +39,7 @@ export default class SocketHandler {
 				this.joinGame(socket, gameId, hostId, playerName);
 
 				const game = this.#serverStore.games.get(gameId);
-				socket.emit("createGameSuccess", gameId, game.state, game.settings);
+				socket.emit("createGameSuccess", gameId);
 				socket.emit("joinGameSuccess", gameId, game.state, game.settings, hostId);
 			})
 
@@ -174,7 +174,8 @@ export default class SocketHandler {
 			.map(([id, game]) => ({
 				id: id,
 				settings: game.settings,
-				players: Object.keys(game.state.players).length,
+				state: game.state,
+				// players: Object.keys(game.state.players).length,
 			}));
 	}
 }

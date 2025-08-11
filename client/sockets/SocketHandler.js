@@ -1,6 +1,7 @@
 import {io} from 'socket.io-client';
 import Player from '../models/Player.js';
 import Bullet from '../models/Bullet.js';
+import Powerup from "../models/Powerup.js";
 
 export default class SocketHandler {
 	#socket;
@@ -46,14 +47,19 @@ export default class SocketHandler {
 		}
 
 		const gameState = this.#clientStore.games.get(gameId).state;
+		let currentIndex = Object.keys(gameState.players).length
 
 		for (const playerID in players) {
-			gameState.players[playerID] = new Player(playerID, players[playerID].name);
-			console.log("gameState.players[playerID]:", gameState.players[playerID]);
-			this.#playerService.createPlayerModel(players[playerID], playerID);
+			// if (!gameState.players[playerID]) {
+				currentIndex++;
+				gameState.players[playerID] = new Player(playerID, players[playerID].name);
+				gameState.players[playerID].colorIndex = currentIndex;
+				this.#playerService.createPlayerModel(players[playerID], playerID);
 
-			// todo I don't think it's necessary to create the playerInterface object and save it for each player
-			//gameState.interfaces[playerID] = new PlayerInterface(playerID);
+				// todo I don't think it's necessary to create the playerInterface object and save it for each player
+				//gameState.interfaces[playerID] = new PlayerInterface(playerID);
+
+			//}
 
 			if (playerID === myPlayer.id) {
 				this.#playerInterfaceService.createPlayerUI(playerID);
@@ -84,7 +90,7 @@ export default class SocketHandler {
 
 		this.initializeGameField(settings.mapType, gameId, myId);
 		this.initializePlayers(gameId, players, players[myId]);
-		this.#gameInterfaceService.createGameUI(game.id, settings, players);
+		this.#gameInterfaceService.createGameUI(gameId, settings, players);
 		this.#clientManager.startRenderLoop();
 	}
 
@@ -122,20 +128,22 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			this.#clientStore.games = new Map(
-				gamesList.map(game => [game.id, { settings: game.settings }])
-			);
+			// todo this does nothing currently. Possibly go back to having a list of available games with minimal information and 1 object with current game data rather than having a single Map with all the data for all games
+			// this.#clientStore.games = new Map(
+			// 	gamesList.map(game => [game.id, { settings: game.settings, state: game.state }])
+			// );
 
-			console.log("Updating available games: ", this.#clientStore.games);
+			// console.log("Updating available games: ", this.#clientStore.games);
 
 			if (this.#listeners["updateAvailableGames"]) {
 				this.#listeners["updateAvailableGames"](gamesList);
 			}
 		})
 
-		socket.on('createGameSuccess', (gameId, state, settings) => {
+		socket.on('createGameSuccess', (gameId) => {
 
-			this.#clientStore.games.set(gameId, {id: gameId, state, settings});
+
+			//this.#clientStore.games.set(gameId, {id: gameId, state, settings});
 
 			// this.setCurrentGame(gameId, state, settings);
 
@@ -148,20 +156,13 @@ export default class SocketHandler {
 			if (this.#listeners["joinGameSuccess"]) {
 				this.#listeners["joinGameSuccess"]();
 			}
-
-			// todo update the other parts of currentGame as
 			this.#clientStore.gameId = gameId;
-			// this.#clientStore.updateCurrentGame(game);
-
-			// this.setCurrentGame(gameId, state, settings);
-
-			// const currentGame = this.#clientStore.games.get(gameId);
-
-			// console.log("current game:", game);
-
-			// const currentGame = this.#clientStore.currentGame;
-
-			// console.log("current game: ", currentGame);
+			if (!this.#clientStore.games.has(gameId)) {
+				this.#clientStore.games.set(gameId, {id: gameId, state: {}, settings: {}});
+			}
+			const game = this.#clientStore.games.get(gameId);
+			game.state = {...game.state, ...state};
+			game.settings = {...game.settings, ...settings};
 
 			this.startGame(gameId, myId);
 		})
@@ -204,10 +205,9 @@ export default class SocketHandler {
 			}
 
 
-
 			// todo probably don't need to hold the same value in both places
-			// this.#gameInterface.gameId = gameId;
-			// this.#clientStore.currentGame.id = gameId;
+			this.#gameInterface.gameId = gameId;
+			this.#clientStore.gameId = gameId;
 
 			// Respawning
 			for (const playerID in updatedGameState.players) {
@@ -261,6 +261,29 @@ export default class SocketHandler {
 						bulletElement.remove();
 					}
 					delete currentGameState.bullets[bulletID];
+				}
+			}
+
+			for (const powerupID in updatedGameState.powerups) {
+				const powerup = updatedGameState.powerups[powerupID];
+
+				if (!currentGameState.powerups[powerupID]) {
+					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
+					this.#gameService.createPowerupModel(powerup, powerupID);
+				}  else {
+					// console.log(updatedGameState.powerups[powerupID].position);
+					currentGameState.powerups[powerupID].pos = powerup.pos;
+				}
+			}
+
+			// Delete the powerup from the client if not present in game state sent from server
+			for (const powerupID in currentGameState.powerups) {
+				if (!updatedGameState.powerups[powerupID]) {
+					const powerupElement = document.getElementById(powerupID);
+					if (powerupElement) {
+						powerupElement.remove();
+					}
+					delete currentGameState.powerups[powerupID];
 				}
 			}
 		})
