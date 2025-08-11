@@ -5,6 +5,7 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 	const [error, setError] = useState(null);
 
 	function ShowAvailableGames() {
+		console.log("games: ", games);
 		return(
 			// Array.from(games.entries()).map(([gameData]) => (
 			// 	<li key={gameData.id} className={"list-item"}>
@@ -27,7 +28,7 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 								</div>
 								<div className="game-info">
 									<div className="player-count">
-										Players: {game.players}/{game.settings.maxPlayers}
+										Players: {Object.keys(game.state.players).length}/{game.settings.maxPlayers}
 									</div>
 									<div className="private">
 										{game.settings.private ? 'Private' : 'Public'}

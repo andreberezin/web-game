@@ -75,26 +75,28 @@ export default class ClientManager {
 	cleanup = () => {
 		const store = this.#clientStore;
 
-		const {players} = store.games.get(store.gameId).state;
+		if (store.gameId) {
+			const {players} = store.games.get(store.gameId).state;
 
-		this.stopRenderLoop();
+			this.stopRenderLoop();
 
-		for (const playerID in players) {
-			delete players[playerID];
+			for (const playerID in players) {
+				delete players[playerID];
 
-			const element = document.getElementById(playerID);
-			console.log("removed player: ",  playerID);
+				const element = document.getElementById(playerID);
+				console.log("removed player: ",  playerID);
 
-			if (element) {
-				element.remove();
+				if (element) {
+					element.remove();
+				}
 			}
-		}
 
-		// cleanup for any other player elements just in case
-		const elements = document.getElementsByClassName("player")
+			// cleanup for any other player elements just in case
+			const elements = document.getElementsByClassName("player")
 
-		if (elements.length > 0) {
-			[...elements].forEach((element) => {element.remove()});
+			if (elements.length > 0) {
+				[...elements].forEach((element) => {element.remove()});
+			}
 		}
 
 		let socket = this.#socketHandler.socket

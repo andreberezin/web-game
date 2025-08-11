@@ -49,7 +49,10 @@ export default class GamesManager {
 
 	broadcastGameState(gameId) {
 		const game = this.#serverStore.games.get(gameId);
-		if (!game) return;
+		if (!game) {
+			console.warn("Game with id:", gameId, " not found");
+			return;
+		}
 
 		// console.log("game:", game.state);
 		this.#io.to(gameId).emit('updateGameState', gameId, game.state);

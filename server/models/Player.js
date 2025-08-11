@@ -39,6 +39,7 @@ export default class Player {
     status = {
         alive: true
     };
+    color = null;
 
     // movement = {
     //     pos: {},
