@@ -66,3 +66,7 @@ form:not(#join-game-form) {
   }
 }
 
+.hidden {
+  display: none;
+}
+
