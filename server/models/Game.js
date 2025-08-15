@@ -2,6 +2,7 @@ export default class Game {
 	#id = null;
 	#state = {
 		isRunning: false,
+		status: 'waiting', // started, paused, finished
 		timeRemaining: 0,
 		startTime: null,
 		players: {},
@@ -53,9 +54,6 @@ export default class Game {
 			...settings
 		};
 		this.#state.timeRemaining = settings.duration;
-
-		// todo assign a value to startTime when "start game" is pressed by player
-		this.#state.startTime = Date.now();
 	}
 
 	get id() {

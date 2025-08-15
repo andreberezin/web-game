@@ -17,45 +17,60 @@ export default class GameService {
 
     updateGameState(game, currentTime) {
 
-        if (Object.keys(game.state.bullets).length > 1) {
-            //console.time("UpdateGameState")
-        }
-
-        if (game.state.isRunning && game.state.timeRemaining > 0) {
-            this.handleGameTimer(game, currentTime);
-        }
+        // if (game.state.status === "started" && game.state.timeRemaining > 0) {
+        //     this.handleGameTimer(game, currentTime);
+        // }
 
         this.updateBullets(game);
-        this.updatePowerups(game, currentTime);
 
-        for (const playerID in game.state.players) {
-            const player = game.state.players[playerID];
+        if (game.state.status !== "finished") {
+            this.updatePowerups(game, currentTime);
 
-            this.checkForCollisions(player, currentTime, game.state);
-            this.#playerInputService.handlePlayerMovement(player, game);
-            this.#playerInputService.handlePlayerShooting(player, currentTime, game);
-            this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
-            this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
-        }
+            for (const playerID in game.state.players) {
+                const player = game.state.players[playerID];
 
-        if (Object.keys(game.state.bullets).length > 1) {
-            //console.timeEnd("UpdateGameState")
+                this.checkForCollisions(player, currentTime, game.state);
+                this.#playerInputService.handlePlayerMovement(player, game);
+                this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+                this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
+                this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
+            }
         }
     }
 
-    handleGameTimer(game, currentTime) {
-        const timer = setTimeout(countdown, 1000);
+    startGame() {
+
+    }
+
+    pauseGame() {
+
+    }
+
+    finishGame(gameId) {
+        // const bullets = this.#serverStore.games.get(gameId).state.bullets;
+        // this.deleteBullets(bullets, bullets)
+    }
+
+    // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
+    handleGameTimer(game, socket) {
+        // const timer = setTimeout(countdown, 10);
 
         function countdown() {
-            const elapsed = currentTime - game.state.startTime;
+            const elapsed = Date.now() - game.state.startTime;
             game.state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
             //console.log("Time remaining:", game.state.timeRemaining);
 
-            if (game.state.timeRemaining === 0) {
-                clearTimeout(timer)
-                //console.log("Timer has finished: ", game.state.timeRemaining);
+            if (game.state.timeRemaining > 0) {
+                setTimeout(countdown, 10)
+
+            } else {
+                // game.state.status = "finished"
+                // socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
+                console.log("Timer has finished: ", game.state.timeRemaining);
             }
         }
+
+        setTimeout(countdown, 10);
     }
 
     checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
@@ -213,7 +228,7 @@ export default class GameService {
             }
         });
 
-        this.deleteBulletsOutOfBounds(bulletsToDelete, bullets);
+        this.deleteBullets(bulletsToDelete, bullets);
     }
 
 	moveBulletByVelocity(bullet, directionValues) {
@@ -222,7 +237,7 @@ export default class GameService {
             }
 	}
 
-	deleteBulletsOutOfBounds(bulletsToDelete, bullets) {
+	deleteBullets(bulletsToDelete, bullets) {
         bulletsToDelete.forEach(bulletId => {
             delete bullets[bulletId];
         });

@@ -1,15 +1,17 @@
+import {existingUI} from '../utils/existingUI.js';
+
 export default class GameService {
-	// #clientManager;
 	#clientStore;
+	#bulletService;
+	#socketHandler;
+	#gameFieldService;
 
-	constructor({playerInputService, clientStore}) {
-		this.playerInputService = playerInputService;
+	constructor({clientStore, bulletService, socketHandler, gameFieldService}) {
 		this.#clientStore = clientStore;
+		this.#bulletService = bulletService;
+		this.#socketHandler = socketHandler;
+		this.#gameFieldService = gameFieldService;
 	}
-
-	// setClientManager(clientManager) {
-	// 	this.#clientManager = clientManager;
-	// }
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
 		const store  = this.#clientStore;
@@ -27,7 +29,8 @@ export default class GameService {
 	}
 
 	createBulletModel(bulletData, bulletId) {
-		if (document.getElementById(bulletId) !== null) return;
+		// if (document.getElementById(bulletId) !== null) return;
+		if (existingUI(bulletId)) return;
 
 		const store  = this.#clientStore;
 
@@ -89,9 +92,30 @@ export default class GameService {
 		return powerupElement;
 	}
 
-	// setPosition(bullet, bulletData) {
-	// 	console.log("bulletData:", bulletData);
-	// 	bullet.position.x = bulletData.position.x;
-	// 	bullet.position.y = bulletData.position.y;
+	startGame() {
+
+	}
+
+	pauseGame() {
+
+	}
+
+	updateGameState() {
+		// todo logic from SocketHandler into smaller methods
+	}
+
+	// finishGame() {
+	//
 	// }
+
+
+	handleGameEnd(gameId) {
+		const game = this.#clientStore.games.get(gameId);
+
+		// render div with game information, like player scores, winner etc
+		this.#gameFieldService.showScoreboard();
+
+		// when player pressed button remove remove game related divs and take user back to main menu
+
+	}
 }

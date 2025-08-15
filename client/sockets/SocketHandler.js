@@ -67,17 +67,29 @@ export default class SocketHandler {
 		}
 	}
 
-	initializeGameField(mapType) {
-		this.#gameFieldService.createElement(mapType);
+	initializeGameField(mapType, gameId, myId) {
+		const gameField = this.#gameFieldService
+		gameField.createElement(mapType);
+
+		const game = this.#clientStore.games.get(gameId);
+		console.log("game:", gameId);
+
+		if (gameId === myId) {
+			// create and append start game button
+			gameField.createStartButton(game);
+		} else {
+			// create and append a message that says, "Waiting for the host to start the game..."
+		}
 	}
 
-	startGame(gameId, myId) {
+	// todo probably should be part of GameService class instead
+	createGame(gameId, myId) {
 		const game  = this.#clientStore.games.get(gameId);
 
 		const players = game.state.players;
 		const settings = game.settings;
 
-		this.initializeGameField(settings.mapType);
+		this.initializeGameField(settings.mapType, gameId, myId);
 		this.initializePlayers(gameId, players, players[myId]);
 		this.#gameInterfaceService.createGameUI(gameId, settings, players);
 		this.#clientManager.startRenderLoop();
@@ -146,16 +158,21 @@ export default class SocketHandler {
 				this.#listeners["joinGameSuccess"]();
 			}
 			this.#clientStore.gameId = gameId;
+
+			// if the game object is not found in the Map then create the game object
 			if (!this.#clientStore.games.has(gameId)) {
 				this.#clientStore.games.set(gameId, {id: gameId, state: {}, settings: {}});
 			}
+
+			// update the Map so references are kept working
 			const game = this.#clientStore.games.get(gameId);
 			game.state = {...game.state, ...state};
 			game.settings = {...game.settings, ...settings};
 
-			this.startGame(gameId, myId);
+			this.createGame(gameId, myId);
 		})
 
+		// todo more error handling
 		socket.on('error', (message) => {
 			console.log("Error:", message);
 
@@ -173,7 +190,7 @@ export default class SocketHandler {
 			console.log("Player:", playerId, "left the game");
 		})
 
-		// todo refactor this socket connection
+		// todo refactor this socket connection into smaller methods
 		socket.on('updateGameState', (gameId, updatedGameState) => {
 			// console.log("updated state:", gameId, updatedGameState);
 
@@ -184,9 +201,23 @@ export default class SocketHandler {
 				return;
 			}
 
+
 			const currentGameState = game.state;
 
-			currentGameState.timeRemaining = updatedGameState.timeRemaining;
+			// handle time remaining
+			if (currentGameState && updatedGameState) {
+				currentGameState.timeRemaining = updatedGameState.timeRemaining;
+
+				// handle timer end
+				if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+					socket.emit('gameStatusChange', "finished")
+					return;
+				}
+
+			} else {
+				console.error("Cannot update time remaining")
+			}
+
 
 			// todo probably don't need to hold the same value in both places
 			this.#gameInterface.gameId = gameId;
@@ -270,6 +301,26 @@ export default class SocketHandler {
 				}
 			}
 		})
+
+		socket.on('gameStatusChangeSuccess', (gameId, status) => {
+			this.#clientStore.games.get(gameId).state.status = status;
+			console.log("Game status changed: ", status);
+
+			switch (status) {
+				case "waiting":
+					break;
+				case "started":
+					break;
+				case "paused":
+					break;
+				case "finished":
+					this.#gameService.handleGameEnd(gameId);
+					break;
+				default:
+					console.log("default: ", status);
+
+			}
+		});
 
 		socket.on('disconnect', () => {
 			console.log('Disconnected from the server ');

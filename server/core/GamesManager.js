@@ -18,7 +18,7 @@ export default class GamesManager {
 		const gameLoop = () => {
 			const game = store.games.get(gameId);
 
-			if (game && game.state.isRunning) {
+			if (game) {
 				const currentTime = Date.now();
 				this.updateGame(gameId, currentTime);
 				this.broadcastGameState(gameId)
@@ -74,7 +74,7 @@ export default class GamesManager {
 
 	updateGame(gameId, currentTime) {
 		const game = this.#serverStore.games.get(gameId);
-		if (game && game.state.isRunning) {
+		if (game) { // && game.state.status !== "finished"
 			this.#gameService.updateGameState(game, currentTime);
 		}
 	}

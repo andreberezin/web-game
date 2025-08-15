@@ -1,5 +1,6 @@
 export default class PlayerInputService {
 
+	// todo remove this class? not used
 	// constructor({socketHandler}) {
 	// 	this.socketHandler = socketHandler;
 	// }

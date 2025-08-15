@@ -1,3 +1,5 @@
+import {existingUI} from '../utils/existingUI.js';
+
 export default class PlayerInterfaceService {
 	#uiParts = ["id", "hp", "respawnTimer"]
 
@@ -5,8 +7,7 @@ export default class PlayerInterfaceService {
 	}
 
 	createPlayerUI(playerID) {
-		const exisitingUI = document.getElementById("player-ui");
-		if (exisitingUI) return;
+		if (existingUI('player-ui')) return;
 
 		const playerUI = document.createElement("div");
 		playerUI.id= "player-ui" ;

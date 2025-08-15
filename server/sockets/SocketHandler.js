@@ -150,13 +150,46 @@ export default class SocketHandler {
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
+
+		socket.on('gameStatusChange', (status) => {
+			game.state.status = status;
+
+			console.log("Game status changed: ", status);
+
+			switch (status) {
+			case "waiting":
+				break;
+			case "started":
+				game.state.startTime = Date.now();
+
+				if (game.state.timeRemaining > 0) {
+					this.#gameService.handleGameTimer(game, socket);
+				}
+
+				this.#io.emit('updateAvailableGames', this.getPublicGameList());
+
+				break;
+			case "paused":
+				break;
+			case "finished":
+				this.#gameService.finishGame(gameId);
+				break;
+			default:
+				console.log("default: ", status);
+
+			}
+
+			socket.emit('gameStatusChangeSuccess', gameId, game.state.status);
+		})
 	}
 
 	// todo possibly create a DTO for this?
 	getPublicGameList() {
 		return Array.from(this.#serverStore.games.entries())
+			// todo commented out for testing so all games can be seen on the list rather than selected games
 			//eslint-disable-next-line
-			.filter(([_, game]) => !game.settings.private)
+			// .filter(([_, game]) => !game.settings.private)
+			// .filter(([_, game]) => game.state.status === "waiting")
 			.map(([id, game]) => ({
 				id: id,
 				settings: game.settings,

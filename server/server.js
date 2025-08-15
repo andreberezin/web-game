@@ -10,7 +10,8 @@ const server = http.createServer(app);
 dotenv.config();
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
 const VITE_PORT = process.env.EXPRESS_PORT || 5173;
-const HOSTNAME = process.env.HOSTNAME || 'localhost';
+// const HOST = process.env.HOST
+// const HOSTNAME = HOST === 'true' ? '0.0.0.0' : 'localhost';
 
 // Socket.io
 const io = new Server(server, {
@@ -33,8 +34,8 @@ app.use(express.static('public'));
 app.use(express.json());
 
 // Start server
-server.listen(EXPRESS_PORT, '0.0.0.0',() => {
-    console.log(`🚀 Express Server running on http://0.0.0.0:${EXPRESS_PORT}`);
+server.listen(EXPRESS_PORT, "localhost",() => {
+    console.log(`🚀 Express Server running on http://localhost:${EXPRESS_PORT}`);
 });
 
 startGameServer(io);

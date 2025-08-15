@@ -1,5 +1,10 @@
-export default class GameFieldService {
+import {existingUI} from '../utils/existingUI.js';
 
+export default class GameFieldService {
+	#clientStore
+	#socketHandler
+
+	// todo duplicate code. Maube have the tilemap layout in backend and when a game is created send the array to frontend depending on the player chosen map (currently either "empty" or "simple")
 	#map = [
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
@@ -36,10 +41,18 @@ export default class GameFieldService {
 		TILES_Y: 27,
 	};
 
-	constructor() {}
+	constructor({clientStore}) {
+		this.#clientStore = clientStore;
+	}
+
+	setSocketHandler(handler) {
+		this.#socketHandler = handler;
+	}
 
 	createElement(mapType) {
-		// console.log("Map type", mapType);
+		if (existingUI('game')) return;
+
+		//console.log("Map type", mapType);
 		const root = document.getElementById('root');
 		const game = document.createElement('div');
 		game.id = 'game';
@@ -55,11 +68,87 @@ export default class GameFieldService {
 		const gameInner = document.createElement('div');
 		gameInner.id = 'game-inner';
 
+		const lobby = this.createLobbyMenu();
+
+		const scoreboard = this.createScoreboard();
+
 		root.append(game);
 		game.append(gameField);
+		game.append(lobby);
+		game.append(scoreboard);
 		gameField.append(gameInner);
 
 		this.generateWalls();
+	}
+
+	createLobbyMenu() {
+		if (existingUI('lobby')) return;
+
+		const lobby = document.createElement('div');
+		lobby.id = 'lobby';
+
+		const startButton = this.createStartButton();
+		const lobbyPlayersCount = this.createLobbyPlayersCount();
+
+		lobby.append(startButton);
+		lobby.append(lobbyPlayersCount);
+
+		return lobby;
+	}
+
+	createStartButton() {
+		if (existingUI('start-button')) return;
+
+
+		const startButton = document.createElement('button');
+		startButton.id = 'start-button';
+		startButton.textContent = 'Start';
+		startButton.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', "started")
+			this.hideLobby();
+		})
+
+		return startButton;
+	}
+
+	hideLobby() {
+		const lobby = document.getElementById('lobby')
+		lobby.style.display = 'none'
+	}
+
+	createScoreboard() {
+		if (existingUI('scoreboard')) return;
+
+		const scoreboard = document.createElement('div');
+		scoreboard.id = 'scoreboard';
+
+		// const scores = this.createScores();
+		//
+		// scoreboard.append(scores);
+
+		return scoreboard;
+	}
+
+	showScoreboard() {
+		const scoreboard = document.getElementById('scoreboard')
+		scoreboard.style.display = 'flex'
+	}
+
+	createLobbyPlayersCount() {
+		if (existingUI('lobby-players-count')) return;
+
+		const store = this.#clientStore
+
+		const game = store.games.get(store.gameId)
+
+		const playerCount = Object.keys(game.state.players).length;
+		const maxPlayers = game.settings.maxPlayers;
+
+		const lobbyPlayersCount = document.createElement('div');
+		lobbyPlayersCount.id = 'lobby-players-count';
+		lobbyPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
+
+		return lobbyPlayersCount;
 	}
 
 	generateWalls() {
@@ -75,6 +164,8 @@ export default class GameFieldService {
 
 			const wallDiv = document.createElement('div');
 			wallDiv.className = 'wall-tile';
+
+			// todo refactor this into scss
 			wallDiv.style.position = 'absolute';
 			wallDiv.style.left = `${x * TILE_SIZE}px`;
 			wallDiv.style.top = `${y * TILE_SIZE}px`;
