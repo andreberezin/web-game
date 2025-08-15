@@ -1,6 +1,6 @@
-#start-menu {
+#scoreboard {
   z-index: 5;
-  display: flex;
+  display: none;
   flex-direction: column;
   justify-content: center;
   align-items: center;
@@ -12,14 +12,4 @@
   position: absolute;
   top: 0;
   left: 0;
-
-  #start-players-count {
-    font-size: 2rem;
-  }
-
-  #start-button {
-	width: 20%;
-	height: 30px;
-	border: 1px solid black;
-  }
 }

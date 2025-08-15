@@ -4,11 +4,13 @@ export default class GameService {
 	#clientStore;
 	#bulletService;
 	#socketHandler;
+	#gameFieldService;
 
-	constructor({clientStore, bulletService, socketHandler}) {
+	constructor({clientStore, bulletService, socketHandler, gameFieldService}) {
 		this.#clientStore = clientStore;
 		this.#bulletService = bulletService;
 		this.#socketHandler = socketHandler;
+		this.#gameFieldService = gameFieldService;
 	}
 
 	updateBulletModel(timestamp, newBulletData, bulletId) {
@@ -102,15 +104,16 @@ export default class GameService {
 		// todo logic from SocketHandler into smaller methods
 	}
 
-	finishGame() {
-
-	}
+	// finishGame() {
+	//
+	// }
 
 
 	handleGameEnd(gameId) {
 		const game = this.#clientStore.games.get(gameId);
 
 		// render div with game information, like player scores, winner etc
+		this.#gameFieldService.showScoreboard();
 
 		// when player pressed button remove remove game related divs and take user back to main menu
 

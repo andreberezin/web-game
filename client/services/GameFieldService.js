@@ -68,29 +68,32 @@ export default class GameFieldService {
 		const gameInner = document.createElement('div');
 		gameInner.id = 'game-inner';
 
-		const startMenu = this.createStartMenu();
+		const lobby = this.createLobbyMenu();
+
+		const scoreboard = this.createScoreboard();
 
 		root.append(game);
 		game.append(gameField);
-		game.append(startMenu);
+		game.append(lobby);
+		game.append(scoreboard);
 		gameField.append(gameInner);
 
 		this.generateWalls();
 	}
 
-	createStartMenu() {
-		if (existingUI('start-menu')) return;
+	createLobbyMenu() {
+		if (existingUI('lobby')) return;
 
-		const startMenu = document.createElement('div');
-		startMenu.id = 'start-menu';
+		const lobby = document.createElement('div');
+		lobby.id = 'lobby';
 
 		const startButton = this.createStartButton();
-		const startPlayersCount = this.createStartPlayersCount();
+		const lobbyPlayersCount = this.createLobbyPlayersCount();
 
-		startMenu.append(startButton);
-		startMenu.append(startPlayersCount);
+		lobby.append(startButton);
+		lobby.append(lobbyPlayersCount);
 
-		return startMenu;
+		return lobby;
 	}
 
 	createStartButton() {
@@ -101,19 +104,38 @@ export default class GameFieldService {
 		startButton.id = 'start-button';
 		startButton.textContent = 'Start';
 		startButton.addEventListener('click', () => {
-			console.log("Start!");
-
 			this.#socketHandler.socket.emit('gameStatusChange', "started")
-
-			const startMenu = document.getElementById('start-menu')
-			startMenu.style.display = 'none'
+			this.hideLobby();
 		})
 
 		return startButton;
 	}
 
-	createStartPlayersCount() {
-		if (existingUI('start-players-count')) return;
+	hideLobby() {
+		const lobby = document.getElementById('lobby')
+		lobby.style.display = 'none'
+	}
+
+	createScoreboard() {
+		if (existingUI('scoreboard')) return;
+
+		const scoreboard = document.createElement('div');
+		scoreboard.id = 'scoreboard';
+
+		// const scores = this.createScores();
+		//
+		// scoreboard.append(scores);
+
+		return scoreboard;
+	}
+
+	showScoreboard() {
+		const scoreboard = document.getElementById('scoreboard')
+		scoreboard.style.display = 'flex'
+	}
+
+	createLobbyPlayersCount() {
+		if (existingUI('lobby-players-count')) return;
 
 		const store = this.#clientStore
 
@@ -122,11 +144,11 @@ export default class GameFieldService {
 		const playerCount = Object.keys(game.state.players).length;
 		const maxPlayers = game.settings.maxPlayers;
 
-		const startPlayersCount = document.createElement('div');
-		startPlayersCount.id = 'start-players-count';
-		startPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
+		const lobbyPlayersCount = document.createElement('div');
+		lobbyPlayersCount.id = 'lobby-players-count';
+		lobbyPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
 
-		return startPlayersCount;
+		return lobbyPlayersCount;
 	}
 
 	generateWalls() {

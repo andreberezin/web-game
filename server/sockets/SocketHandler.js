@@ -186,6 +186,7 @@ export default class SocketHandler {
 	// todo possibly create a DTO for this?
 	getPublicGameList() {
 		return Array.from(this.#serverStore.games.entries())
+			// todo commented out for testing so all games can be seen on the list rather than selected games
 			//eslint-disable-next-line
 			// .filter(([_, game]) => !game.settings.private)
 			// .filter(([_, game]) => game.state.status === "waiting")
