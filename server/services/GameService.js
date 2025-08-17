@@ -47,8 +47,16 @@ export default class GameService {
     }
 
     finishGame(gameId) {
-        // const bullets = this.#serverStore.games.get(gameId).state.bullets;
-        // this.deleteBullets(bullets, bullets)
+        // setTimeout(() => {
+        //     this.deleteGame(gameId);
+        //     console.log("Games: ", this.#serverStore.games);
+        // }, 1500)
+        this.deleteGame(gameId);
+    }
+
+    deleteGame(gameId) {
+        console.log("Deleting game: ", gameId);
+        this.#serverStore.games.delete(gameId);
     }
 
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
