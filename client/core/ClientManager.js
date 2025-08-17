@@ -5,14 +5,18 @@ export default class ClientManager {
 	#playerInterfaceService
 	#socketHandler
 	#clientStore
+	onGameEnd
+	#gameFieldService
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, clientStore}) {
+	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore}) {
 		this.#gameService = gameService;
 		this.#gameInterfaceService = gameInterfaceService
 		this.#playerInterfaceService = playerInterfaceService
 		this.#playerService = playerService;
 		this.#socketHandler = socketHandler;
+		this.#gameFieldService = gameFieldService
 		this.#clientStore = clientStore;
+		this.onGameEnd = null;
 	}
 
 	get socketHandler() {
@@ -69,35 +73,18 @@ export default class ClientManager {
 		const renderLoopId = this.#clientStore.uiState.renderLoopId;
 		if (renderLoopId) {
 			cancelAnimationFrame(renderLoopId);
-			this.#clientStore.uiState.renderLoopId = null;
+			this.#clientStore.updateUIState({renderLoopId: null});
 		}
 	}
 
 	cleanup = () => {
 		const store = this.#clientStore;
 
+		this.stopRenderLoop();
+
 		if (store.gameId) {
-			const {players} = store.games.get(store.gameId).state;
-
-			this.stopRenderLoop();
-
-			for (const playerID in players) {
-				delete players[playerID];
-
-				const element = document.getElementById(playerID);
-				console.log("removed player: ",  playerID);
-
-				if (element) {
-					element.remove();
-				}
-			}
-
-			// cleanup for any other player elements just in case
-			const elements = document.getElementsByClassName("player")
-
-			if (elements.length > 0) {
-				[...elements].forEach((element) => {element.remove()});
-			}
+			this.#playerService.removePlayerModels();
+			this.#gameFieldService.removeGameField();
 		}
 
 		let socket = this.#socketHandler.socket
@@ -110,6 +97,17 @@ export default class ClientManager {
 
 		this.#playerService.removeEventListeners();
 
+	}
+
+	endGame(gameId) {
+		this.stopRenderLoop();
+		this.#playerService.removeEventListeners();
+		this.#socketHandler.cleanupGameListeners();
+		// this.#playerService.removePlayerModels();
+		this.#gameFieldService.removeGameElements();
+		this.#clientStore.games.delete(gameId)
+		this.#clientStore.gameId = null;
+		if (this.onGameEnd) this.onGameEnd();
 	}
 
 	setupCleanup() {
