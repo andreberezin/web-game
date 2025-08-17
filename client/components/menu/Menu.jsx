@@ -28,7 +28,8 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 			clientManager.socketHandler.on("updateAvailableGames", null);
 		}
 
-	}, [clientManager.socketHandler, games]); // empty deps now fine because no external dependencies used in handlers
+		// eslint-disable-next-line
+	}, [clientManager.socketHandler]);
 
 
 	return(
