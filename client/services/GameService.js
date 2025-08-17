@@ -57,6 +57,7 @@ export default class GameService {
 
 	appendToGameField(bulletElement) {
 		const gameField = document.getElementById("game-inner");
+		if (!gameField) return;
 		gameField.appendChild(bulletElement);
 	}
 
@@ -92,30 +93,7 @@ export default class GameService {
 		return powerupElement;
 	}
 
-	startGame() {
-
-	}
-
-	pauseGame() {
-
-	}
-
 	updateGameState() {
 		// todo logic from SocketHandler into smaller methods
-	}
-
-	// finishGame() {
-	//
-	// }
-
-
-	handleGameEnd(gameId) {
-		const game = this.#clientStore.games.get(gameId);
-
-		// render div with game information, like player scores, winner etc
-		this.#gameFieldService.showScoreboard();
-
-		// when player pressed button remove remove game related divs and take user back to main menu
-
 	}
 }
