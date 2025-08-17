@@ -102,6 +102,8 @@ export default class PlayerService {
 
 	appendToGameField(playerElement) {
 		const gameField = document.getElementById("game-inner");
+		if (!gameField) return;
+
 		gameField.appendChild(playerElement);
 		// if (playerId === this.#clientStore.myID) {
 		// 	playerElement.focus();
@@ -174,9 +176,26 @@ export default class PlayerService {
 		return playerElement;
 	}
 
-	removePlayerModel(playerId) {
-		const playerElement = document.getElementById(playerId);
-		playerElement.remove();
-	}
+	removePlayerModels() {
+		const store = this.#clientStore;
+		const {players} = store.games.get(store.gameId).state;
 
+		for (const playerID in players) {
+			delete players[playerID];
+
+			const element = document.getElementById(playerID);
+			console.log("removed player: ",  playerID);
+
+			if (element) {
+				element.remove();
+			}
+		}
+
+		// cleanup for any other player elements just in case
+		const elements = document.getElementsByClassName("player")
+
+		if (elements.length > 0) {
+			[...elements].forEach((element) => {element.remove()});
+		}
+	}
 }

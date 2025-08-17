@@ -6,6 +6,7 @@ import Powerup from "../models/Powerup.js";
 export default class SocketHandler {
 	#socket;
 	#listeners = {}
+	#externalListeners = {}
 
 	#playerService;
 	#playerInterfaceService;
@@ -72,7 +73,6 @@ export default class SocketHandler {
 		gameField.createElement(mapType);
 
 		const game = this.#clientStore.games.get(gameId);
-		console.log("game:", gameId);
 
 		if (gameId === myId) {
 			// create and append start game button
@@ -141,7 +141,7 @@ export default class SocketHandler {
 			}
 		})
 
-		socket.on('createGameSuccess', (gameId) => {
+		this.on('createGameSuccess', (gameId) => {
 
 
 			//this.#clientStore.games.set(gameId, {id: gameId, state, settings});
@@ -151,11 +151,11 @@ export default class SocketHandler {
 			console.log("Game created: ", gameId);
 		})
 
-		socket.on('joinGameSuccess', (gameId, state, settings, myId) => {
+		this.on('joinGameSuccess', (gameId, state, settings, myId) => {
 			console.log("Game:", gameId, "joined by player: ", myId);
 
-			if (this.#listeners["joinGameSuccess"]) {
-				this.#listeners["joinGameSuccess"]();
+			if (this.#externalListeners["joinGameSuccess"]) {
+				this.#externalListeners["joinGameSuccess"]();
 			}
 			this.#clientStore.gameId = gameId;
 
@@ -182,16 +182,16 @@ export default class SocketHandler {
 
 		})
 
-		socket.on('playerJoined', (playerId) => {
+		this.on('playerJoined', (playerId) => {
 			console.log("Player:", playerId, "joined the game");
 		})
 
-		socket.on('playerLeft', (playerId) => {
+		this.on('playerLeft', (playerId) => {
 			console.log("Player:", playerId, "left the game");
 		})
 
 		// todo refactor this socket connection into smaller methods
-		socket.on('updateGameState', (gameId, updatedGameState) => {
+		this.on('updateGameState', (gameId, updatedGameState) => {
 			// console.log("updated state:", gameId, updatedGameState);
 
 			const game = this.#clientStore.games.get(gameId)
@@ -302,7 +302,7 @@ export default class SocketHandler {
 			}
 		})
 
-		socket.on('gameStatusChangeSuccess', (gameId, status) => {
+		this.on('gameStatusChangeSuccess', (gameId, status) => {
 			this.#clientStore.games.get(gameId).state.status = status;
 			console.log("Game status changed: ", status);
 
@@ -314,7 +314,11 @@ export default class SocketHandler {
 				case "paused":
 					break;
 				case "finished":
-					this.#gameService.handleGameEnd(gameId);
+					this.#gameFieldService.showScoreboard();
+					// this.#gameService.handleGameFinish(gameId);
+					setTimeout(() => {
+						this.#clientManager.gameCleanup(gameId);
+					}, 1000)
 					break;
 				default:
 					console.log("default: ", status);
@@ -325,5 +329,14 @@ export default class SocketHandler {
 		socket.on('disconnect', () => {
 			console.log('Disconnected from the server ');
 		})
+	}
+
+	cleanupGameListeners() {
+		this.on("createGameSuccess", null);
+		this.on("joinGameSuccess", null);
+		this.on("updateGameState", null);
+		this.on("playerJoined", null);
+		this.on("playerLeft", null);
+		this.on("gameStatusChangeSuccess", null);
 	}
 }
