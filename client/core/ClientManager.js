@@ -5,8 +5,8 @@ export default class ClientManager {
 	#playerInterfaceService
 	#socketHandler
 	#clientStore
-	onGameEnd
 	#gameFieldService
+	onGameEnd
 
 	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore}) {
 		this.#gameService = gameService;
@@ -77,14 +77,13 @@ export default class ClientManager {
 		}
 	}
 
-	cleanup = () => {
+	clientCleanup = () => {
 		const store = this.#clientStore;
 
 		this.stopRenderLoop();
 
 		if (store.gameId) {
-			this.#playerService.removePlayerModels();
-			this.#gameFieldService.removeGameField();
+			this.#gameFieldService.removeGameElements();
 		}
 
 		let socket = this.#socketHandler.socket
@@ -99,11 +98,10 @@ export default class ClientManager {
 
 	}
 
-	endGame(gameId) {
+	gameCleanup(gameId) {
 		this.stopRenderLoop();
 		this.#playerService.removeEventListeners();
 		this.#socketHandler.cleanupGameListeners();
-		// this.#playerService.removePlayerModels();
 		this.#gameFieldService.removeGameElements();
 		this.#clientStore.games.delete(gameId)
 		this.#clientStore.gameId = null;
@@ -111,6 +109,6 @@ export default class ClientManager {
 	}
 
 	setupCleanup() {
-		window.addEventListener("beforeunload", this.cleanup);
+		window.addEventListener("beforeunload", this.clientCleanup);
 	}
 }
