@@ -108,6 +108,11 @@ export default class SocketHandler {
 
 
 	joinGame(socket, gameId, playerId, playerName) {
+
+		this.#io.of("/").adapter.on("delete-room", (room) => {
+			console.log(`Room ${room} was deleted`);
+		});
+
 		socket.join(gameId);
 		socket.gameId = gameId;
 
@@ -121,15 +126,6 @@ export default class SocketHandler {
 		console.log("Player: ", playerId, " joined game: ", gameId);
 
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
-
-		// socket.on('updateMyPlayerData', (input) => {
-		// 	const player = gameState.players[playerId];
-		// 	if (player) {
-		// 		player.input = input;
-		// 		//player.shift = shift;
-		// 		//player.maxPosition = maxPosition;
-		// 	}
-		// });
 
 		socket.on('updateMyPlayerInput', (data) => {
 			let {key, type} = data;
@@ -172,15 +168,36 @@ export default class SocketHandler {
 			case "paused":
 				break;
 			case "finished":
-				this.#gameService.finishGame(gameId);
+
+				// clean up socket listeners
+				this.removeListeners();
+
+				setTimeout(() => {
+					this.#gameService.finishGame(gameId);
+					this.leaveSocketRoom(socket, gameId);
+				}, 1000)
 				break;
+				// this.#gameService.finishGame(gameId);
+				// this.leaveSocketRoom(socket, gameId);
+				// socket.removeAllListeners('updateMyPlayerInput');
+				// socket.removeAllListeners('gameStatusChange');
+				// break;
 			default:
 				console.log("default: ", status);
 
 			}
 
-			socket.emit('gameStatusChangeSuccess', gameId, game.state.status);
+			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
 		})
+	}
+
+	leaveSocketRoom(socket, gameId) {
+		socket.leave(gameId);
+	}
+
+	removeListeners(socket) {
+		socket.removeAllListeners('updateMyPlayerInput');
+		socket.removeAllListeners('gameStatusChange');
 	}
 
 	// todo possibly create a DTO for this?
