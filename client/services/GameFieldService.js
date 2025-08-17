@@ -81,6 +81,18 @@ export default class GameFieldService {
 		this.generateWalls();
 	}
 
+	removeGameField() {
+		const gameField = document.getElementById('game-field');
+		// if (!gameField) return;
+		gameField.remove();
+	}
+
+	removeGameElements() {
+		const game = document.getElementById('game');
+		// if (!game) return;
+		game.remove();
+	}
+
 	createLobbyMenu() {
 		if (existingUI('lobby')) return;
 
