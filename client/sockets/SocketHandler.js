@@ -108,16 +108,12 @@ export default class SocketHandler {
 		if (callback) {
 			this.socket.on(event, callback);
 		}
+
 	}
 
-	// setCurrentGame(gameId, state, settings) {
-	// 	this.#clientStore.gameId = gameId;
-	// 	this.#clientStore.currentGame.id = gameId;
-	//
-	// 	// todo should have update functions for these
-	// 	this.#clientStore.currentGame.state = state;
-	// 	this.#clientStore.currentGame.settings = settings;
-	// }
+	addExternalListener(event, callback) {
+		this.#externalListeners[event] = callback;
+	}
 
 	connectToServer() {
 		this.socket = io();
@@ -134,19 +130,12 @@ export default class SocketHandler {
 			// 	gamesList.map(game => [game.id, { settings: game.settings, state: game.state }])
 			// );
 
-			// console.log("Updating available games: ", this.#clientStore.games);
-
 			if (this.#listeners["updateAvailableGames"]) {
 				this.#listeners["updateAvailableGames"](gamesList);
 			}
 		})
 
 		this.on('createGameSuccess', (gameId) => {
-
-
-			//this.#clientStore.games.set(gameId, {id: gameId, state, settings});
-
-			// this.setCurrentGame(gameId, state, settings);
 
 			console.log("Game created: ", gameId);
 		})
@@ -159,7 +148,7 @@ export default class SocketHandler {
 			}
 			this.#clientStore.gameId = gameId;
 
-			// if the game object is not found in the Map then create the game object
+			// if the game object is not found in the Map, then create the game object
 			if (!this.#clientStore.games.has(gameId)) {
 				this.#clientStore.games.set(gameId, {id: gameId, state: {}, settings: {}});
 			}
@@ -174,7 +163,6 @@ export default class SocketHandler {
 
 			// todo refactor this socket connection into smaller methods
 			this.on('updateGameState', (gameId, updatedGameState) => {
-				// console.log("updated state:", gameId, updatedGameState);
 
 				const game = this.#clientStore.games.get(gameId)
 
@@ -191,7 +179,7 @@ export default class SocketHandler {
 					currentGameState.timeRemaining = updatedGameState.timeRemaining;
 
 					// handle timer end
-					if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+					if (currentGameState.timeRemaining <= 0 && currentGameState.status === "started") {
 						socket.emit('gameStatusChange', "finished")
 						return;
 					}
@@ -226,13 +214,11 @@ export default class SocketHandler {
 					}
 
 					if (player) {
-						// player.name = updatedPlayer.name;
 						player.pos = updatedPlayer.pos;
 						player.hp = updatedPlayer.hp;
 						player.status = updatedPlayer.status;
 						player.respawnTimer = updatedPlayer.respawnTimer;
 						player.size = updatedPlayer.size;
-						// player.maxPos = updatedPlayer.maxPos;
 						player.deathCooldown = updatedPlayer.deathCooldown;
 					}
 				}
@@ -287,7 +273,7 @@ export default class SocketHandler {
 
 		// todo more error handling
 		socket.on('error', (message) => {
-			console.log("Error:", message);
+			console.error("Error:", message);
 
 			if (this.#listeners["error"]) {
 				this.#listeners["error"](message);
@@ -311,7 +297,8 @@ export default class SocketHandler {
 			switch (status) {
 				case "waiting":
 					break;
-				case "started":
+			case "started":
+					this.#gameFieldService.hideLobby();
 					break;
 				case "paused":
 					break;

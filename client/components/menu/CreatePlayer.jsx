@@ -13,17 +13,18 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			setError(message)
 		});
 
-		socketHandler.on("joinGameSuccess", () => {
+		socketHandler.addExternalListener("joinGameSuccess", () => {
 			setIsGameStarted(true);
 			setIsCreatePlayer(false);
 		});
 
 		return () => {
 			socketHandler.on("error", null);
-			socketHandler.on("JoinGameSuccess", null);
+			socketHandler.on("createGameSuccess", null);
+			clientManager.socketHandler.addExternalListener("joinGameSuccess", null);
 		}
 
-	}, [clientManager.socketHandler, setIsCreatePlayer, setIsGameStarted]); // empty deps now fine because no external dependencies used in handlers
+	}, [clientManager.socketHandler, setIsCreatePlayer, setIsGameStarted]);
 
 
 	useEffect(() => {
@@ -38,13 +39,11 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 	function joinGame() {
 		if (!name) {
 			setError("Please enter a name");
-			console.log(error);
 			return;
 		}
 
 		if (!gameId) {
 			setError("Game not found")
-			console.log(error);
 			return;
 		}
 
