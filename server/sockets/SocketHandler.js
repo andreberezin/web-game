@@ -69,13 +69,6 @@ export default class SocketHandler {
 
 				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
 
-				// socket.emit("joinGameSuccess", {
-				// 	gameId,
-				// 	state: game.state,
-				// 	settings: game.settings,
-				// 	myId: playerId,
-				// });
-
 				socket.to(gameId).emit("playerJoined", playerId);
 			})
 
@@ -103,10 +96,6 @@ export default class SocketHandler {
 					this.#io.emit('updateAvailableGames', this.getPublicGameList());
 				}
 			});
-
-			// socket.on('disconnect', () => {
-			// 	console.log('Disconnecting player: ',socket.id);
-			// })
 		})
 	}
 
@@ -145,47 +134,49 @@ export default class SocketHandler {
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})
 
+		socket.on('gameStatusChange', (gameId, status) => {
+			const game = this.#serverStore.games.get(gameId);
+			if (!game) return;
+
+			// shared update, per game
+			if (game.state.status !== status) {
+				console.log("Game status changed: ", status);
+
+				switch (status) {
+				case "waiting":
+					break;
+				case "started":
+					game.state.startTime = Date.now();
+					if (game.state.timeRemaining > 0) {
+						this.#gameService.handleGameTimer(game, socket);
+					}
+					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+					break;
+				case "paused":
+					break;
+				case "finished":
+					setTimeout(() => {
+						this.#gameService.finishGame(gameId);
+					}, 1000)
+					break;
+				default:
+					console.log("default: ", status);
+				}
+
+				game.state.status = status;
+				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+			}
+
+			// separate update, per socket
+			if (status === "finished") {
+				this.removeListeners(socket);
+				this.leaveSocketRoom(socket, gameId);
+			}
+		})
+
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
-
-		socket.on('gameStatusChange', (status) => {
-			game.state.status = status;
-
-			console.log("Game status changed: ", status);
-
-			switch (status) {
-			case "waiting":
-				break;
-			case "started":
-				game.state.startTime = Date.now();
-
-				if (game.state.timeRemaining > 0) {
-					this.#gameService.handleGameTimer(game, socket);
-				}
-
-				this.#io.emit('updateAvailableGames', this.getPublicGameList());
-
-				break;
-			case "paused":
-				break;
-			case "finished":
-
-				// clean up socket listeners
-				this.removeListeners(socket);
-
-				setTimeout(() => {
-					this.#gameService.finishGame(gameId);
-					this.leaveSocketRoom(socket, gameId);
-				}, 1000)
-				break;
-			default:
-				console.log("default: ", status);
-
-			}
-
-			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
-		})
 	}
 
 	leaveSocketRoom(socket, gameId) {
