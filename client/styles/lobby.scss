@@ -1,20 +1,17 @@
 #lobby {
-  z-index: 5;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 20%;
-  background-color: rgba(150, 150, 150, 0.5);
-  backdrop-filter: blur(0px);
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
 
   #lobby-players-count {
     font-size: 2rem;
+  }
+
+  #lobby-game-id {
+    all: unset;
+    font-size: 1.5rem;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 
   #start-button {
