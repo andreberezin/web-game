@@ -170,7 +170,7 @@ export default class SocketHandler {
 			case "finished":
 
 				// clean up socket listeners
-				this.removeListeners();
+				this.removeListeners(socket);
 
 				setTimeout(() => {
 					this.#gameService.finishGame(gameId);
@@ -196,6 +196,7 @@ export default class SocketHandler {
 	}
 
 	removeListeners(socket) {
+		debugger
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
 	}
