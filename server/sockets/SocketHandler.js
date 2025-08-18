@@ -46,6 +46,7 @@ export default class SocketHandler {
 			socket.on('joinGame', (gameId, playerName) => {
 				const game = this.#serverStore.games.get(gameId);
 				if (!game) {
+					console.error(`Game does not exist: ${gameId}`);
 					socket.emit('error', "Game not found");
 					return;
 				}
@@ -53,6 +54,7 @@ export default class SocketHandler {
 				for (const playerId in game.state.players) {
 					const player = game.state.players[playerId];
 					if (player.name === playerName) {
+						console.error(`Player already exists: ${playerId}`);
 						socket.emit('error', "Player with name '"+ playerName + "' already exists in game")
 						return;
 					}
@@ -60,8 +62,6 @@ export default class SocketHandler {
 
 				const playerId = socket.id;
 				this.joinGame(socket, gameId, playerId, playerName);
-
-				console.log("game state:", game.state);
 
 				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
 
@@ -109,6 +109,8 @@ export default class SocketHandler {
 
 	joinGame(socket, gameId, playerId, playerName) {
 
+		// if (gameId !== playerId) debugger;
+
 		this.#io.of("/").adapter.on("delete-room", (room) => {
 			console.log(`Room ${room} was deleted`);
 		});
@@ -132,7 +134,7 @@ export default class SocketHandler {
 			const player = gameState.players[playerId];
 
 			if (!player) {
-				console.log("Player not found: ", playerId);
+				console.error("Player not found: ", playerId);
 				return;
 			}
 
@@ -177,11 +179,6 @@ export default class SocketHandler {
 					this.leaveSocketRoom(socket, gameId);
 				}, 1000)
 				break;
-				// this.#gameService.finishGame(gameId);
-				// this.leaveSocketRoom(socket, gameId);
-				// socket.removeAllListeners('updateMyPlayerInput');
-				// socket.removeAllListeners('gameStatusChange');
-				// break;
 			default:
 				console.log("default: ", status);
 
@@ -196,7 +193,6 @@ export default class SocketHandler {
 	}
 
 	removeListeners(socket) {
-		debugger
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
 	}
