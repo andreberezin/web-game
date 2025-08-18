@@ -22,6 +22,10 @@ export default class SocketHandler {
 	createSocketConnection() {
 		console.log("Connecting servers...");
 
+		this.#io.of("/").adapter.on("delete-room", (room) => {
+			console.log(`Room ${room} was deleted`);
+		});
+
 		this.#io.on('connection', (socket) => {
 			console.log("Connected servers");
 
@@ -110,10 +114,6 @@ export default class SocketHandler {
 	joinGame(socket, gameId, playerId, playerName) {
 
 		// if (gameId !== playerId) debugger;
-
-		this.#io.of("/").adapter.on("delete-room", (room) => {
-			console.log(`Room ${room} was deleted`);
-		});
 
 		socket.join(gameId);
 		socket.gameId = gameId;
