@@ -2,15 +2,20 @@ export default class Player {
     // todo make fields private and use setters, getters? Needs extra logic to send data via sockets if fields are private
     // todo restructure data into fewer objects with related values to make more sense
     id = null;
-    pos = {
-		x: 100,
-		y: 100,
-	};
+
     name = null;
     shift = 0;
     maxPos = {
         x: 1920 - 30,
         y: 1080 - 30,
+    }
+    pos = {
+        x: 0,
+        y: 0,
+    };
+    spawnPos = {
+        x: 100,
+        y: 100,
     }
     size = {
         width: 30,
@@ -43,6 +48,7 @@ export default class Player {
 
     // movement = {
     //     pos: {},
+    //     spawnPos: {},
     //     maxPos: {},
     //     direction: "up",
     //     shift: 0,
@@ -64,6 +70,7 @@ export default class Player {
 	constructor(id, name) {
         this.id = id;
         this.name = name;
+        this.pos = this.spawnPos;
 	}
 
     // setStatus(status) {
