@@ -70,7 +70,7 @@ function App() {
         clientManager.onGameEnd = () => {
             setTimeout(() => {
                 setIsGameStarted(false);
-                console.log("Setting is game started to false");
+                console.log("Rerendering menu");
             }, 100)
         };
     }, []);
