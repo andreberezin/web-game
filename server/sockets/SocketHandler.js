@@ -195,6 +195,7 @@ export default class SocketHandler {
 			//eslint-disable-next-line
 			// .filter(([_, game]) => !game.settings.private)
 			// .filter(([_, game]) => game.state.status === "waiting")
+			// .filter(([_, game]) => Object.keys(game.state.players).length < game.settings.maxPlayers)
 			.map(([id, game]) => ({
 				id: id,
 				settings: game.settings,
