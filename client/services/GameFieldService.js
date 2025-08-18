@@ -82,11 +82,11 @@ export default class GameFieldService {
 		this.generateWalls();
 	}
 
-	removeGameField() {
-		const gameField = document.getElementById('game-field');
-		// if (!gameField) return;
-		gameField.remove();
-	}
+	// removeGameField() {
+	// 	const gameField = document.getElementById('game-field');
+	// 	// if (!gameField) return;
+	// 	gameField.remove();
+	// }
 
 	removeGameElements() {
 		const game = document.getElementById('game');
@@ -145,7 +145,7 @@ export default class GameFieldService {
 		startButton.id = 'start-button';
 		startButton.textContent = 'Start';
 		startButton.addEventListener('click', () => {
-			this.#socketHandler.socket.emit('gameStatusChange', "started")
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started")
 			// this.hideLobby();
 		})
 
