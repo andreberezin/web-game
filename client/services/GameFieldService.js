@@ -74,18 +74,19 @@ export default class GameFieldService {
 
 		root.append(game);
 		game.append(gameField);
-		game.append(lobby);
-		game.append(scoreboard);
+		// game.append(scoreboard);
 		gameField.append(gameInner);
+		gameInner.append(lobby);
+		gameInner.append(scoreboard)
 
 		this.generateWalls();
 	}
 
-	removeGameField() {
-		const gameField = document.getElementById('game-field');
-		// if (!gameField) return;
-		gameField.remove();
-	}
+	// removeGameField() {
+	// 	const gameField = document.getElementById('game-field');
+	// 	// if (!gameField) return;
+	// 	gameField.remove();
+	// }
 
 	removeGameElements() {
 		const game = document.getElementById('game');
@@ -98,14 +99,42 @@ export default class GameFieldService {
 
 		const lobby = document.createElement('div');
 		lobby.id = 'lobby';
+		lobby.classList.add('overlay')
 
 		const startButton = this.createStartButton();
 		const lobbyPlayersCount = this.createLobbyPlayersCount();
+		const lobbyGameId = this.createLobbyGameId();
 
-		lobby.append(startButton);
+		lobby.append(lobbyGameId);
 		lobby.append(lobbyPlayersCount);
+		lobby.append(startButton);
 
 		return lobby;
+	}
+
+	createLobbyGameId() {
+		if (existingUI('lobby-game-id')) return;
+
+		const gameIdElement = document.createElement('button');
+		gameIdElement.id = 'lobby-game-id';
+		const gameId = this.#clientStore.gameId;
+		gameIdElement.textContent = `${gameId}`;
+
+
+		gameIdElement.addEventListener("dblclick", () => {
+			if (navigator.clipboard && navigator.clipboard.writeText) {
+				navigator.clipboard.writeText(gameId)
+					.then(() => {
+						gameIdElement.textContent = "Copied!";
+						setTimeout(() => { gameIdElement.textContent = gameId; }, 1000);
+					})
+					.catch(() => alert("Failed to copy!"));
+			} else {
+				alert("Clipboard not supported");
+			}
+		});
+
+		return gameIdElement;
 	}
 
 	createStartButton() {
@@ -116,8 +145,8 @@ export default class GameFieldService {
 		startButton.id = 'start-button';
 		startButton.textContent = 'Start';
 		startButton.addEventListener('click', () => {
-			this.#socketHandler.socket.emit('gameStatusChange', "started")
-			this.hideLobby();
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started")
+			// this.hideLobby();
 		})
 
 		return startButton;
@@ -133,6 +162,7 @@ export default class GameFieldService {
 
 		const scoreboard = document.createElement('div');
 		scoreboard.id = 'scoreboard';
+		scoreboard.classList.add('overlay')
 
 		// const scores = this.createScores();
 		//

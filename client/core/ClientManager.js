@@ -49,6 +49,7 @@ export default class ClientManager {
 				}
 			}
 
+			// todo no need to check anymore?
 			if (store.games.get(store.gameId).state.status !== "finished") {
 				for (let playerID in players) {
 					if (playerID && players[playerID] != null) {

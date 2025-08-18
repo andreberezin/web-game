@@ -13,6 +13,10 @@ export default class Player {
         x: 0,
         y: 0,
     }
+    // #spawnPos = {
+    //     x: 100,
+    //     y: 100,
+    // }
     #size = {
         width: 0,
         height: 0,
@@ -71,6 +75,18 @@ export default class Player {
             y: y,
         }
     }
+
+    // get spawnPos() {
+    //     return this.#spawnPos;
+    // }
+    //
+    // set spawnPos({x, y}) {
+    //     this.#spawnPos = {
+    //         x: x,
+    //         y: y,
+    //     }
+    // }
+
 
     get shift() {
         return this.#shift;

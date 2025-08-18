@@ -19,7 +19,7 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 							className="list-item"
 							onClick={() => {
 								setGameId(gameId);
-								// joinGame();
+								setIsCreatePlayer(true);
 							}}
 						>
 							<div className="game">

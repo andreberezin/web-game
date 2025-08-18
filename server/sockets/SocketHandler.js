@@ -22,6 +22,10 @@ export default class SocketHandler {
 	createSocketConnection() {
 		console.log("Connecting servers...");
 
+		this.#io.of("/").adapter.on("delete-room", (room) => {
+			console.log(`Room ${room} was deleted`);
+		});
+
 		this.#io.on('connection', (socket) => {
 			console.log("Connected servers");
 
@@ -46,6 +50,7 @@ export default class SocketHandler {
 			socket.on('joinGame', (gameId, playerName) => {
 				const game = this.#serverStore.games.get(gameId);
 				if (!game) {
+					console.error(`Game does not exist: ${gameId}`);
 					socket.emit('error', "Game not found");
 					return;
 				}
@@ -53,6 +58,7 @@ export default class SocketHandler {
 				for (const playerId in game.state.players) {
 					const player = game.state.players[playerId];
 					if (player.name === playerName) {
+						console.error(`Player already exists: ${playerId}`);
 						socket.emit('error', "Player with name '"+ playerName + "' already exists in game")
 						return;
 					}
@@ -61,16 +67,7 @@ export default class SocketHandler {
 				const playerId = socket.id;
 				this.joinGame(socket, gameId, playerId, playerName);
 
-				console.log("game state:", game.state);
-
 				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
-
-				// socket.emit("joinGameSuccess", {
-				// 	gameId,
-				// 	state: game.state,
-				// 	settings: game.settings,
-				// 	myId: playerId,
-				// });
 
 				socket.to(gameId).emit("playerJoined", playerId);
 			})
@@ -99,19 +96,13 @@ export default class SocketHandler {
 					this.#io.emit('updateAvailableGames', this.getPublicGameList());
 				}
 			});
-
-			// socket.on('disconnect', () => {
-			// 	console.log('Disconnecting player: ',socket.id);
-			// })
 		})
 	}
 
 
 	joinGame(socket, gameId, playerId, playerName) {
 
-		this.#io.of("/").adapter.on("delete-room", (room) => {
-			console.log(`Room ${room} was deleted`);
-		});
+		// if (gameId !== playerId) debugger;
 
 		socket.join(gameId);
 		socket.gameId = gameId;
@@ -132,7 +123,7 @@ export default class SocketHandler {
 			const player = gameState.players[playerId];
 
 			if (!player) {
-				console.log("Player not found: ", playerId);
+				console.error("Player not found: ", playerId);
 				return;
 			}
 
@@ -143,52 +134,49 @@ export default class SocketHandler {
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})
 
+		socket.on('gameStatusChange', (gameId, status) => {
+			const game = this.#serverStore.games.get(gameId);
+			if (!game) return;
+
+			// shared update, per game
+			if (game.state.status !== status) {
+				console.log("Game status changed: ", status);
+
+				switch (status) {
+				case "waiting":
+					break;
+				case "started":
+					game.state.startTime = Date.now();
+					if (game.state.timeRemaining > 0) {
+						this.#gameService.handleGameTimer(game, socket);
+					}
+					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+					break;
+				case "paused":
+					break;
+				case "finished":
+					setTimeout(() => {
+						this.#gameService.finishGame(gameId);
+					}, 1000)
+					break;
+				default:
+					console.log("default: ", status);
+				}
+
+				game.state.status = status;
+				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+			}
+
+			// separate update, per socket
+			if (status === "finished") {
+				this.removeListeners(socket);
+				this.leaveSocketRoom(socket, gameId);
+			}
+		})
+
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.getPublicGameList());
 		}
-
-		socket.on('gameStatusChange', (status) => {
-			game.state.status = status;
-
-			console.log("Game status changed: ", status);
-
-			switch (status) {
-			case "waiting":
-				break;
-			case "started":
-				game.state.startTime = Date.now();
-
-				if (game.state.timeRemaining > 0) {
-					this.#gameService.handleGameTimer(game, socket);
-				}
-
-				this.#io.emit('updateAvailableGames', this.getPublicGameList());
-
-				break;
-			case "paused":
-				break;
-			case "finished":
-
-				// clean up socket listeners
-				this.removeListeners(socket);
-
-				setTimeout(() => {
-					this.#gameService.finishGame(gameId);
-					this.leaveSocketRoom(socket, gameId);
-				}, 1000)
-				break;
-				// this.#gameService.finishGame(gameId);
-				// this.leaveSocketRoom(socket, gameId);
-				// socket.removeAllListeners('updateMyPlayerInput');
-				// socket.removeAllListeners('gameStatusChange');
-				// break;
-			default:
-				console.log("default: ", status);
-
-			}
-
-			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
-		})
 	}
 
 	leaveSocketRoom(socket, gameId) {
@@ -196,7 +184,6 @@ export default class SocketHandler {
 	}
 
 	removeListeners(socket) {
-		debugger
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
 	}

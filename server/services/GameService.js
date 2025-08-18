@@ -23,7 +23,7 @@ export default class GameService {
 
         this.updateBullets(game);
 
-        if (game.state.status !== "finished") {
+        if (game.state.status === "started") {
             this.updatePowerups(game, currentTime);
 
             for (const playerID in game.state.players) {
