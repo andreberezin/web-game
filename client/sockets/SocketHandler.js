@@ -170,6 +170,119 @@ export default class SocketHandler {
 			game.settings = {...game.settings, ...settings};
 
 			this.createGame(gameId, myId);
+
+
+			// todo refactor this socket connection into smaller methods
+			this.on('updateGameState', (gameId, updatedGameState) => {
+				// console.log("updated state:", gameId, updatedGameState);
+
+				const game = this.#clientStore.games.get(gameId)
+
+				if (!game) {
+					console.warn(`No game found with ID ${gameId}`);
+					return;
+				}
+
+
+				const currentGameState = game.state;
+
+				// handle time remaining
+				if (currentGameState && updatedGameState) {
+					currentGameState.timeRemaining = updatedGameState.timeRemaining;
+
+					// handle timer end
+					if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+						socket.emit('gameStatusChange', "finished")
+						return;
+					}
+
+				} else {
+					console.error("Cannot update time remaining")
+				}
+
+
+				// todo probably don't need to hold the same value in both places
+				this.#gameInterface.gameId = gameId;
+				this.#clientStore.gameId = gameId;
+
+				// Respawning
+				for (const playerID in updatedGameState.players) {
+					if (!currentGameState.players[playerID]) {
+						currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
+						//console.log("Creating player model for:", updatedGameState.players[playerID]);
+						this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
+					}
+				}
+
+				for (const playerID in currentGameState.players) {
+					const player = currentGameState.players[playerID];
+					const updatedPlayer = updatedGameState.players[playerID];
+
+					if (!updatedPlayer) {
+						const element = document.getElementById(playerID);
+						if (element) element.remove();
+						delete currentGameState.players[playerID];
+						continue;
+					}
+
+					if (player) {
+						// player.name = updatedPlayer.name;
+						player.pos = updatedPlayer.pos;
+						player.hp = updatedPlayer.hp;
+						player.status = updatedPlayer.status;
+						player.respawnTimer = updatedPlayer.respawnTimer;
+						player.size = updatedPlayer.size;
+						// player.maxPos = updatedPlayer.maxPos;
+						player.deathCooldown = updatedPlayer.deathCooldown;
+					}
+				}
+
+				for (const bulletID in updatedGameState.bullets) {
+					const bullet = updatedGameState.bullets[bulletID];
+
+					if (!currentGameState.bullets[bulletID]) {
+						currentGameState.bullets[bulletID] = new Bullet(bulletID, bullet.pos.x, bullet.pos.y, bullet.direction);
+						this.#gameService.createBulletModel(bullet, bulletID);
+					}  else {
+						// console.log(updatedGameState.bullets[bulletID].position);
+						currentGameState.bullets[bulletID].pos = bullet.pos;
+					}
+				}
+
+				// Delete the bullet from the client if not present in game state sent from server
+				for (const bulletID in currentGameState.bullets) {
+					if (!updatedGameState.bullets[bulletID]) {
+						const bulletElement = document.getElementById(bulletID);
+						if (bulletElement) {
+							bulletElement.remove();
+						}
+						delete currentGameState.bullets[bulletID];
+					}
+				}
+
+				for (const powerupID in updatedGameState.powerups) {
+					const powerup = updatedGameState.powerups[powerupID];
+
+					if (!currentGameState.powerups[powerupID]) {
+						currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
+						this.#gameService.createPowerupModel(powerup, powerupID);
+					}  else {
+						// console.log(updatedGameState.powerups[powerupID].position);
+						currentGameState.powerups[powerupID].pos = powerup.pos;
+					}
+				}
+
+				// Delete the powerup from the client if not present in game state sent from server
+				for (const powerupID in currentGameState.powerups) {
+					if (!updatedGameState.powerups[powerupID]) {
+						const powerupElement = document.getElementById(powerupID);
+						if (powerupElement) {
+							powerupElement.remove();
+						}
+						delete currentGameState.powerups[powerupID];
+					}
+				}
+			})
 		})
 
 		// todo more error handling
@@ -190,117 +303,6 @@ export default class SocketHandler {
 			console.log("Player:", playerId, "left the game");
 		})
 
-		// todo refactor this socket connection into smaller methods
-		this.on('updateGameState', (gameId, updatedGameState) => {
-			// console.log("updated state:", gameId, updatedGameState);
-
-			const game = this.#clientStore.games.get(gameId)
-
-			if (!game) {
-				console.warn(`No game found with ID ${gameId}`);
-				return;
-			}
-
-
-			const currentGameState = game.state;
-
-			// handle time remaining
-			if (currentGameState && updatedGameState) {
-				currentGameState.timeRemaining = updatedGameState.timeRemaining;
-
-				// handle timer end
-				if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
-					socket.emit('gameStatusChange', "finished")
-					return;
-				}
-
-			} else {
-				console.error("Cannot update time remaining")
-			}
-
-
-			// todo probably don't need to hold the same value in both places
-			this.#gameInterface.gameId = gameId;
-			this.#clientStore.gameId = gameId;
-
-			// Respawning
-			for (const playerID in updatedGameState.players) {
-				if (!currentGameState.players[playerID]) {
-					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
-					//console.log("Creating player model for:", updatedGameState.players[playerID]);
-					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
-				}
-			}
-
-			for (const playerID in currentGameState.players) {
-				const player = currentGameState.players[playerID];
-				const updatedPlayer = updatedGameState.players[playerID];
-
-				if (!updatedPlayer) {
-					const element = document.getElementById(playerID);
-					if (element) element.remove();
-					delete currentGameState.players[playerID];
-					continue;
-				}
-
-				if (player) {
-					// player.name = updatedPlayer.name;
-					player.pos = updatedPlayer.pos;
-					player.hp = updatedPlayer.hp;
-					player.status = updatedPlayer.status;
-					player.respawnTimer = updatedPlayer.respawnTimer;
-					player.size = updatedPlayer.size;
-					// player.maxPos = updatedPlayer.maxPos;
-					player.deathCooldown = updatedPlayer.deathCooldown;
-				}
-			}
-
-			for (const bulletID in updatedGameState.bullets) {
-				const bullet = updatedGameState.bullets[bulletID];
-
-				if (!currentGameState.bullets[bulletID]) {
-					currentGameState.bullets[bulletID] = new Bullet(bulletID, bullet.pos.x, bullet.pos.y, bullet.direction);
-					this.#gameService.createBulletModel(bullet, bulletID);
-				}  else {
-					// console.log(updatedGameState.bullets[bulletID].position);
-					currentGameState.bullets[bulletID].pos = bullet.pos;
-				}
-			}
-
-			// Delete the bullet from the client if not present in game state sent from server
-			for (const bulletID in currentGameState.bullets) {
-				if (!updatedGameState.bullets[bulletID]) {
-					const bulletElement = document.getElementById(bulletID);
-					if (bulletElement) {
-						bulletElement.remove();
-					}
-					delete currentGameState.bullets[bulletID];
-				}
-			}
-
-			for (const powerupID in updatedGameState.powerups) {
-				const powerup = updatedGameState.powerups[powerupID];
-
-				if (!currentGameState.powerups[powerupID]) {
-					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
-					this.#gameService.createPowerupModel(powerup, powerupID);
-				}  else {
-					// console.log(updatedGameState.powerups[powerupID].position);
-					currentGameState.powerups[powerupID].pos = powerup.pos;
-				}
-			}
-
-			// Delete the powerup from the client if not present in game state sent from server
-			for (const powerupID in currentGameState.powerups) {
-				if (!updatedGameState.powerups[powerupID]) {
-					const powerupElement = document.getElementById(powerupID);
-					if (powerupElement) {
-						powerupElement.remove();
-					}
-					delete currentGameState.powerups[powerupID];
-				}
-			}
-		})
 
 		this.on('gameStatusChangeSuccess', (gameId, status) => {
 			this.#clientStore.games.get(gameId).state.status = status;
