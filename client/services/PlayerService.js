@@ -84,19 +84,17 @@ export default class PlayerService {
 		const store  = this.#clientStore;
 
 		const player = store.games.get(store.gameId).state.players[playerId];
-		player.pos = playerData.pos;
-		player.maxPos = playerData.maxPos;
-		player.name = playerData.name || playerId;
+		// player.pos = playerData.pos;
+		// player.maxPos = playerData.maxPos;
+		// player.name = playerData.name || playerId;
+		// player.size.width = playerData.size.width || 0;
 
-
-        // const numberOfPlayers = Object.keys(store.games.get(store.gameId).state.players).length;
 		const indexOfPlayer = player.colorIndex || 1;
 
  		const playerElement = this.createElement(player, indexOfPlayer, playerId);
 		this.addEventListeners(playerId);
 		player.element = playerElement;
 
-		// console.log("players", this.#clientManager.game.state.players);
 		this.appendToGameField(playerElement, playerId);
 	}
 
@@ -144,16 +142,17 @@ export default class PlayerService {
 
 	handleKeyPress(event) {
 		//if (event.type === 'keydown' && event.repeat) return;
-
 		//if (event.repeat) return;
 
-		const socket = this.#socketHandler.socket
+		if (this.#clientStore.games.get(this.#clientStore.gameId).state.status === "started") {
+			const socket = this.#socketHandler.socket
 
-		socket.emit('updateMyPlayerInput', {
-			// playerId: playerId,
-			key: event.key,
-			type: event.type,
-		})
+			socket.emit('updateMyPlayerInput', {
+				// playerId: playerId,
+				key: event.key,
+				type: event.type,
+			})
+		}
 	}
 
 	createElement(player, index, playerId) {
