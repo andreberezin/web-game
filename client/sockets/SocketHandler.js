@@ -16,14 +16,18 @@ export default class SocketHandler {
 	#clientManager;
 	#gameService;
 	#clientStore;
+	#powerupService;
+	#bulletService;
 
-	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore}) {
+	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore, powerupService, bulletService}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
 		this.#gameInterfaceService = gameInterfaceService;
 		this.#gameFieldService = gameFieldService;
 		this.#clientStore = clientStore;
+		this.#powerupService = powerupService;
+		this.#bulletService = bulletService;
 	}
 
 	get socket() {
@@ -228,7 +232,7 @@ export default class SocketHandler {
 
 				if (!currentGameState.bullets[bulletID]) {
 					currentGameState.bullets[bulletID] = new Bullet(bulletID, bullet.pos.x, bullet.pos.y, bullet.direction);
-					this.#gameService.createBulletModel(bullet, bulletID);
+					this.#bulletService.createBulletModel(bullet, bulletID);
 				}  else {
 					// console.log(updatedGameState.bullets[bulletID].position);
 					currentGameState.bullets[bulletID].pos = bullet.pos;
@@ -251,7 +255,7 @@ export default class SocketHandler {
 
 				if (!currentGameState.powerups[powerupID]) {
 					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
-					this.#gameService.createPowerupModel(powerup, powerupID);
+					this.#powerupService.createPowerupModel(powerup, powerupID);
 				}  else {
 					// console.log(updatedGameState.powerups[powerupID].position);
 					currentGameState.powerups[powerupID].pos = powerup.pos;

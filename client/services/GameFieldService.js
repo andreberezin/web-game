@@ -137,6 +137,12 @@ export default class GameFieldService {
 		return gameIdElement;
 	}
 
+	appendToGameField(element) {
+		const gameField = document.getElementById("game-inner");
+		if (!gameField) return;
+		gameField.appendChild(element);
+	}
+
 	createStartButton() {
 		if (existingUI('start-button')) return;
 

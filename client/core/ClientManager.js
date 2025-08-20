@@ -7,8 +7,9 @@ export default class ClientManager {
 	#clientStore
 	#gameFieldService
 	onGameEnd
+	#bulletService
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore}) {
+	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService}) {
 		this.#gameService = gameService;
 		this.#gameInterfaceService = gameInterfaceService
 		this.#playerInterfaceService = playerInterfaceService
@@ -17,6 +18,7 @@ export default class ClientManager {
 		this.#gameFieldService = gameFieldService
 		this.#clientStore = clientStore;
 		this.onGameEnd = null;
+		this.#bulletService = bulletService;
 	}
 
 	get socketHandler() {
@@ -45,7 +47,7 @@ export default class ClientManager {
 
 			for (let bulletID in bullets) {
 				if (bulletID && bullets[bulletID] != null) {
-					this.#gameService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
+					this.#bulletService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
 				}
 			}
 

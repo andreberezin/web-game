@@ -25,7 +25,7 @@ export default class GameService {
         //     this.handleGameTimer(game, currentTime);
         // }
 
-        this.updateBullets(game);
+        this.#bulletService.updateBullets(game);
 
         if (game.state.status === "started") {
             this.#powerupService.updatePowerups(game, currentTime);
