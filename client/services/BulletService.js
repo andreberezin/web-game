@@ -1,19 +1,26 @@
+import {existingUI} from '../utils/existingUI.js';
+
 export class BulletService {
-	constructor() {}
+	#clientStore
+	#gameFieldService
 
-	removeBullets(bullets) {
-		for (const bulletId in bullets) {
+	constructor({clientStore, gameFieldService}) {
+		this.#clientStore = clientStore;
+		this.#gameFieldService = gameFieldService;
 
-			// if (bulletElement) {
-			// 	bulletElement.remove();
-			// }
-			delete bullets[bulletId];
-		}
+	}
 
-		const bulletElements = document.getElementsByClassName("bullet");
+	createBulletModel(bulletData, bulletId) {
+		// if (document.getElementById(bulletId) !== null) return;
+		if (existingUI(bulletId)) return;
 
-		for (const bullet of bulletElements) {
-			bullet.remove();
-		}
+		const store  = this.#clientStore;
+
+		const bullet = store.games.get(store.gameId).state.bullets[bulletId];
+
+		bullet.pos = bulletData.pos;
+
+		const bulletElement = this.createElementForBullet(bullet);
+		this.#gameFieldService.appendToGameField(bulletElement);
 	}
 }

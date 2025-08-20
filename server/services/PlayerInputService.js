@@ -2,8 +2,11 @@ import {clamp} from '../utils/clamp.js';
 
 export default class PlayerInputService {
     #gameService;
+    #bulletService;
 
-    constructor() {}
+    constructor({bulletService}) {
+        this.#bulletService = bulletService;
+    }
 
     setGameService(gameService) {
         this.#gameService = gameService;
@@ -175,7 +178,7 @@ export default class PlayerInputService {
         // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                this.#gameService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
+                this.#bulletService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
                 player.lastBulletShotAt(currentTime);
             }
         }

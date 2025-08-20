@@ -1,3 +1,41 @@
 export class PowerupService {
 	// todo move powerup related methods from GameService to here
+
+	#clientStore
+	#gameFieldService
+
+	constructor({clientStore, gameFieldService}) {
+		this.#clientStore = clientStore;
+		this.#gameFieldService = gameFieldService;
+
+	}
+
+	createPowerupModel(powerupData, powerupId) {
+		if (document.getElementById(powerupId) !== null) return;
+
+		const store  = this.#clientStore;
+
+		const powerup = store.games.get(store.gameId).state.powerups[powerupId];
+
+		powerup.pos = powerupData.pos;
+
+		const powerupElement = this.createElementForPowerup(powerup);
+		this.#gameFieldService.appendToGameField(powerupElement);
+	}
+
+	createElementForPowerup(powerup) {
+		const powerupElement = document.createElement("div")
+		powerupElement.classList.add("powerup")
+		powerupElement.id = powerup.id;
+		powerupElement.style.top = `${powerup.pos.y}px`
+		powerupElement.style.left = `${powerup.pos.x}px`
+		powerupElement.tabIndex = 0;
+
+		// for (const property in powerup.styles) {
+		// 	powerupElement.style[property] = powerup.styles[property]
+		// }
+
+		powerup.element = powerupElement;
+		return powerupElement;
+	}
 }

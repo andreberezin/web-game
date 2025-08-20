@@ -25,10 +25,10 @@ export default class Powerup {
         // Give 1 extra life to player
         if (this.typeOfPowerup === 0) {
             player.lives += 1;
-            console.log("Giving extra life to player: ", player);
+            console.log("Giving extra life to player: ", player.lives);
         } else if (this.typeOfPowerup === 1) {
             player.damageMultiplier = 2;
-            console.log("Raising damage for player: ", player);
+            console.log("Raising damage for player: ", player.damageMultiplier);
         }
     }
 }

@@ -12,7 +12,7 @@ export default class Game {
 	};
 	#settings = {
 		private: false,
-		duration: 60000, // milliseconds = 1 minute
+		duration: 600000, // milliseconds = 1 minute
 		maxPlayers: 4,
 		mapType: "empty"
 	};

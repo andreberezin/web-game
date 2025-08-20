@@ -178,6 +178,7 @@ export default class SocketHandler {
 
 				// handle timer end
 				if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+					// todo goes here 5 times
 					console.log("here");
 					socket.emit('gameStatusChange', gameId, "finished")
 					return;

@@ -13,10 +13,11 @@ export default class Bullet {
         height: 10,
     }
 
-    constructor(id, x, y, direction) {
+    constructor(id, x, y, direction, damageMultiplier) {
         this.id = id;
         this.direction = direction;
         this.velocity = 10;
+        this.damageMultiplier = damageMultiplier;
 
         // Center the bullet at the given (x, y)
         this.pos = {

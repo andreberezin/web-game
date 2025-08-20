@@ -5,10 +5,14 @@ import Powerup from "../models/Powerup.js";
 export default class GameService {
     #playerInputService
     #serverStore
+    #bulletService
+    #powerupService
 
-    constructor({playerInputService, serverStore}) {
+    constructor({playerInputService, serverStore, bulletService, powerupService}) {
         this.#playerInputService = playerInputService;
         this.#serverStore = serverStore;
+        this.#bulletService = bulletService;
+        this.#powerupService = powerupService;
     }
 
     createGame(hostId, settings) {
@@ -24,7 +28,7 @@ export default class GameService {
         this.updateBullets(game);
 
         if (game.state.status === "started") {
-            this.updatePowerups(game, currentTime);
+            this.#powerupService.updatePowerups(game, currentTime);
 
             for (const playerID in game.state.players) {
                 const player = game.state.players[playerID];
@@ -74,6 +78,7 @@ export default class GameService {
             } else {
                 // game.state.status = "finished"
                 // socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
+                // todo logs randomly
                 console.log("Timer has finished: ", game.state.timeRemaining);
             }
         }
@@ -150,110 +155,6 @@ export default class GameService {
 
     addPlayer(game, playerId, player) {
         game.state.players[playerId] = player;
-    }
-
-    createPowerup(game) {
-        // TODO: add UUID generation instead of math.random
-        const id = Math.floor(Math.random() * 10000);
-        let x = Math.floor(Math.random() * 1919);
-        let y = Math.floor(Math.random() * 1079);
-        const typeOfPowerup = Math.floor(Math.random() * 2);
-        let foundCoordinatesNotInsideWalls = false;
-        while (foundCoordinatesNotInsideWalls == false) {
-            if (this.wouldCollideWithWalls(x, y, 20, game)) {
-                x = Math.floor(Math.random() * 1919);
-                y = Math.floor(Math.random() * 1079);
-            } else {
-                foundCoordinatesNotInsideWalls = true;
-            }
-        }
-        game.state.powerups[id] = new Powerup(id, x, y, typeOfPowerup);
-    }
-
-    updatePowerups(game, currentTime) {
-        const timeWhenLastPowerupWasCreated = this.#serverStore.timeWhenLastPowerupWasCreated;
-        let currentAmountOfPowerups = Object.keys(game.state.powerups).length;
-
-        //console.log(currentTime - timeWhenLastPowerupWasCreated);
-        if (currentAmountOfPowerups <= 5 && ((currentTime - timeWhenLastPowerupWasCreated) > 5000 || timeWhenLastPowerupWasCreated === 0)) {
-            this.createPowerup(game);
-            this.#serverStore.timeWhenLastPowerupWasCreated = currentTime;
-        }
-    }
-
-    createBulletAt(x, y, direction, game, playerWidth, damageMultiplier) {
-        // TODO: add UUID generation instead of math.random
-        const id = Math.floor(Math.random() * 10000);
-        const offset = 24;
-
-        let bulletX = x + playerWidth / 2;
-        let bulletY = y + playerWidth / 2;
-
-        switch(direction) {
-            case "up":
-                bulletY -= offset;
-                break;
-            case "down":
-                bulletY += offset;
-                break;
-            case "left":
-                bulletX -= offset;
-                break;
-            case "right":
-                bulletX += offset;
-                break;
-        }
-        game.state.bullets[id] = new Bullet(id, bulletX, bulletY, direction, damageMultiplier);
-    }
-
-    updateBullets(game) {
-        const bullets = game.state.bullets;
-        const directionMap = {
-            "up": {coord: "y", multiplier: -1},
-            "down": {coord: "y", multiplier: 1},
-            "left": {coord: "x", multiplier: -1},
-            "right": {coord: "x", multiplier: 1}
-        }
-        const bulletsToDelete = [];
-
-        Object.entries(bullets).forEach(([bulletId, bullet]) => {
-            const directionValues = directionMap[bullet.direction];
-            const bulletSize = bullet.size?.width || 20;
-            const newPosition = bullet.pos[directionValues.coord] + bullet.velocity * directionValues.multiplier;
-            let testX = bullet.pos.x;
-            let testY = bullet.pos.y;
-
-            if (directionMap[bullet.direction].coord === 'x') {
-                testX = newPosition;
-            } else {
-                testY = newPosition;
-            }
-
-            this.moveBulletByVelocity(bullet, directionValues);
-
-            if (this.wouldCollideWithWalls(testX, testY, bulletSize, game) || this.isOutOfBounds(bullet.pos)) {
-                bulletsToDelete.push(bulletId);
-            }
-        });
-
-        this.deleteBullets(bulletsToDelete, bullets);
-    }
-
-	moveBulletByVelocity(bullet, directionValues) {
-            if (directionValues) {
-                bullet.pos[directionValues.coord] += bullet.velocity * directionValues.multiplier;
-            }
-	}
-
-	deleteBullets(bulletsToDelete, bullets) {
-        bulletsToDelete.forEach(bulletId => {
-            delete bullets[bulletId];
-        });
-	}
-
-    isOutOfBounds(pos) {
-        const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
-        return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
     }
 
     wouldCollideWithWalls(x, y, objectSize, game) {

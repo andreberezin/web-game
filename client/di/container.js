@@ -10,6 +10,7 @@ import ClientManager from '../core/ClientManager.js';
 import GameFieldService from '../services/GameFieldService.js';
 import clientStore from '../stores/clientStore.js';
 import {BulletService} from '../services/BulletService.js';
+import {PowerupService} from '../services/PowerupService.js';
 
 const container = createContainer();
 
@@ -22,6 +23,7 @@ container.register({
 	gameInterfaceService: asClass(GameInterfaceService).singleton(),
 	playerInterfaceService: asClass(PlayerInterfaceService).singleton(),
 	bulletService: asClass(BulletService).singleton(),
+	powerupService: asClass(PowerupService).singleton(),
 	socketHandler: asClass(SocketHandler).singleton(),
 	clientManager: asClass(ClientManager).singleton(),
 	clientStore: asClass(clientStore).singleton(),
