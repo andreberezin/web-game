@@ -220,6 +220,7 @@ export default class SocketHandler {
 				if (player) {
 					player.pos = updatedPlayer.pos;
 					player.hp = updatedPlayer.hp;
+					player.lives = updatedPlayer.lives;
 					player.status = updatedPlayer.status;
 					player.respawnTimer = updatedPlayer.respawnTimer;
 					player.size = updatedPlayer.size;
