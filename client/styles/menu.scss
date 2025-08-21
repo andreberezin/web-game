@@ -170,10 +170,17 @@
 		  border-bottom: 1px solid lightgray;
 
 		  .game {
-			&:hover {
-			  cursor: pointer;
-			  scale: 1.02;
-			  font-weight: 550;
+
+			&.joinable {
+			  &:hover {
+				cursor: pointer;
+				scale: 1.02;
+				font-weight: 550;
+			  }
+			}
+
+			&:not(.joinable) {
+			  color: grey;
 			}
 
 			.game-id {
