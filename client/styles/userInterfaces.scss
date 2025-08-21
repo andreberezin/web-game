@@ -42,6 +42,22 @@
     bottom: 0;
   }
 
+  .ui-part {
+    width: 40%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+    .ui-item {
+      width: 40%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+    }
+
   .ui-item {
     width: 40%;
     display: flex;
@@ -52,6 +68,11 @@
 
     &#player-id {
 
+      #player-id-value {
+        width: fit-content;
+        white-space: nowrap;
+        overflow: hidden;
+      }
     }
 
     &#player-hp{

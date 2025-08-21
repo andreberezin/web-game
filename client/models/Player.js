@@ -30,6 +30,7 @@ export default class Player {
     }
     #direction = null;
     #hp = 0;
+    #lives = 3;
     // lastShotTime = 0;
     // shotCooldown = 250;
     #deathCooldown = 0;
@@ -65,6 +66,14 @@ export default class Player {
         this.#hp = hp;
     }
 
+    get lives() {
+        return this.#lives;
+    }
+
+    set lives(lives) {
+        this.#lives = lives;
+    }
+
     get pos() {
         return this.#pos;
     }
@@ -75,18 +84,6 @@ export default class Player {
             y: y,
         }
     }
-
-    // get spawnPos() {
-    //     return this.#spawnPos;
-    // }
-    //
-    // set spawnPos({x, y}) {
-    //     this.#spawnPos = {
-    //         x: x,
-    //         y: y,
-    //     }
-    // }
-
 
     get shift() {
         return this.#shift;

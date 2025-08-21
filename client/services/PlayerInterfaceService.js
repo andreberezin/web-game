@@ -1,7 +1,7 @@
 import {existingUI} from '../utils/existingUI.js';
 
 export default class PlayerInterfaceService {
-	#uiParts = ["id", "hp", "respawnTimer"]
+	#uiParts = ["id", "hp", "lives", "respawnTimer"]
 
 	constructor() {
 	}
@@ -13,19 +13,41 @@ export default class PlayerInterfaceService {
 		playerUI.id= "player-ui" ;
 		playerUI.className = 'ui'
 
+		const playerUIrightSide = document.createElement("div");
+		playerUIrightSide.id= "player-ui-rightSide" ;
+		playerUIrightSide.className = 'ui-part'
+
 		const game = document.getElementById("game");
 
 		game.appendChild(playerUI);
+		playerUI.appendChild(playerUIrightSide);
 
 		this.#uiParts.forEach(uiPart => {
-			if (uiPart === "respawnTimer") {
-				const gameInner = document.getElementById("game-inner");
-				const element = this.createRespawnTimer(uiPart);
-				gameInner.appendChild(element);
-			} else {
-				const element = this.createElement(uiPart);
-				playerUI.appendChild(element);
+
+			const element = uiPart === "respawnTimer" ? this.createRespawnTimer(uiPart) : this.createElement(uiPart);
+
+			switch (uiPart) {
+				case "respawnTimer":
+					const gameInner = document.getElementById("game-inner");
+					gameInner.appendChild(element);
+					break;
+				case "hp":
+					playerUIrightSide.appendChild(element);
+					break;
+				case "lives":
+					playerUIrightSide.appendChild(element);
+					break;
+				default:
+					playerUI.appendChild(element);
 			}
+			// if (uiPart === "respawnTimer") {
+			// 	const gameInner = document.getElementById("game-inner");
+			// 	const element = this.createRespawnTimer(uiPart);
+			// 	gameInner.appendChild(element);
+			// } else {
+			// 	const element = this.createElement(uiPart);
+			// 	playerUI.appendChild(element);
+			// }
 		})
 	}
 
