@@ -4,10 +4,11 @@ import {useEffect, useState} from 'react';
 import {CreateGame} from './CreateGame.jsx';
 import {CreatePlayer} from './CreatePlayer.jsx';
 
-export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
+export function Menu({clientManager, isGameStarted, setIsGameStarted, setError}) {
 	const [isCreateGame, setIsCreateGame] = useState(false);
 	const [isCreatePlayer, setIsCreatePlayer] = useState(false);
 	const [gameId, setGameId] = useState(null);
+
 
 	// todo add logic to save game id to browser storage to automatically join correct game when refreshing
 
@@ -31,7 +32,6 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 		// eslint-disable-next-line
 	}, [clientManager.socketHandler]);
 
-
 	return(
 			<div id={"menu"}>
 				<div id={"title"}>Cube Wars</div>
@@ -44,6 +44,7 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 							setGameId={setGameId}
 							gameId={gameId}
 							games={games}
+							setError={setError}
 						/>
 
 						<div className={"menu-item"} id={"create-game-button-container"}>
@@ -73,7 +74,6 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 						gameId={gameId}
 					/>
 				}
-
 			</div>
 	)
 }
