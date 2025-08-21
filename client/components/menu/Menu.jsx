@@ -33,46 +33,47 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted}) {
 
 
 	return(
-		<div id={"menu"}>
+			<div id={"menu"}>
+				<div id={"title"}>Cube Wars</div>
 
-			{!isCreateGame && !isGameStarted && !isCreatePlayer &&
-				<>
-					<JoinGame
+				{!isCreateGame && !isGameStarted && !isCreatePlayer &&
+					<>
+						<JoinGame
+							clientManager={clientManager}
+							setIsCreatePlayer={setIsCreatePlayer}
+							setGameId={setGameId}
+							gameId={gameId}
+							games={games}
+						/>
+
+						<div className={"menu-item"} id={"create-game-button-container"}>
+							<button id={"create-game-button"} onClick={() => {
+								setIsCreateGame(true);
+							}}
+							>
+								Create game
+							</button>
+						</div>
+					</>
+				}
+
+				{isCreateGame && !isGameStarted && !isCreatePlayer &&
+					<CreateGame
 						clientManager={clientManager}
-						setIsCreatePlayer={setIsCreatePlayer}
-						setGameId={setGameId}
-						gameId={gameId}
-						games={games}
+						setIsCreateGame={setIsCreateGame}
+						setIsGameStarted={setIsGameStarted}
 					/>
+				}
 
-					<div className={"menu-item"} id={"create-game-button-container"}>
-						<button id={"create-game-button"} onClick={() => {
-							setIsCreateGame(true);
-						}}
-						>
-							Create game
-						</button>
-					</div>
-				</>
-			}
+				{!isCreateGame && !isGameStarted && isCreatePlayer &&
+					<CreatePlayer
+						clientManager={clientManager}
+						setIsGameStarted={setIsGameStarted}
+						setIsCreatePlayer={setIsCreatePlayer}
+						gameId={gameId}
+					/>
+				}
 
-			{isCreateGame && !isGameStarted && !isCreatePlayer &&
-				<CreateGame
-					clientManager={clientManager}
-					setIsCreateGame={setIsCreateGame}
-					setIsGameStarted={setIsGameStarted}
-				/>
-			}
-
-			{!isCreateGame && !isGameStarted && isCreatePlayer &&
-				<CreatePlayer
-					clientManager={clientManager}
-					setIsGameStarted={setIsGameStarted}
-					setIsCreatePlayer={setIsCreatePlayer}
-					gameId={gameId}
-				/>
-			}
-
-		</div>
+			</div>
 	)
 }
