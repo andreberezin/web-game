@@ -82,12 +82,6 @@ export default class GameFieldService {
 		this.generateWalls();
 	}
 
-	// removeGameField() {
-	// 	const gameField = document.getElementById('game-field');
-	// 	// if (!gameField) return;
-	// 	gameField.remove();
-	// }
-
 	removeGameElements() {
 		const game = document.getElementById('game');
 		// if (!game) return;
@@ -185,18 +179,21 @@ export default class GameFieldService {
 	createLobbyPlayersCount() {
 		if (existingUI('lobby-players-count')) return;
 
-		const store = this.#clientStore
-
-		const game = store.games.get(store.gameId)
-
-		const playerCount = Object.keys(game.state.players).length;
-		const maxPlayers = game.settings.maxPlayers;
-
 		const lobbyPlayersCount = document.createElement('div');
 		lobbyPlayersCount.id = 'lobby-players-count';
-		lobbyPlayersCount.textContent = `Players: ${playerCount}/${maxPlayers}`;
 
 		return lobbyPlayersCount;
+	}
+
+	updateLobbyPlayersCount() {
+		const element = document.getElementById('lobby-players-count');
+		if (!element) return;
+
+		const store = this.#clientStore;
+		const game = store.games.get(store.gameId);
+		const playersCount = Object.keys(game.state.players).length;
+		const maxPlayers = game.settings.maxPlayers;
+		element.textContent = `Players: ${playersCount}/${maxPlayers}`;
 	}
 
 	generateWalls() {

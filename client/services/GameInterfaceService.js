@@ -154,7 +154,7 @@ export default class GameInterfaceService {
 		const time = (timeRemaining / 1000).toFixed(2);
 		countdownElement.textContent = time;
 
-		if (time <= 10000 && countdownElement.style.color !== "red") {
+		if (time <= 10 && countdownElement.style.color !== "red") {
 			countdownElement.style.color = "red";
 		}
 	}

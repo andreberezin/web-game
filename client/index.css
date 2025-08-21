@@ -17,6 +17,7 @@ body {
   justify-content: center;   /* center horizontally */
   align-items: center;       /* center vertically */
   overflow: hidden;
+  font-family: "Andale Mono", monospace;
 }
 
 button:not(.back) {
