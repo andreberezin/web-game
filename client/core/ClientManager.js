@@ -45,6 +45,10 @@ export default class ClientManager {
 			const {players, bullets, powerups} = game.state;
 			this.#gameInterfaceService.updateGameUI(game);
 
+			if (game.state.status === "waiting") {
+				this.#gameFieldService.updateLobbyPlayersCount();
+			}
+
 			for (let bulletID in bullets) {
 				if (bulletID && bullets[bulletID] != null) {
 					this.#bulletService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
