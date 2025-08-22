@@ -12,69 +12,44 @@ export class BulletService {
 		this.#gameService = gameService;
 	}
 
-	createBulletAt(x, y, direction, game, playerWidth, damageMultiplier) {
+	createBulletAt(x, y, angle, game, playerWidth, damageMultiplier) {
 		// TODO: add UUID generation instead of math.random
 		const id = Math.floor(Math.random() * 10000);
 		const offset = 24;
+		const playerCenterX = x + playerWidth / 2;
+		const playerCenterY = y + playerWidth / 2;
+		const bulletX = playerCenterX + Math.cos(angle) * offset;
+		const bulletY = playerCenterY + Math.sin(angle) * offset
+		const directionVector = {
+			x: Math.cos(angle),
+			y: Math.sin(angle)
+		};
 
-
-		let bulletX = x + playerWidth / 2;
-		let bulletY = y + playerWidth / 2;
-
-		switch(direction) {
-		case "up":
-			bulletY -= offset;
-			break;
-		case "down":
-			bulletY += offset;
-			break;
-		case "left":
-			bulletX -= offset;
-			break;
-		case "right":
-			bulletX += offset;
-			break;
-		}
-		game.state.bullets[id] = new Bullet(id, bulletX, bulletY, direction, damageMultiplier);
+		game.state.bullets[id] = new Bullet(id, bulletX, bulletY, directionVector, damageMultiplier, angle);
 	}
 
 	updateBullets(game) {
 		const bullets = game.state.bullets;
-		const directionMap = {
-			"up": {coord: "y", multiplier: -1},
-			"down": {coord: "y", multiplier: 1},
-			"left": {coord: "x", multiplier: -1},
-			"right": {coord: "x", multiplier: 1}
-		}
 		const bulletsToDelete = [];
 
 		Object.entries(bullets).forEach(([bulletId, bullet]) => {
-			const directionValues = directionMap[bullet.direction];
 			const bulletSize = bullet.size?.width || 20;
-			const newPosition = bullet.pos[directionValues.coord] + bullet.velocity * directionValues.multiplier;
-			let testX = bullet.pos.x;
-			let testY = bullet.pos.y;
+			let newX = bullet.pos.x + bullet.velocity * bullet.direction.x;
+			let newY = bullet.pos.y + bullet.velocity * bullet.direction.y;
 
-			if (directionMap[bullet.direction].coord === 'x') {
-				testX = newPosition;
-			} else {
-				testY = newPosition;
-			}
-
-			this.moveBulletByVelocity(bullet, directionValues);
-
-			if (this.#gameService.wouldCollideWithWalls(testX, testY, bulletSize, game) || this.isOutOfBounds(bullet.pos)) {
+			if (this.#gameService.wouldCollideWithWalls(newX, newY, bulletSize, game) || this.isOutOfBounds({x: newX, y: newY})) {
 				bulletsToDelete.push(bulletId);
+			} else {
+				this.moveBulletByVelocity(bullet, newX, newY);
 			}
 		});
 
 		this.deleteBullets(bulletsToDelete, bullets);
 	}
 
-	moveBulletByVelocity(bullet, directionValues) {
-		if (directionValues) {
-			bullet.pos[directionValues.coord] += bullet.velocity * directionValues.multiplier;
-		}
+	moveBulletByVelocity(bullet, newX, newY) {
+		bullet.pos.x = newX;
+		bullet.pos.y = newY;
 	}
 
 	deleteBullets(bulletsToDelete, bullets) {

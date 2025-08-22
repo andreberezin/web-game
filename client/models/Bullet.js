@@ -4,15 +4,17 @@ export default class Bullet {
         x: 0,
         y: 0,
     };
-    #direction = "";
+    #direction = null;
+    #angle = null;
     #velocity = 0;
     #element = null;
 
-    constructor(id, x, y, direction) {
+    constructor(id, x, y, direction, angle) {
         this.#id = id;
         this.#pos.x = x;
         this.#pos.y = y;
         this.#direction = direction;
+        this.#angle = angle;
     }
 
     get id() {
@@ -37,6 +39,14 @@ export default class Bullet {
 
     set direction(direction) {
         this.#direction = direction;
+    }
+
+    get angle() {
+        return this.#angle;
+    }
+
+    set angle(angle) {
+        this.#angle = angle;
     }
 
     get velocity() {
