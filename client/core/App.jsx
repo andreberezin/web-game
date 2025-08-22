@@ -20,7 +20,7 @@ function App() {
         private: false,
         maxPlayers: 4,
         mapType: "empty",
-        duration: 60000,
+        duration: 600000,
     });
 
     useEffect(() => {

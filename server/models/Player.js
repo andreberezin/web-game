@@ -41,6 +41,7 @@ export default class Player {
     respawnTimer = null;
     deathTime = 0;
     damageMultiplier = 1;
+    damageBoostEndTime = null;
     shootingAngle = null;
     status = {
         alive: true
