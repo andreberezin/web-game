@@ -33,6 +33,7 @@ export default class GameService {
             for (const playerID in game.state.players) {
                 const player = game.state.players[playerID];
 
+                this.#powerupService.updatePlayerPowerups(player, currentTime);
                 this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
@@ -122,7 +123,7 @@ export default class GameService {
                     const powerup = powerups[powerupID];
 
                     if (powerup.pos.x + 10 > player.pos.x && powerup.pos.x < player.pos.x + 20 && powerup.pos.y + 10 > player.pos.y && powerup.pos.y < player.pos.y + 20) {
-                        powerup.givePowerup(player);
+                        powerup.givePowerup(player, currentTime);
                         powerupsToDelete.push(powerupID);
                     }
                 }
