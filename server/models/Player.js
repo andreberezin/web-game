@@ -34,7 +34,7 @@ export default class Player {
     hp = 100;
     lives = 3;
     speed = 5;
-    maxSpeed = 1;
+    maxSpeed = 2;
     acceleration = 1000 // in ms, less is more
     movementStart = null;
     deathCooldown = 5000;
