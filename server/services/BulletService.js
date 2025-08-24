@@ -34,10 +34,13 @@ export class BulletService {
 
 		Object.entries(bullets).forEach(([bulletId, bullet]) => {
 			const bulletSize = bullet.size?.width || 20;
+			const startX = bullet.pos.x;
+			const startY = bullet.pos.y;
 			let newX = bullet.pos.x + bullet.velocity * bullet.direction.x;
 			let newY = bullet.pos.y + bullet.velocity * bullet.direction.y;
+			let didBulletHit = this.#gameService.raycastToWalls(startX, startY, newX, newY, bulletSize, game)
 
-			if (this.#gameService.wouldCollideWithWalls(newX, newY, bulletSize, game) || this.isOutOfBounds({x: newX, y: newY})) {
+			if (didBulletHit || this.isOutOfBounds({x: newX, y: newY})) {
 				bulletsToDelete.push(bulletId);
 			} else {
 				this.moveBulletByVelocity(bullet, newX, newY);
