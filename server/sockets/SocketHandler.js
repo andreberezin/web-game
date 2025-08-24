@@ -127,6 +127,15 @@ export default class SocketHandler {
 				return;
 			}
 			const input = player.input
+			if(key === "w") {
+				key = "ArrowUp";
+			} else if(key === "s") {
+				key = "ArrowDown";
+			} else if(key === "a") {
+				key = "ArrowLeft";
+			} else if(key === "d") {
+				key = "ArrowRight";
+			}
 
 			if (type === 'mouseclick') {
 				player.shootingAngle = shootingAngle;
