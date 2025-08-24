@@ -5,6 +5,7 @@ export default class PlayerService {
 	#keydownHandler = null;
 	#keyupHandler = null;
 	#mouseClickHandler = null;
+	#mouseMoveHandler = null;
 	#hasListeners = false;
 	#gameFieldElement = null;
 	#mousePosition = {x: 0, y: 0};
@@ -120,12 +121,14 @@ export default class PlayerService {
 		this.#keydownHandler = (event) => this.handleKeyPress(event, playerId);
 		this.#keyupHandler = (event) => this.handleKeyPress(event, playerId);
 		this.#mouseClickHandler = (event) => this.handleMouseClicking(event, playerId);
+		this.#mouseMoveHandler = (event) => this.handleMouseMove(event);
 
 		window.addEventListener("keydown", this.#keydownHandler);
 		window.addEventListener("keyup", this.#keyupHandler);
 		const gameInner = document.getElementById("game-inner");
 		if (gameInner) {
 			gameInner.addEventListener("click", this.#mouseClickHandler);
+			gameInner.addEventListener("mousemove", this.#mouseMoveHandler);
 		}
 
 		// window.addEventListener("keydown", (event) => {
@@ -140,17 +143,52 @@ export default class PlayerService {
 	}
 
 	initializeMouseTracking() {
-		document.addEventListener('mousemove', (event) => {
-			if(this.#gameFieldElement === document.getElementById('game-inner')) {
-				this.convertMousePositionWith(event);
-			}
-		});
-
 		document.addEventListener('mouseenter', (event) => {
 			if(event.target.id === 'game-inner') {
 				this.#gameFieldElement = document.getElementById('game-inner');
 			}
 		});
+
+		document.addEventListener('mouseleave', (event) => {
+			if(event.target.id === 'game-inner') {
+				this.#gameFieldElement = null;
+			}
+		});
+	}
+
+	handleMouseMove(event) {
+		//if (this.#gameFieldElement !== document.getElementById('game-inner')) return;
+
+		this.convertMousePositionWith(event);
+		this.rotateCurrentPlayer(event);
+	}
+
+	rotateCurrentPlayer(event) {
+		const store = this.#clientStore;
+		const myId = store.myId;
+
+		if (!myId || !store.gameId) return;
+
+		const currentGame = store.games.get(store.gameId);
+		if (!currentGame) return;
+
+		const myPlayer = currentGame.state.players[myId];
+		if (!myPlayer || !myPlayer.element || !myPlayer.pos || !myPlayer.size) return;
+
+		const gameInner = document.getElementById('game-inner');
+		if (!gameInner) return;
+
+		const rect = gameInner.getBoundingClientRect();
+		const scale = getComputedStyle(document.documentElement).getPropertyValue('--scale') || 1;
+		const mouseX = (event.clientX - rect.left) / parseFloat(scale);
+		const mouseY = (event.clientY - rect.top) / parseFloat(scale);
+		const playerCenterX = myPlayer.pos.x + (myPlayer.size.width / 2);
+		const playerCenterY = myPlayer.pos.y + (myPlayer.size.height / 2);
+		const deltaX = mouseX - playerCenterX;
+		const deltaY = mouseY - playerCenterY;
+		const angle = Math.atan2(deltaY, deltaX);
+
+		myPlayer.element.style.transform = `rotate(${angle}rad)`;
 	}
 
 	convertMousePositionWith(event) {
