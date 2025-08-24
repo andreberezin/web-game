@@ -158,6 +158,23 @@ export default class GameService {
         game.state.players[playerId] = player;
     }
 
+    raycastToWalls(startX, startY, endX, endY, objectSize, game) {
+        const steps = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+        const stepSize = Math.max(1, Math.floor(steps / 10));
+
+        for(let step = 0; step <= steps; step += stepSize) {
+            const t = step / steps;
+            const checkX = startX + (endX - startX) * t;
+            const checkY = startY + (endY - startY) * t;
+
+            if(this.wouldCollideWithWalls(checkX, checkY, objectSize, game)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     wouldCollideWithWalls(x, y, objectSize, game) {
         if (!game || !game.map) {
             return false;

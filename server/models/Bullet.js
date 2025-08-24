@@ -17,7 +17,7 @@ export default class Bullet {
     constructor(id, x, y, direction, damageMultiplier, angle) {
         this.id = id;
         this.direction = direction;
-        this.velocity = 10;
+        this.velocity = 100;
         this.damageMultiplier = damageMultiplier;
         this.angle = angle;
 
