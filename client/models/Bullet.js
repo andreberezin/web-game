@@ -6,7 +6,7 @@ export default class Bullet {
     };
     #direction = null;
     #angle = null;
-    #velocity = 0;
+    #velocityPerSecond = 0;
     #element = null;
 
     constructor(id, x, y, direction, angle) {
@@ -49,12 +49,12 @@ export default class Bullet {
         this.#angle = angle;
     }
 
-    get velocity() {
-        return this.#velocity;
+    get velocityPerSecond() {
+        return this.#velocityPerSecond;
     }
 
-    set velocity(velocity) {
-        this.#velocity = velocity;
+    set velocityPerSecond(velocityPerSecond) {
+        this.#velocityPerSecond = velocityPerSecond;
     }
 
     get element() {
