@@ -33,6 +33,7 @@ export default class GameService {
             for (const playerID in game.state.players) {
                 const player = game.state.players[playerID];
 
+                this.#powerupService.updatePlayerPowerups(player, currentTime);
                 this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
@@ -93,8 +94,10 @@ export default class GameService {
             if (player.status.alive) {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
+                    let bulletEndX = bullet.pos.x + bullet.velocity * bullet.direction.x;
+                    let bulletEndY = bullet.pos.y + bullet.velocity * bullet.direction.y;
 
-                    if (bullet.pos.x + 5 > player.pos.x && bullet.pos.x < player.pos.x + 20 && bullet.pos.y + 5 > player.pos.y && bullet.pos.y < player.pos.y + 20) {
+                    if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
                         //console.log("PLAYER GOT HIT REMOVING 20 HP");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
@@ -122,7 +125,7 @@ export default class GameService {
                     const powerup = powerups[powerupID];
 
                     if (powerup.pos.x + 10 > player.pos.x && powerup.pos.x < player.pos.x + 20 && powerup.pos.y + 10 > player.pos.y && powerup.pos.y < player.pos.y + 20) {
-                        powerup.givePowerup(player);
+                        powerup.givePowerup(player, currentTime);
                         powerupsToDelete.push(powerupID);
                     }
                 }
@@ -155,6 +158,44 @@ export default class GameService {
 
     addPlayer(game, playerId, player) {
         game.state.players[playerId] = player;
+    }
+
+    raycastToWalls(startX, startY, endX, endY, objectSize, game) {
+        const steps = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
+        const stepSize = Math.max(1, Math.floor(steps / 10));
+
+        for(let step = 0; step <= steps; step += stepSize) {
+            const t = step / steps;
+            const checkX = startX + (endX - startX) * t;
+            const checkY = startY + (endY - startY) * t;
+
+            if(this.wouldCollideWithWalls(checkX, checkY, objectSize, game)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    raycastToPlayer(bulletStartX, bulletStartY, bulletEndX, bulletEndY, bullet, player) {
+        const steps = Math.max(Math.abs(bulletEndX - bulletStartX), Math.abs(bulletEndY - bulletStartY));
+        const stepSize = Math.max(1, Math.floor(steps / 10));
+
+        for(let step = 0; step <= steps; step += stepSize) {
+            const t = step / steps;
+            const checkX = bulletStartX + (bulletEndX - bulletStartX) * t;
+            const checkY = bulletStartY + (bulletEndY - bulletStartY) * t;
+
+            if(this.wouldCollideWithPlayer(checkX, checkY, bullet, player)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    wouldCollideWithPlayer(checkX, checkY, bullet, player) {
+        return !!(checkX + 5 > player.pos.x && checkX < player.pos.x + 20 && checkY + 5 > player.pos.y && checkY < player.pos.y + 20);
     }
 
     wouldCollideWithWalls(x, y, objectSize, game) {

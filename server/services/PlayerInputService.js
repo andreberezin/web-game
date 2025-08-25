@@ -59,7 +59,7 @@ export default class PlayerInputService {
         if (player.movementStart) {
             const elapsed = now - player.movementStart;
             const progress = Math.min(elapsed / player.acceleration, player.maxSpeed); // 0–1 over 1000ms
-            const base = 0.1;
+            const base = 0.7;
             player.shift = (base + (1 - base) * Math.pow(progress, 1.5));
         }
 
@@ -95,12 +95,45 @@ export default class PlayerInputService {
             testY = newPosition;
         }
 
-        if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+        if (!this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+            player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
+            player.direction = direction;
             return;
         }
 
-        player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
-        player.direction = direction;
+        const maxSafeDistance = this.findMaxMovementDistance(player, axis, distance, playerSize, game);
+
+        if (Math.abs(maxSafeDistance) > 0.1) {
+            player.pos[axis] += maxSafeDistance;
+            player.direction = direction;
+        }
+    }
+
+    findMaxMovementDistance(player, axis, requestedDistance, playerSize, game) {
+        let minDistance = 0;
+        let maxDistance = Math.abs(requestedDistance);
+        const direction = requestedDistance < 0 ? -1 : 1;
+
+        for (let i = 0; i < 10; i++) {
+            const testDistance = (minDistance + maxDistance) / 2;
+
+            let testX = player.pos.x;
+            let testY = player.pos.y;
+
+            if (axis === 'x') {
+                testX = player.pos.x + (testDistance * direction);
+            } else {
+                testY = player.pos.y + (testDistance * direction);
+            }
+
+            if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+                maxDistance = testDistance;
+            } else {
+                minDistance = testDistance;
+            }
+        }
+
+        return minDistance * direction;
     }
 
     /*wouldCollideWithWalls(x, y, playerSize, game) {
@@ -178,7 +211,17 @@ export default class PlayerInputService {
         // console.log("player.input.space: ", player.input.space);
         if (player.input && player.input.space === true && player.status.alive) {
             if (player.canShoot(currentTime)) {
-                this.#bulletService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
+                if(player.shootingAngle !== undefined) {
+                    this.#bulletService.createBulletAt(
+                        player.pos.x,
+                        player.pos.y,
+                        player.shootingAngle,
+                        game,
+                        player.size.width,
+                        player.damageMultiplier
+                    );
+                }
+                //this.#bulletService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);
                 player.lastBulletShotAt(currentTime);
             }
         }

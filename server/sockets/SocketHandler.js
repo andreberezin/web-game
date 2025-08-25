@@ -119,17 +119,37 @@ export default class SocketHandler {
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
 
 		socket.on('updateMyPlayerInput', (data) => {
-			let {key, type} = data;
+			let {key, type, shootingAngle} = data;
 			const player = gameState.players[playerId];
 
 			if (!player) {
 				console.error("Player not found: ", playerId);
 				return;
 			}
-
 			const input = player.input
+			if(key === "w") {
+				key = "ArrowUp";
+			} else if(key === "s") {
+				key = "ArrowDown";
+			} else if(key === "a") {
+				key = "ArrowLeft";
+			} else if(key === "d") {
+				key = "ArrowRight";
+			}
 
-			if (key === " ") key = "space"
+			if (type === 'mouseclick') {
+				player.shootingAngle = shootingAngle;
+
+				if (key === " ") {
+					input.space = true;
+
+					setTimeout(() => {
+						input.space = false;
+					}, 100);
+				}
+
+				return;
+			}
 
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})

@@ -9,8 +9,10 @@ export default class Powerup {
         height: 20,
     }
     typeOfPowerup = 0;
+    timeOfCreation = 0;
 
-    constructor(id, x, y, typeOfPowerup) {
+
+    constructor(id, x, y, typeOfPowerup, timeOfCreation) {
         this.id = id;
 
         this.pos = {
@@ -19,15 +21,19 @@ export default class Powerup {
         };
 
         this.typeOfPowerup= typeOfPowerup;
+        this.timeOfCreation = timeOfCreation;
     }
 
-    givePowerup(player) {
+    givePowerup(player, currentTime) {
         // Give 1 extra life to player
         if (this.typeOfPowerup === 0) {
-            player.lives += 1;
-            console.log("Giving extra life to player: ", player.lives);
+            if(player.lives < 5) {
+                player.lives += 1;
+                console.log("Giving extra life to player: ", player.lives);
+            }
         } else if (this.typeOfPowerup === 1) {
             player.damageMultiplier = 2;
+            player.damageBoostEndTime = currentTime + 7000;
             console.log("Raising damage for player: ", player.damageMultiplier);
         }
     }

@@ -6,18 +6,20 @@ export default class Bullet {
         y: 0,
     };
     direction = null;
-    velocity = 10;
+    angle = null;
+    velocityPerSecond = 0;
     damageMultiplier = 1;
     size = {
         width: 10,
         height: 10,
     }
 
-    constructor(id, x, y, direction, damageMultiplier) {
+    constructor(id, x, y, direction, damageMultiplier, angle) {
         this.id = id;
         this.direction = direction;
-        this.velocity = 10;
+        this.velocityPerSecond = 3000;
         this.damageMultiplier = damageMultiplier;
+        this.angle = angle;
 
         // Center the bullet at the given (x, y)
         this.pos = {
