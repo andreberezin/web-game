@@ -54,7 +54,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 						onChange={(e) => {
 							const value = e.target.value;
 
-							if (value.length >= 3 && value.length <= 10) {
+							if (value.length <= 10) {
 								setName(value);
 							}
 						}}
@@ -90,8 +90,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 				className={"submit"}
 				type={"submit"}
 				form={"create-game-form"}
-				disabled={!name}
-
+				disabled={!name || (name.length <= 3)}
 			>
 				Start
 			</button>

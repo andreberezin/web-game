@@ -72,6 +72,7 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted, setError})
 						setIsGameStarted={setIsGameStarted}
 						setIsCreatePlayer={setIsCreatePlayer}
 						gameId={gameId}
+						setError={setError}
 					/>
 				}
 			</div>

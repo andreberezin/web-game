@@ -1,10 +1,8 @@
 import { IoChevronBackCircleOutline } from "react-icons/io5";
 import {useEffect, useState} from 'react';
 
-export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer, gameId}) {
+export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer, gameId, setError}) {
 	const [name, setName] = useState(null);
-	const [error, setError] = useState(null);
-
 
 	useEffect(() => {
 		const socketHandler = clientManager.socketHandler;
@@ -24,17 +22,17 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			clientManager.socketHandler.addExternalListener("joinGameSuccess", null);
 		}
 
-	}, [clientManager.socketHandler, setIsCreatePlayer, setIsGameStarted]);
+	}, [clientManager.socketHandler, setError, setIsCreatePlayer, setIsGameStarted]);
 
 
-	useEffect(() => {
-
-		if (error) {
-			setIsGameStarted(false);
-			setIsCreatePlayer(true);
-		}
-
-	}, [error, setIsCreatePlayer, setIsGameStarted])
+	// useEffect(() => {
+	//
+	// 	if (error) {
+	// 		setIsGameStarted(false);
+	// 		setIsCreatePlayer(true);
+	// 	}
+	//
+	// }, [setIsCreatePlayer, setIsGameStarted])
 
 	function joinGame() {
 		if (!name) {
@@ -85,7 +83,7 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 						onChange={(e) => {
 							const value = e.target.value;
 
-							if (value.length <= 10 && value.length >= 3) {
+							if (value.length <= 10) {
 								setName(value);
 							}
 						}}
@@ -98,7 +96,7 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 				className={"submit"}
 				type={"submit"}
 				form={"create-player-form"}
-				disabled={!name}
+				disabled={!name || (name.length <= 3)}
 			>
 				Join
 			</button>
