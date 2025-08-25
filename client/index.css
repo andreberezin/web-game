@@ -9,6 +9,8 @@ body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+  background: #ffb521;
+  background: linear-gradient(360deg, rgba(255, 181, 33, 1) 0%, rgba(78, 217, 136, 0.42) 100%, rgba(237, 221, 83, 1) 100%);
 }
 
 #root {
@@ -19,6 +21,12 @@ body {
   justify-content: center;   /* center horizontally */
   align-items: center;       /* center vertically */
   overflow: hidden;
+}
+
+.fa, .fas, .fab,
+.fa::before, .fas::before, .fab::before {
+  font-family: "Font Awesome 6 Free" !important;
+  font-weight: 900;
 }
 
 button:not(.back) {
@@ -41,7 +49,7 @@ button:not(.back) {
   &:disabled {
     cursor: not-allowed;
     color: gray !important;
-    /*background-color: lightgray !important;*/
+    border: 1px solid gray;
   }
 }
 

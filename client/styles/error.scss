@@ -1,0 +1,35 @@
+#error {
+  position: absolute;
+  display: flex;
+  top: 50px;
+  right: -250px;             /* start offscreen */
+  border-radius: 12px;
+  min-width: 200px;
+  max-width: 300px;
+  padding: 12px 20px;
+  background-color: #ff4c4c; /* stronger red for visibility */
+  color: #fff;
+  font-weight: 500;
+  font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: all 0.5s ease-in-out;
+  opacity: 0;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  z-index: 9999;
+
+  &.hover {
+    cursor: default;
+  }
+}
+
+#error.shown {
+  right: 50px;  /* slides in */
+  opacity: 1;
+}
+
+#error.hiding {
+  right: -250px; /* slides out */
+  opacity: 0;
+}

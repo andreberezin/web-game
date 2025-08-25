@@ -1,15 +1,23 @@
-import {useEffect, useState} from 'react';
+import {isGameJoinable} from '../../utils/isGameJoinable.js';
 
-export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, games}) {
-	// const [gameId, setGameId] = useState(null);
-	const [error, setError] = useState(null);
+export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, games, setError}) {
+
+	function handleGameNotJoinableError(game) {
+		if (!game) {
+			setError("Game not found");
+		} else if (game.settings.private) {
+			setError("Cannot join private game");
+		} else if (game.state.status !== 'waiting') {
+			setError('Game has already started')
+		} else if (game.settings.maxPlayers - Object.keys(game.state.players).length <= 0) {
+			setError('Game is full')
+		} else {
+			setError('Something went wrong')
+		}
+	}
 
 	function ShowAvailableGames() {
 		return(
-			// Array.from(games.entries()).map(([gameData]) => (
-			// 	<li key={gameData.id} className={"list-item"}>
-			// 		Game ID: {gameData.id}
-			// 	</li>
 			<>
 				{Object.keys(games).length > 0 ? (
 					Object.entries(games)
@@ -18,11 +26,15 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 							key={gameId}
 							className="list-item"
 							onClick={() => {
-								setGameId(gameId);
-								setIsCreatePlayer(true);
+								if (isGameJoinable(game)) {
+									setGameId(gameId);
+									setIsCreatePlayer(true);
+								} else {
+									handleGameNotJoinableError(game);
+								}
 							}}
 						>
-							<div className="game">
+							<div className={`game ${(isGameJoinable(game)) ? 'joinable' : ''}`}>
 								<div className="game-id">
 									Game ID: {gameId}
 								</div>
@@ -46,17 +58,6 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 			</>
 		)
 	}
-
-	// function joinGame() {
-	// 	setIsGameStarted(true);
-	//
-	// 	if (gameId) {
-	// 		const socket = clientManager.socketHandler.socket;
-	// 		socket.emit('joinGame', gameId);
-	// 	} else {
-	// 		setError("Game not found")
-	// 	}
-	// }
 
 	return (
 		<div
@@ -85,7 +86,13 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 					id={"join-game-button"}
 					disabled={!gameId}
 					onClick={() => {
-						setIsCreatePlayer(true);
+						const game = games[gameId];
+						if (game && isGameJoinable(game)) {
+							setIsCreatePlayer(true);
+						} else {
+							setError('Game not found')
+							// setTimeout(() => setError(null), 2500);
+						}
 					}}
 				>
 					Join

@@ -5,15 +5,18 @@ import '../styles/player.scss'
 import '../styles/bullet.css'
 import '../styles/powerup.css'
 import '../styles/userInterfaces.scss'
+import '../styles/error.scss'
 import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useRef, useState} from 'react';
 import {createClientManager} from './createClientManager.js';
+import {Error} from '../components/menu/Error.jsx';
 
 const clientManager = createClientManager();
 clientManager.socketHandler.connectToServer();
 
 function App() {
     const [isGameStarted, setIsGameStarted] = useState(false);
+    const [error, setError] = useState(null);
     const SHOW_MENU = import.meta.env.VITE_SHOW_MENU;
 
     const gameSettings = useRef({
@@ -75,25 +78,15 @@ function App() {
         };
     }, []);
 
-
-
     // with menu enabled
     if (SHOW_MENU === "TRUE") {
 
         return (
             <>
                 {!isGameStarted && (
-                    <Menu clientManager={clientManager} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted}></Menu>
+                    <Menu clientManager={clientManager} isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted} setError={setError}></Menu>
                 )}
-                {/*{isGameStarted && (*/}
-                {/*    <div id={"game-field"} onClick={() => {*/}
-                {/*        if (document.getElementById(clientManager.myID)) {*/}
-                {/*            (document.getElementById(clientManager.myID).focus())*/}
-                {/*        }*/}
-                {/*    }}*/}
-                {/*    >*/}
-                {/*    </div>*/}
-                {/*)}*/}
+                {error && <Error error={error} setError={setError} />}
             </>
 
         )
@@ -102,14 +95,8 @@ function App() {
 
         return (
             <>
+                {error && <Error error={error} setError={setError} />}
             </>
-            // <div id={"game-field"} onClick={() => {
-            //     if (document.getElementById(clientManager.myID)) {
-            //         (document.getElementById(clientManager.myID).focus())
-            //     }
-            // }}
-            // >
-            // </div>
         )
     }
 }
