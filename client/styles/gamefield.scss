@@ -5,7 +5,7 @@
   display: flex;
   justify-content: center;   /* center horizontally */
   align-items: center;       /* center vertically */
-  background-color: lightgray;
+  background-color: transparent;
   overflow: hidden;
 
   #game-field {
@@ -16,7 +16,8 @@
 	//display: flex;
 	//justify-content: center;   /* center horizontally */
 	//align-items: center;       /* center vertically */
-	background-color: lightgray;
+	//background-color: lightgray;
+	background-color: transparent;
 
 
 	#game-inner {
