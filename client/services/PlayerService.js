@@ -188,7 +188,17 @@ export default class PlayerService {
 		const deltaY = mouseY - playerCenterY;
 		const angle = Math.atan2(deltaY, deltaX);
 
-		myPlayer.element.style.transform = `rotate(${angle}rad)`;
+		// myPlayer.element.style.transform = `rotate(${angle}rad)`;
+
+		console.log("myPlayer.element:", myPlayer.element);
+
+		const innerElement = myPlayer.element.querySelector('.player-inner');
+		if (innerElement) {
+			const bodyElement = innerElement.querySelector('.player-body');
+			if (bodyElement) {
+				bodyElement.style.transform = `rotate(${angle}rad)`;
+			}
+		}
 	}
 
 	convertMousePositionWith(event) {
@@ -286,22 +296,58 @@ export default class PlayerService {
 		}
 	}
 
+	// createElement(player, index, playerId) {
+	// 	const playerElement = document.createElement("div")
+	// 	playerElement.classList.add("player")
+	// 	playerElement.id = `${playerId}`
+	// 	playerElement.style.top = `${player.pos.y}px`
+	// 	playerElement.style.left = `${player.pos.x}px`
+	// 	playerElement.style.width = `${player.size.width}px`
+	// 	playerElement.tabIndex = 0;
+	//
+	// 	// css variable for styling
+	// 	playerElement.style.setProperty("--name", `"${player.name}"`)
+	// 	playerElement.setAttribute("number", index);
+	//
+	// 	if (playerId === this.#clientStore.myId) {
+	// 		playerElement.classList.add("me")
+	// 	}
+	//
+	// 	return playerElement;
+	// }
+
 	createElement(player, index, playerId) {
-		const playerElement = document.createElement("div")
-		playerElement.classList.add("player")
-		playerElement.id = `${playerId}`
-		playerElement.style.top = `${player.pos.y}px`
-		playerElement.style.left = `${player.pos.x}px`
-		playerElement.style.width = `${player.size.width}px`
+
+		// create outer element for player with absolute positioning
+		const playerElement = document.createElement("div");
+		playerElement.classList.add("player");
+		playerElement.id = `${playerId}`;
+		playerElement.style.top = `${player.pos.y}px`;
+		playerElement.style.left = `${player.pos.x}px`;
+		playerElement.style.width = `${player.size.width}px`;
 		playerElement.tabIndex = 0;
 
-		// css variable for styling
-		playerElement.style.setProperty("--name", `"${player.name}"`)
+		// create inner element for player with relative positioning
+		const playerInner = document.createElement("div");
+		playerInner.classList.add("player-inner");
+
+		// create parts for the inner element for player with absolute positioning in regards to the inner element
+		const playerBody = document.createElement("div");
+		playerBody.classList.add("player-body");
+		const playerName = document.createElement("div");
+		playerName.classList.add("player-name");
+		playerName.innerHTML = player.name
+
+
 		playerElement.setAttribute("number", index);
 
 		if (playerId === this.#clientStore.myId) {
-			playerElement.classList.add("me")
+			playerElement.classList.add("me");
 		}
+
+		playerInner.appendChild(playerBody);
+		playerInner.appendChild(playerName);
+		playerElement.appendChild(playerInner);
 
 		return playerElement;
 	}
