@@ -70,7 +70,7 @@ export default class GameInterfaceService {
 
 		const fullscreenButton = document.createElement("button");
 		fullscreenButton.id = "fullscreen-button";
-		fullscreenButton.innerHTML = `<i class="fa-solid fa-expand"></i>`
+		fullscreenButton.innerHTML = `<i class="fas fa-expand"></i>`
 
 		const page = document.documentElement;
 
@@ -96,9 +96,9 @@ export default class GameInterfaceService {
 			store.updateUIState({isFullscreen: isFullscreen});
 
 			if (isFullscreen) {
-				fullscreenButton.innerHTML = `<i class="fa-solid fa-compress"></i>`
+				fullscreenButton.innerHTML = `<i class="fas fa-compress"></i>`
 			} else {
-				fullscreenButton.innerHTML = `<i class="fa-solid fa-expand"></i>`
+				fullscreenButton.innerHTML = `<i class="fas fa-expand"></i>`
 			}
 		})
 
