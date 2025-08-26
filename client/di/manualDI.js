@@ -8,6 +8,7 @@ export default function manualDI() {
 	const clientManager = container.resolve('clientManager');
 	const gameFieldService = container.resolve('gameFieldService');
 	const playerInterfaceService = container.resolve('playerInterfaceService');
+	const playerInputService = container.resolve('playerInputService');
 
 	socketHandler.setClientManager(clientManager);
 	socketHandler.setGameService(gameService);
@@ -16,4 +17,5 @@ export default function manualDI() {
 	playerService.setSocketHandler(socketHandler);
 	gameFieldService.setSocketHandler(socketHandler);
 	playerInterfaceService.setSocketHandler(socketHandler);
+	playerInputService.setSocketHandler(socketHandler);
 }
