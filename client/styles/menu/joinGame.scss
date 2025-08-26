@@ -1,0 +1,93 @@
+div#join-game {
+  height: 90%;
+
+  form#join-game-form {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	width: 100%;
+	margin-bottom: 30px;
+	gap: 5px;
+
+	label {
+	  width: 90%;
+	  display: flex;
+	  align-items: center;
+	  justify-content: space-between;
+
+	  input {
+		border-radius: 20px;
+	  }
+	}
+
+	button#join-game-button {
+	}
+
+	input#game-name-input {
+	  display: flex;
+	  align-items: center;
+	  height: 30px;
+	  width: 100%;
+	  border: 1px solid black;
+	  padding: 5px;
+	}
+  }
+
+  div#create-player {
+
+	form#create-player-form {
+	  background-color: aliceblue;
+	}
+  }
+
+  div#games-list-container {
+	flex: 1;
+	width: 100%;
+	padding: 20px 0px 20px 0px;
+	border-top: 1px solid white;
+	border-bottom: 1px solid white;
+
+	p#games-list-title {
+	  margin-bottom: 20px;
+	  text-align: center;
+	  font-size: 1.1rem;
+	  font-weight: bold;
+	}
+
+	ul#games-list {
+	  width: 100%;
+	  height: 100%;
+	  list-style-type: none;
+
+	  li.list-item {
+		border-bottom: 1px solid lightgray;
+
+		.game {
+
+		  &.joinable {
+			&:hover {
+			  cursor: pointer;
+			  scale: 1.02;
+			  font-weight: 550;
+			}
+		  }
+
+		  &:not(.joinable) {
+			color: grey;
+		  }
+
+		  .game-id {
+
+		  }
+
+		  .game-info {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			justify-content: space-between;
+		  }
+		}
+	  }
+	}
+  }
+}

@@ -1,0 +1,16 @@
+div#create-game {
+  form#create-game-form {
+	label {
+	  select {
+		border-radius: 20px;
+		border: 1px solid black;
+		padding: 5px 5px 5px 5px;
+		width: 50%;
+	  }
+	}
+
+	button.submit {
+	  margin-top: 100px;
+	}
+  }
+}
