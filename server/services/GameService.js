@@ -96,20 +96,10 @@ export default class GameService {
                     let bulletEndY = bullet.pos.y + bullet.velocity * bullet.direction.y;
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
-                        //console.log("PLAYER GOT HIT REMOVING 20 HP");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
-                            player.lives -= 1;
-                            player.input = {
-                                space: false,
-                                ArrowUp: false,
-                                ArrowRight: false,
-                                ArrowLeft: false,
-                                ArrowDown: false};
-                            player.shift = 0;
-                            player.movementStart = undefined;
-                            player.status.alive = false;
+                            this.#playerService.handlePlayerDeath(player);
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
                             //delete game.state.players[playerID];
