@@ -1,6 +1,6 @@
 import Powerup from '../models/Powerup.js';
 
-export class PowerupService {
+export default class PowerupService {
 	#serverStore
 	#gameService
 

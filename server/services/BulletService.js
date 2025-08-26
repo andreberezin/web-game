@@ -1,6 +1,6 @@
 import Bullet from '../models/Bullet.js';
 
-export class BulletService {
+export default class BulletService {
 	#serverStore;
 	#gameService;
 	#lastUpdateTime = 0;
