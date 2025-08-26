@@ -52,11 +52,9 @@ export default class GameService {
     }
 
     finishGame(gameId) {
-        // setTimeout(() => {
-        //     this.deleteGame(gameId);
-        //     console.log("Games: ", this.#serverStore.games);
-        // }, 1500)
-        this.deleteGame(gameId);
+        setTimeout(() => {
+            this.#gamesManager.deleteGame(gameId);
+        }, 1000)
     }
 
     deleteGame(gameId) {

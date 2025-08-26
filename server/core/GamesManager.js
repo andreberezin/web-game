@@ -78,4 +78,9 @@ export default class GamesManager {
 			this.#gameService.updateGameState(game, currentTime);
 		}
 	}
+
+	deleteGame(gameId) {
+		console.log("Deleting game: ", gameId);
+		this.#serverStore.games.delete(gameId);
+	}
 }
