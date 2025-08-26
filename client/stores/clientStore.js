@@ -1,7 +1,6 @@
 export default class clientStore {
 	#uiState = {
 		renderLoopId: null,
-		isFullscreen: false,
 	}
 	#myId = null;
 	#gameId = null;
