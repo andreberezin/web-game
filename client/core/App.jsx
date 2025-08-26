@@ -15,7 +15,6 @@ const clientManager = createClientManager();
 clientManager.socketHandler.connectToServer();
 
 function App() {
-    // const [isGameStarted, setIsGameStarted] = useState(false);
     const [view, setView] = useState('main');
     const [error, setError] = useState(null);
     const SHOW_MENU = import.meta.env.VITE_SHOW_MENU;
@@ -86,7 +85,7 @@ function App() {
         return (
             <>
                 {view !== 'game' && ( // !isGameStarted
-                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view}></Menu> // isGameStarted={isGameStarted} setIsGameStarted={setIsGameStarted}
+                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view}></Menu>
                 )}
                 {error && <Error error={error} setError={setError} />}
             </>

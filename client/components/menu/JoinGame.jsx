@@ -69,7 +69,6 @@ export function JoinGame({setView, setGameId, gameId, games, setError}) {
 				id="join-game-form"
 				onSubmit={(event) => {
 				event.preventDefault();
-				// joinGame(event.target[0].value)
 			}}>
 				<label>
 					<input
@@ -93,7 +92,6 @@ export function JoinGame({setView, setGameId, gameId, games, setError}) {
 							setView('create-player')
 						} else {
 							setError('Game not found')
-							// setTimeout(() => setError(null), 2500);
 						}
 					}}
 				>

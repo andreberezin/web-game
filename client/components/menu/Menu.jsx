@@ -9,10 +9,7 @@ import {Instructions} from './Instructions.jsx';
 import {InstructionsButton} from './InstructionsButton.jsx';
 import {CreateGameButton} from './CreateGameButton.jsx';
 
-export function Menu({clientManager, setError, setView, view}) { // isGameStarted, setIsGameStarted,
-	// const [isCreateGame, setIsCreateGame] = useState(false);
-	// const [isCreatePlayer, setIsCreatePlayer] = useState(false);
-	// const [isInstructions, setIsInstructions] = useState(false);
+export function Menu({clientManager, setError, setView, view}) {
 	const [gameId, setGameId] = useState(null);
 
 
@@ -21,7 +18,6 @@ export function Menu({clientManager, setError, setView, view}) { // isGameStarte
 	const [games, setGames] = useState({});
 
 	useEffect(() => {
-		//const socket = clientManager.socketHandler.socket;
 
 		clientManager.socketHandler.on("updateAvailableGames", (gamesList) => {
 			const gamesObj = Object.fromEntries(gamesList.map((game) => [game.id, game]));
@@ -60,14 +56,14 @@ export function Menu({clientManager, setError, setView, view}) { // isGameStarte
 					</>
 				}
 
-				{view === 'create-game' && // isCreateGame && !isGameStarted && !isCreatePlayer && !isInstructions &&
+				{view === 'create-game' &&
 					<CreateGame
 						clientManager={clientManager}
 						setView={setView}
 					/>
 				}
 
-				{view === 'create-player' && // isCreatePlayer && !isCreateGame && !isGameStarted && !isInstructions &&
+				{view === 'create-player' &&
 					<CreatePlayer
 						clientManager={clientManager}
 						setView={setView}
@@ -76,7 +72,7 @@ export function Menu({clientManager, setError, setView, view}) { // isGameStarte
 					/>
 				}
 
-				{view === 'instructions' && // isInstructions && !isCreateGame && !isGameStarted && !isCreatePlayer &&
+				{view === 'instructions' &&
 					<Instructions
 						setView={setView}
 					/>
