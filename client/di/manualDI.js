@@ -7,13 +7,13 @@ export default function manualDI() {
 	const playerService = container.resolve('playerService');
 	const clientManager = container.resolve('clientManager');
 	const gameFieldService = container.resolve('gameFieldService');
-	const bulletService = container.resolve('bulletService');
-	const powerupService = container.resolve('powerupService');
+	const playerInterfaceService = container.resolve('playerInterfaceService');
 
 	socketHandler.setClientManager(clientManager);
 	socketHandler.setGameService(gameService);
-	// gameService.setClientManager(clientManager);
+	gameService.setClientManager(clientManager);
 	// playerService.setClientManager(clientManager);
 	playerService.setSocketHandler(socketHandler);
 	gameFieldService.setSocketHandler(socketHandler);
+	playerInterfaceService.setSocketHandler(socketHandler);
 }
