@@ -94,11 +94,11 @@ export default class GameService {
             if (player.status.alive) {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
-                    let bulletEndX = bullet.pos.x + bullet.velocity * bullet.direction.x;
-                    let bulletEndY = bullet.pos.y + bullet.velocity * bullet.direction.y;
+                    let bulletEndX = bullet.pos.x + bullet.velocityPerSecond * bullet.direction.x;
+                    let bulletEndY = bullet.pos.y + bullet.velocityPerSecond * bullet.direction.y;
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
-                        //console.log("PLAYER GOT HIT REMOVING 20 HP");
+                        console.log("PLAYER GOT HIT");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
