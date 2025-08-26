@@ -1,30 +1,42 @@
 import {existingUI} from '../utils/existingUI.js';
 
 export default class PlayerInterfaceService {
-	#uiParts = ["id", "hp", "lives", "respawnTimer"]
+	#socketHandler;
+	#clientStore
+	#uiParts = ["id", "hp", "lives", "respawnTimer", "pause", "quit"]
 
-	constructor() {
+	constructor({clientStore}) {
+		this.#clientStore = clientStore;
 	}
 
-	createPlayerUI(playerID) {
+	setSocketHandler(socketHandler) {
+		this.#socketHandler = socketHandler;
+	}
+
+	createPlayerUI() {
 		if (existingUI('player-ui')) return;
 
 		const playerUI = document.createElement("div");
 		playerUI.id= "player-ui" ;
 		playerUI.className = 'ui'
 
-		const playerUIrightSide = document.createElement("div");
-		playerUIrightSide.id= "player-ui-rightSide" ;
-		playerUIrightSide.className = 'ui-part'
+		const playerUIleft = document.createElement("div");
+		playerUIleft.id= "player-ui-left" ;
+		playerUIleft.className = 'ui-part'
+
+		const playerUImid = document.createElement("div");
+		playerUImid.id= "player-ui-mid" ;
+		playerUImid.className = 'ui-part'
+
+		const playerUIright = document.createElement("div");
+		playerUIright.id= "player-ui-right" ;
+		playerUIright.className = 'ui-part'
 
 		const game = document.getElementById("game");
 
-		game.appendChild(playerUI);
-		playerUI.appendChild(playerUIrightSide);
-
 		this.#uiParts.forEach(uiPart => {
 
-			const element = uiPart === "respawnTimer" ? this.createRespawnTimer(uiPart) : this.createElement(uiPart);
+			const element = uiPart === "respawnTimer" ? this.createRespawnTimer(uiPart) : (uiPart === "pause" || uiPart === "quit" ? this.createMenuButton(uiPart) : this.createElement(uiPart));
 
 			switch (uiPart) {
 				case "respawnTimer":
@@ -32,23 +44,26 @@ export default class PlayerInterfaceService {
 					gameInner.appendChild(element);
 					break;
 				case "hp":
-					playerUIrightSide.appendChild(element);
+					playerUIleft.appendChild(element);
 					break;
 				case "lives":
-					playerUIrightSide.appendChild(element);
+					playerUIleft.appendChild(element);
+					break;
+				case "pause":
+					playerUImid.appendChild(element);
+					break;
+				case "quit":
+					playerUImid.appendChild(element);
 					break;
 				default:
-					playerUI.appendChild(element);
+					playerUIright.appendChild(element);
 			}
-			// if (uiPart === "respawnTimer") {
-			// 	const gameInner = document.getElementById("game-inner");
-			// 	const element = this.createRespawnTimer(uiPart);
-			// 	gameInner.appendChild(element);
-			// } else {
-			// 	const element = this.createElement(uiPart);
-			// 	playerUI.appendChild(element);
-			// }
 		})
+
+		game.appendChild(playerUI);
+		playerUI.appendChild(playerUIleft);
+		playerUI.appendChild(playerUImid);
+		playerUI.appendChild(playerUIright);
 	}
 
 	updatePlayerUI(player) {
@@ -92,11 +107,6 @@ export default class PlayerInterfaceService {
 		}
 	}
 
-	removeElement(key) {
-		const element = document.getElementById(`player-${key}`);
-		if (element) element.remove();
-	}
-
 	createRespawnTimer(type) {
 		const element = document.createElement("div");
 		element.id= `player-${type}`;
@@ -107,17 +117,25 @@ export default class PlayerInterfaceService {
 		return element;
 	}
 
-	handleDeathCooldownElement(player, key) {
-		if (!player.status.alive) {
-			console.log("Handling death cooldown element");
-			const gameInner = document.getElementById('game-inner')
-			const element = document.createElement("div");
-			element.id= `player-${key}`;
-			element.innerHTML = `${player.respawnTimer} <span id="player-${key}-value" class='value'></span>`;
-			gameInner.appendChild(element);
+	createMenuButton(type) {
+		const button = document.createElement('button');
+		button.id = type;
 
-		} else {
-			this.removeElement(key)
+		if (type === "pause") {
+			// button.innerHTML = `<i class="fas fa-pause"></i>`;
+			button.textContent = `PAUSE`;
+
+			button.addEventListener('click', () => {
+				this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "paused")
+			})
+			// pause game
+		} else if (type === "quit") {
+			// button.innerHTML = `<i class="fas fa-stop"></i>`;
+			button.textContent = `QUIT`;
+			// quite game
 		}
+
+
+		return button;
 	}
 }
