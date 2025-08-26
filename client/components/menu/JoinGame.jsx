@@ -1,6 +1,7 @@
 import {isGameJoinable} from '../../utils/isGameJoinable.js';
+import '../../styles/menu/joinGame.scss'
 
-export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, games, setError}) {
+export function JoinGame({setView, setGameId, gameId, games, setError}) {
 
 	function handleGameNotJoinableError(game) {
 		if (!game) {
@@ -28,7 +29,7 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 							onClick={() => {
 								if (isGameJoinable(game)) {
 									setGameId(gameId);
-									setIsCreatePlayer(true);
+									setView('create-player')
 								} else {
 									handleGameNotJoinableError(game);
 								}
@@ -84,11 +85,12 @@ export function JoinGame({clientManager, setIsCreatePlayer, setGameId, gameId, g
 				<button
 					type={"button"}
 					id={"join-game-button"}
+					className={'other-button'}
 					disabled={!gameId}
 					onClick={() => {
 						const game = games[gameId];
 						if (game && isGameJoinable(game)) {
-							setIsCreatePlayer(true);
+							setView('create-player')
 						} else {
 							setError('Game not found')
 							// setTimeout(() => setError(null), 2500);

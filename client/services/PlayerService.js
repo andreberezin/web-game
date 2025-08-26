@@ -190,8 +190,6 @@ export default class PlayerService {
 
 		// myPlayer.element.style.transform = `rotate(${angle}rad)`;
 
-		console.log("myPlayer.element:", myPlayer.element);
-
 		const innerElement = myPlayer.element.querySelector('.player-inner');
 		if (innerElement) {
 			const bodyElement = innerElement.querySelector('.player-body');

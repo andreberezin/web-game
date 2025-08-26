@@ -1,7 +1,8 @@
 import {useRef, useState} from 'react';
-import {IoChevronBackCircleOutline} from 'react-icons/io5';
+import '../../styles/menu/createGame.scss'
+import {BackButton} from './BackButton.jsx';
 
-export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
+export function CreateGame({clientManager, setView}) {
 	const gameSettings = useRef({
 		private: false,
 		maxPlayers: 4,
@@ -11,13 +12,10 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 	const [name, setName] = useState(null)
 
 	function startGame() {
-		setIsGameStarted(true);
+		setView('game')
 
 		const socket = clientManager.socketHandler.socket;
 		socket.emit('createGame', socket.id, name, gameSettings.current);
-
-		// clientManager.gameInterfaceService.createGameUI();
-		// clientManager.startRenderLoop();
 	}
 
 	return (
@@ -25,16 +23,7 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 			id={"create-game"}
 			className={"menu-item"}
 		>
-
-			<div className={"back-button-container"}>
-				<button
-					className={"back"}
-					onClick={() => setIsCreateGame(false)}
-					type="button"
-				>
-					<IoChevronBackCircleOutline />
-				</button>
-			</div>
+			<BackButton setView={setView} lastView={'main'}/>
 
 			<form id={"create-game-form"}
 				onSubmit={(e) => {
@@ -87,12 +76,12 @@ export function CreateGame({clientManager, setIsCreateGame, setIsGameStarted}) {
 			</form>
 
 			<button
-				className={"submit"}
+				className={"submit other-button"}
 				type={"submit"}
 				form={"create-game-form"}
 				disabled={!name || (name.length <= 3)}
 			>
-				Start
+				Play
 			</button>
 
 		</div>

@@ -176,6 +176,24 @@ export default class GameFieldService {
 		scoreboard.style.display = 'flex'
 	}
 
+	createInstructions() {
+		if (existingUI('instructions')) return;
+		const instructions = document.getElementById('instructions');
+		instructions.id = 'instructions';
+		instructions.classList.add('overlay');
+		return instructions;
+	}
+
+	showInstructions() {
+		const scoreboard = document.getElementById('instructions')
+		scoreboard.style.display = 'flex'
+	}
+
+	hideInstructions() {
+		const scoreboard = document.getElementById('instructions')
+		scoreboard.style.display = 'none'
+	}
+
 	createLobbyPlayersCount() {
 		if (existingUI('lobby-players-count')) return;
 

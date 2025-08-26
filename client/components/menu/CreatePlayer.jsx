@@ -1,7 +1,8 @@
 import { IoChevronBackCircleOutline } from "react-icons/io5";
 import {useEffect, useState} from 'react';
+import {BackButton} from './BackButton.jsx';
 
-export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer, gameId, setError}) {
+export function CreatePlayer({clientManager, setView, gameId, setError}) {
 	const [name, setName] = useState(null);
 
 	useEffect(() => {
@@ -12,8 +13,7 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 		});
 
 		socketHandler.addExternalListener("joinGameSuccess", () => {
-			setIsGameStarted(true);
-			setIsCreatePlayer(false);
+			setView('game')
 		});
 
 		return () => {
@@ -22,17 +22,8 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			clientManager.socketHandler.addExternalListener("joinGameSuccess", null);
 		}
 
-	}, [clientManager.socketHandler, setError, setIsCreatePlayer, setIsGameStarted]);
+	}, [clientManager.socketHandler, setError, setView]);
 
-
-	// useEffect(() => {
-	//
-	// 	if (error) {
-	// 		setIsGameStarted(false);
-	// 		setIsCreatePlayer(true);
-	// 	}
-	//
-	// }, [setIsCreatePlayer, setIsGameStarted])
 
 	function joinGame() {
 		if (!name) {
@@ -52,15 +43,7 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 	return (
 		<div id={"create-player"} className={"menu-item"}>
 
-			<div className={"back-button-container"}>
-				<button
-					className={"back"}
-					onClick={() => setIsCreatePlayer(false)}
-					type="button"
-				>
-					<IoChevronBackCircleOutline />
-				</button>
-			</div>
+			<BackButton setView={setView} lastView={'main'}/>
 
 			<form
 				id={"create-player-form"}
@@ -93,12 +76,12 @@ export function CreatePlayer({clientManager, setIsGameStarted, setIsCreatePlayer
 			</form>
 
 			<button
-				className={"submit"}
+				className={"submit other-button"}
 				type={"submit"}
 				form={"create-player-form"}
 				disabled={!name || (name.length <= 3)}
 			>
-				Join
+				Play
 			</button>
 
 		</div>
