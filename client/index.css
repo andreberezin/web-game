@@ -29,8 +29,28 @@ body {
   font-weight: 900;
 }
 
-button:not(.back),
-button:not(#instructions-button) {
+button:has(i) {
+  all: unset;
+  transition: all 0.1s ease-in-out;
+  text-align: center;
+  line-height: 100%;
+
+  &:hover:not(:disabled) {
+    cursor: pointer;
+    scale: 1.1;
+  }
+
+  i {
+    font-size: 100%;
+    color: black;
+    aspect-ratio: 1/1;
+  //border: 1px solid red;
+  }
+}
+
+button:not(:has(i)) {
+  /*font-family: "Font Awesome 6 Free" !important;*/
+  /*font-weight: 900;*/
   border-radius: 20px;
   background-color: white;
   transition: all 0.1s ease-in-out;
