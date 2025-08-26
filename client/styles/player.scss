@@ -42,16 +42,20 @@ $player-colors: (
 	  color: lightgray;
 	  font-size: 1.5rem;
 	  white-space: nowrap;
+	  -webkit-user-select: none; /* Safari */
+	  -moz-user-select: none; /* Firefox */
+	  -ms-user-select: none; /* IE10+/Edge */
+	  user-select: none; /* Standard */
 	}
   }
 
   &.me {
 	.player-inner {
 	  .player-name {
-		-webkit-user-select: none; /* Safari */
-		-moz-user-select: none; /* Firefox */
-		-ms-user-select: none; /* IE10+/Edge */
-		user-select: none; /* Standard */
+		//-webkit-user-select: none; /* Safari */
+		//-moz-user-select: none; /* Firefox */
+		//-ms-user-select: none; /* IE10+/Edge */
+		//user-select: none; /* Standard */
 		color: black;
 	  }
 	}
