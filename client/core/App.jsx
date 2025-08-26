@@ -26,6 +26,7 @@ function App() {
         duration: 600000,
     });
 
+    // temporary to render the game without the menu
     useEffect(() => {
         console.log("SHOW MENU: ", SHOW_MENU);
 
@@ -52,6 +53,7 @@ function App() {
         }
     }, [SHOW_MENU]);
 
+    // scale the game field with window size
     useEffect(() => {
         function updateScale() {
             const scaleX = (window.innerWidth * 0.99) / 1920;
@@ -69,6 +71,7 @@ function App() {
         return () => window.removeEventListener('resize', updateScale);
     }, []);
 
+    // end game callback to rerender menu
     useEffect(() => {
         clientManager.onGameEnd = () => {
             setTimeout(() => {
@@ -78,6 +81,31 @@ function App() {
             }, 100)
         };
     }, []);
+
+    // fullscreen ctr+f event listener
+    useEffect(() => {
+        async function handleKeyDown(event) {
+            if (event.key === "f" && event.ctrlKey === true) {
+                const page = document.documentElement;
+
+                try {
+
+                    if (document.fullscreenElement !== null) {
+                        await document.exitFullscreen();
+                    } else {
+                        await page.requestFullscreen();
+                    }
+
+                } catch (e) {
+                    console.error(e);
+                }
+            }
+        }
+
+        window.addEventListener("keydown", handleKeyDown )
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [])
+
 
     // with menu enabled
     if (SHOW_MENU === "TRUE") {
