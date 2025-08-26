@@ -1,12 +1,18 @@
-import '../../styles/menu.scss'
+import '../../styles/menu/menu.scss'
+import '../../styles/menu/backButton.scss'
+import '../../styles/menu/instructionsButtons.scss'
 import {JoinGame} from './JoinGame.jsx';
 import {useEffect, useState} from 'react';
 import {CreateGame} from './CreateGame.jsx';
 import {CreatePlayer} from './CreatePlayer.jsx';
+import {Instructions} from './Instructions.jsx';
+import {InstructionsButton} from './InstructionsButton.jsx';
+import {CreateGameButton} from './CreateGameButton.jsx';
 
-export function Menu({clientManager, isGameStarted, setIsGameStarted, setError}) {
-	const [isCreateGame, setIsCreateGame] = useState(false);
-	const [isCreatePlayer, setIsCreatePlayer] = useState(false);
+export function Menu({clientManager, setError, setView, view}) { // isGameStarted, setIsGameStarted,
+	// const [isCreateGame, setIsCreateGame] = useState(false);
+	// const [isCreatePlayer, setIsCreatePlayer] = useState(false);
+	// const [isInstructions, setIsInstructions] = useState(false);
 	const [gameId, setGameId] = useState(null);
 
 
@@ -36,43 +42,43 @@ export function Menu({clientManager, isGameStarted, setIsGameStarted, setError})
 			<div id={"menu"}>
 				<div id={"title"}>Cube Wars</div>
 
-				{!isCreateGame && !isGameStarted && !isCreatePlayer &&
+				{view === 'main' && // !isCreateGame && !isGameStarted && !isCreatePlayer && !isInstructions &&
 					<>
+						<InstructionsButton
+							setView={setView}
+						/>
+
 						<JoinGame
-							clientManager={clientManager}
-							setIsCreatePlayer={setIsCreatePlayer}
+							setView={setView}
 							setGameId={setGameId}
 							gameId={gameId}
 							games={games}
 							setError={setError}
 						/>
 
-						<div className={"menu-item"} id={"create-game-button-container"}>
-							<button id={"create-game-button"} onClick={() => {
-								setIsCreateGame(true);
-							}}
-							>
-								Create game
-							</button>
-						</div>
+						<CreateGameButton setView={setView}/>
 					</>
 				}
 
-				{isCreateGame && !isGameStarted && !isCreatePlayer &&
+				{view === 'create-game' && // isCreateGame && !isGameStarted && !isCreatePlayer && !isInstructions &&
 					<CreateGame
 						clientManager={clientManager}
-						setIsCreateGame={setIsCreateGame}
-						setIsGameStarted={setIsGameStarted}
+						setView={setView}
 					/>
 				}
 
-				{!isCreateGame && !isGameStarted && isCreatePlayer &&
+				{view === 'create-player' && // isCreatePlayer && !isCreateGame && !isGameStarted && !isInstructions &&
 					<CreatePlayer
 						clientManager={clientManager}
-						setIsGameStarted={setIsGameStarted}
-						setIsCreatePlayer={setIsCreatePlayer}
+						setView={setView}
 						gameId={gameId}
 						setError={setError}
+					/>
+				}
+
+				{view === 'instructions' && // isInstructions && !isCreateGame && !isGameStarted && !isCreatePlayer &&
+					<Instructions
+						setView={setView}
 					/>
 				}
 			</div>
