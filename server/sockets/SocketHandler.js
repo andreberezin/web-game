@@ -1,4 +1,5 @@
 import Player from '../models/Player.js';
+import container from '../di/container.js';
 
 export default class SocketHandler {
 	#io
@@ -107,7 +108,8 @@ export default class SocketHandler {
 		socket.join(gameId);
 		socket.gameId = gameId;
 
-		const player = new Player(playerId, playerName);
+		// const player = new Player(playerId, playerName);
+		const player = container.build(Player, { id: playerId, name: playerName });
 
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
@@ -166,18 +168,13 @@ export default class SocketHandler {
 				case "waiting":
 					break;
 				case "started":
-					game.state.startTime = Date.now();
-					if (game.state.timeRemaining > 0) {
-						this.#gameService.handleGameTimer(game, socket);
-					}
-					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+					this.#gameService.startGame(game);
 					break;
 				case "paused":
+					this.#gameService.pauseGame(game);
 					break;
 				case "finished":
-					setTimeout(() => {
-						this.#gameService.finishGame(gameId);
-					}, 1000)
+					this.#gameService.finishGame(gameId);
 					break;
 				default:
 					console.log("default: ", status);
@@ -185,6 +182,8 @@ export default class SocketHandler {
 
 				game.state.status = status;
 				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+
+				this.#io.emit('updateAvailableGames', this.getPublicGameList());
 			}
 
 			// separate update, per socket

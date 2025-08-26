@@ -1,18 +1,23 @@
 import Game from '../models/Game.js';
-import Bullet from "../models/Bullet.js";
-import Powerup from "../models/Powerup.js";
 
 export default class GameService {
-    #playerInputService
-    #serverStore
-    #bulletService
-    #powerupService
+    #playerInputService;
+    #serverStore;
+    #bulletService;
+    #powerupService;
+    #gamesManager;
+    #playerService
 
-    constructor({playerInputService, serverStore, bulletService, powerupService}) {
+    constructor({playerInputService, serverStore, bulletService, powerupService, playerService}) {
         this.#playerInputService = playerInputService;
         this.#serverStore = serverStore;
         this.#bulletService = bulletService;
         this.#powerupService = powerupService;
+        this.#playerService = playerService;
+    }
+
+    setGamesManager(gamesManager) {
+        this.#gamesManager = gamesManager;
     }
 
     createGame(hostId, settings) {
@@ -24,12 +29,14 @@ export default class GameService {
         // if (game.state.status === "started" && game.state.timeRemaining > 0) {
         //     this.handleGameTimer(game, currentTime);
         // }
+        const status = game.state.status;
 
-        this.#bulletService.updateBullets(game);
-
-        if (game.state.status === "started") {
+        if (status !== "paused" && status !== "waiting") {
+            this.#bulletService.updateBullets(game);
             this.#powerupService.updatePowerups(game, currentTime);
+        }
 
+        if (status === "started") {
             for (const playerID in game.state.players) {
                 const player = game.state.players[playerID];
 
@@ -43,8 +50,11 @@ export default class GameService {
         }
     }
 
-    startGame() {
-
+    startGame(game) {
+        game.state.startTime = Date.now();
+        if (game.state.timeRemaining > 0) {
+            this.handleGameTimer(game);
+        }
     }
 
     pauseGame() {
@@ -57,28 +67,22 @@ export default class GameService {
         }, 1000)
     }
 
-    deleteGame(gameId) {
-        console.log("Deleting game: ", gameId);
-        this.#serverStore.games.delete(gameId);
-    }
-
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
-    handleGameTimer(game, socket) {
-        // const timer = setTimeout(countdown, 10);
+    handleGameTimer(game) {
 
         function countdown() {
-            const elapsed = Date.now() - game.state.startTime;
-            game.state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
+            const state = game.state;
+
+            const elapsed = Date.now() - state.startTime;
+            state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
             //console.log("Time remaining:", game.state.timeRemaining);
 
-            if (game.state.timeRemaining > 0) {
+            if (state.timeRemaining > 0 && state.status === "started") {
                 setTimeout(countdown, 10)
 
             } else {
-                // game.state.status = "finished"
-                // socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
                 // todo logs randomly
-                console.log("Timer has finished: ", game.state.timeRemaining);
+                console.log("Timer has stopped: ", game.state.timeRemaining / 1000);
             }
         }
 
