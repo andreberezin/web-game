@@ -30,8 +30,10 @@ export default class PlayerService {
 			return;
 		}
 
-		if (playerElement.hidden) {
-			playerElement.hidden = false;
+		if (playerElement) {
+			if (playerElement.hidden === true) {
+				playerElement.hidden = false;
+			}
 		}
 
 		if (this.playerIsNotMoving(player)) {
