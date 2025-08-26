@@ -8,8 +8,9 @@ export default class ClientManager {
 	#gameFieldService
 	onGameEnd
 	#bulletService
+	#playerInputService
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService}) {
+	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService, playerInputService}) {
 		this.#gameService = gameService;
 		this.#gameInterfaceService = gameInterfaceService
 		this.#playerInterfaceService = playerInterfaceService
@@ -17,8 +18,9 @@ export default class ClientManager {
 		this.#socketHandler = socketHandler;
 		this.#gameFieldService = gameFieldService
 		this.#clientStore = clientStore;
-		this.onGameEnd = null;
 		this.#bulletService = bulletService;
+		this.#playerInputService = playerInputService;
+		this.onGameEnd = null;
 	}
 
 	get socketHandler() {
@@ -101,13 +103,13 @@ export default class ClientManager {
 
 		this.#clientStore.myID = null;
 
-		this.#playerService.removeEventListeners();
+		this.#playerInputService.removeEventListeners();
 
 	}
 
 	gameCleanup(gameId) {
 		this.stopRenderLoop();
-		this.#playerService.removeEventListeners();
+		this.#playerInputService.removeEventListeners();
 		this.#socketHandler.cleanupGameListeners();
 		this.#gameFieldService.removeGameElements();
 		this.#clientStore.games.delete(gameId)
