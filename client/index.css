@@ -29,7 +29,8 @@ body {
   font-weight: 900;
 }
 
-button:not(.back) {
+button:not(.back),
+button:not(#instructions-button) {
   border-radius: 20px;
   background-color: white;
   transition: all 0.1s ease-in-out;
