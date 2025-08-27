@@ -1,11 +1,13 @@
 import '../styles/gamefield.scss'
 import '../styles/lobby.scss'
 import '../styles/scoreboard.scss'
+import '../styles/paused.scss'
 import '../styles/player.scss'
 import '../styles/bullet.css'
 import '../styles/powerup.css'
 import '../styles/userInterfaces.scss'
 import '../styles/error.scss'
+import '../styles/wallTile.scss'
 import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useRef, useState} from 'react';
 import {createClientManager} from './createClientManager.js';
@@ -56,7 +58,7 @@ function App() {
     // scale the game field with window size
     useEffect(() => {
         function updateScale() {
-            const scaleX = (window.innerWidth * 0.99) / 1920;
+            const scaleX = (window.innerWidth * 1) / 1920;
             const scaleY = (window.innerHeight * 0.90) / 1080; // match 90% height from #game-field
             const scale = Math.min(scaleX, scaleY);
 
