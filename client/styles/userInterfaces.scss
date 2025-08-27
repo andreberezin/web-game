@@ -39,43 +39,44 @@
     align-items: center;
     justify-content: center;
 
-    &#player-ui-mid {
-      border-left: 1px solid white;
-      border-right: 1px solid white;
-      padding: 0 1rem 0 1rem;
-      margin: 0 0.5rem 0 0.5rem;
+      &#player-ui-mid {
+        border-left: 1px solid white;
+        border-right: 1px solid white;
+        padding: 0 1rem 0 1rem;
+        margin: 0 0.5rem 0 0.5rem;
 
-      button#pause,
-      button#quit {
-        font-size: 2rem;
-        all: unset;
+        button#pause,
+        button#quit {
+          font-size: 2rem;
+          all: unset;
+          cursor: not-allowed;
 
-        &:hover {
-          cursor: pointer;
-          scale: 1.1;
+          &.enabled {
+            cursor: pointer;
+
+            &:hover {
+              cursor: pointer;
+              scale: 1.1;
+            }
+          }
+
+          i {
+            color: black;
+          }
         }
-
-        i {
-          color: black;
-        }
-      }
-    }
-
-      .ui-item {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
       }
     }
 
   .ui-item {
-    width: 40%;
+    flex: 1;
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* IE10+/Edge */
+    user-select: none; /* Standard */
 
     &#player-id {
       #player-id-value {
