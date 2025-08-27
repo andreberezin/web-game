@@ -45,7 +45,7 @@ export default class GameInterfaceService {
 		button.id = "game-id-value";
 		button.className = "value";
 		button.type = "button";
-		button.title = "Click to copy";
+		button.title = "Double click to copy";
 		button.textContent = gameId;
 
 		button.addEventListener("dblclick", () => {
