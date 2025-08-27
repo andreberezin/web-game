@@ -41,9 +41,9 @@ export default class GameService {
                 const player = game.state.players[playerID];
 
                 this.#powerupService.updatePlayerPowerups(player, currentTime);
-                this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+                this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
@@ -100,11 +100,11 @@ export default class GameService {
                     let bulletEndY = bullet.pos.y + bullet.velocityPerSecond * bullet.direction.y;
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
-                        console.log("PLAYER GOT HIT");
+                        console.log("player hit");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
-                            this.#playerService.handlePlayerDeath(player);
+                            player.handleDeath();
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
                             //delete game.state.players[playerID];
@@ -179,7 +179,7 @@ export default class GameService {
             const checkX = bulletStartX + (bulletEndX - bulletStartX) * t;
             const checkY = bulletStartY + (bulletEndY - bulletStartY) * t;
 
-            if(this.wouldCollideWithPlayer(checkX, checkY, bullet, player)) {
+            if (this.wouldCollideWithPlayer(checkX, checkY, bullet, player)) {
                 return true;
             }
         }
