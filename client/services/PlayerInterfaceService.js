@@ -121,21 +121,29 @@ export default class PlayerInterfaceService {
 		const button = document.createElement('button');
 		button.id = type;
 
+		const myId = this.#clientStore.myId;
+
 		if (type === "pause") {
 			// button.innerHTML = `<i class="fas fa-pause"></i>`;
 			button.textContent = `PAUSE`;
 
 			button.addEventListener('click', () => {
-				this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "paused")
+				if (this.#clientStore.games.get(this.#clientStore.gameId).state.status === "started") {
+					this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "paused", myId)
+				}
 			})
 			// pause game
 		} else if (type === "quit") {
 			// button.innerHTML = `<i class="fas fa-stop"></i>`;
 			button.textContent = `QUIT`;
+			button.classList.add('enabled');
 			// quite game
 		}
-
-
 		return button;
+	}
+
+	togglePauseButton() {
+		const button = document.getElementById('pause');
+		button.classList.toggle('enabled')
 	}
 }
