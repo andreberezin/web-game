@@ -68,16 +68,16 @@ export default class GameFieldService {
 		const gameInner = document.createElement('div');
 		gameInner.id = 'game-inner';
 
-		const lobby = this.createLobbyMenu();
-
-		const scoreboard = this.createScoreboard();
+		const lobbyOverlay = this.createLobbyOverlay();
+		const scoreboardOverlay = this.createScoreboardOverlay();
+		const pauseOverlay = this.createPauseOverlay();
 
 		root.append(game);
 		game.append(gameField);
-		// game.append(scoreboard);
 		gameField.append(gameInner);
-		gameInner.append(lobby);
-		gameInner.append(scoreboard)
+		gameField.append(lobbyOverlay);
+		gameField.append(scoreboardOverlay);
+		gameField.append(pauseOverlay);
 
 		this.generateWalls();
 	}
@@ -88,7 +88,87 @@ export default class GameFieldService {
 		game.remove();
 	}
 
-	createLobbyMenu() {
+	appendToGameField(element) {
+		const gameField = document.getElementById("game-inner");
+		if (!gameField) return;
+		gameField.appendChild(element);
+	}
+
+	// pause overlay
+	createPauseOverlay() {
+		if (existingUI('paused')) return;
+
+		const pauseOverlay = document.createElement('div');
+		pauseOverlay.id = 'paused';
+		pauseOverlay.classList.add('overlay');
+
+		const pausedBy = this.createPausedBy();
+		const pauseTimer = this.createPauseTimer();
+
+		pauseOverlay.appendChild(pausedBy);
+		pauseOverlay.appendChild(pauseTimer);
+
+		return pauseOverlay;
+	}
+
+	createPausedBy() {
+		const pausedBy = document.createElement('div');
+		pausedBy.te
+
+		return pausedBy;
+	}
+
+	createPauseTimer() {
+
+	}
+
+	togglePauseOverlay() {
+		const pauseOverlay = document.getElementById('paused');
+		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
+	}
+
+	updatePauseOverlay() {
+
+	}
+
+
+	// scoreboard overlay
+	createScoreboardOverlay() {
+		if (existingUI('scoreboard')) return;
+
+		const scoreboard = document.createElement('div');
+		scoreboard.id = 'scoreboard';
+		scoreboard.classList.add('overlay')
+
+		return scoreboard;
+	}
+
+	showScoreboard() {
+		const scoreboard = document.getElementById('scoreboard')
+		scoreboard.style.display = 'flex'
+	}
+
+	// instructions overlay
+	createInstructionsOverlay() {
+		if (existingUI('instructions')) return;
+		const instructions = document.getElementById('instructions');
+		instructions.id = 'instructions';
+		instructions.classList.add('overlay');
+		return instructions;
+	}
+
+	showInstructions() {
+		const scoreboard = document.getElementById('instructions')
+		scoreboard.style.display = 'flex'
+	}
+
+	hideInstructions() {
+		const scoreboard = document.getElementById('instructions')
+		scoreboard.style.display = 'none'
+	}
+
+	// lobby overlay
+	createLobbyOverlay() {
 		if (existingUI('lobby')) return;
 
 		const lobby = document.createElement('div');
@@ -106,11 +186,34 @@ export default class GameFieldService {
 		return lobby;
 	}
 
+	hideLobby() {
+		const lobby = document.getElementById('lobby')
+		if (lobby.style.display !== 'none') {
+			lobby.style.display = 'none'
+		}
+	}
+
+	createStartButton() {
+		if (existingUI('start-button')) return;
+
+
+		const startButton = document.createElement('button');
+		startButton.id = 'start-button';
+		startButton.textContent = 'Start';
+		startButton.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId)
+			// this.hideLobby();
+		})
+
+		return startButton;
+	}
+
 	createLobbyGameId() {
 		if (existingUI('lobby-game-id')) return;
 
 		const gameIdElement = document.createElement('button');
 		gameIdElement.id = 'lobby-game-id';
+		gameIdElement.title = "Double click to copy";
 		const gameId = this.#clientStore.gameId;
 		gameIdElement.textContent = `${gameId}`;
 
@@ -131,68 +234,6 @@ export default class GameFieldService {
 		return gameIdElement;
 	}
 
-	appendToGameField(element) {
-		const gameField = document.getElementById("game-inner");
-		if (!gameField) return;
-		gameField.appendChild(element);
-	}
-
-	createStartButton() {
-		if (existingUI('start-button')) return;
-
-
-		const startButton = document.createElement('button');
-		startButton.id = 'start-button';
-		startButton.textContent = 'Start';
-		startButton.addEventListener('click', () => {
-			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started")
-			// this.hideLobby();
-		})
-
-		return startButton;
-	}
-
-	hideLobby() {
-		const lobby = document.getElementById('lobby')
-		lobby.style.display = 'none'
-	}
-
-	createScoreboard() {
-		if (existingUI('scoreboard')) return;
-
-		const scoreboard = document.createElement('div');
-		scoreboard.id = 'scoreboard';
-		scoreboard.classList.add('overlay')
-
-		// const scores = this.createScores();
-		//
-		// scoreboard.append(scores);
-
-		return scoreboard;
-	}
-
-	showScoreboard() {
-		const scoreboard = document.getElementById('scoreboard')
-		scoreboard.style.display = 'flex'
-	}
-
-	createInstructions() {
-		if (existingUI('instructions')) return;
-		const instructions = document.getElementById('instructions');
-		instructions.id = 'instructions';
-		instructions.classList.add('overlay');
-		return instructions;
-	}
-
-	showInstructions() {
-		const scoreboard = document.getElementById('instructions')
-		scoreboard.style.display = 'flex'
-	}
-
-	hideInstructions() {
-		const scoreboard = document.getElementById('instructions')
-		scoreboard.style.display = 'none'
-	}
 
 	createLobbyPlayersCount() {
 		if (existingUI('lobby-players-count')) return;
@@ -228,15 +269,10 @@ export default class GameFieldService {
 			const wallDiv = document.createElement('div');
 			wallDiv.className = 'wall-tile';
 
-			// todo refactor this into scss
-			wallDiv.style.position = 'absolute';
 			wallDiv.style.left = `${x * TILE_SIZE}px`;
 			wallDiv.style.top = `${y * TILE_SIZE}px`;
-			wallDiv.style.width = `${TILE_SIZE}px`;
-			wallDiv.style.height = `${TILE_SIZE}px`;
-			wallDiv.style.backgroundColor = '#333';
-			wallDiv.style.border = '1px solid #555';
-			wallDiv.style.boxSizing = 'border-box';
+			// wallDiv.style.width = `${TILE_SIZE}px`;
+			// wallDiv.style.height = `${TILE_SIZE}px`;
 
 			gameInner.appendChild(wallDiv);
 		}
