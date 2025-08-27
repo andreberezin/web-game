@@ -4,6 +4,8 @@ export default class PlayerService {
 	constructor() {}
 
 	handlePlayerDeath(player) {
+		console.log("Player dead");
+
 		player.lives -= 1;
 		player.input = {
 			space: false,

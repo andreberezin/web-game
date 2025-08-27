@@ -69,19 +69,16 @@ export default class Player {
     //     timer: null,
     // }
 
-	constructor(id, name) {
+	constructor(id, name, playerService) {
         this.id = id;
         this.name = name;
         this.pos = this.spawnPos;
+        this.playerService = playerService;
 	}
 
-    // setStatus(status) {
-    //     this.status = status;
-    // }
-    //
-    // getStatus() {
-    //     return this.status;
-    // }
+    handleDeath() {
+        return this.playerService.handlePlayerDeath(this);
+    }
 
     canRespawn(currentTime) {
         return (currentTime - this.deathTime) >= this.deathCooldown;

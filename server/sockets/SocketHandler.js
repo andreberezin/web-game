@@ -109,7 +109,13 @@ export default class SocketHandler {
 		socket.gameId = gameId;
 
 		// const player = new Player(playerId, playerName);
-		const player = container.build(Player, { id: playerId, name: playerName });
+		// const player = container.build(Player, { id: playerId, name: playerName });
+		const player = new Player(playerId, playerName, container.resolve('playerService'));
+
+		// const player = container.build(container.resolve('player'), {
+		// 	id: playerId,
+		// 	name: playerName
+		// });
 
 		this.#gameService.addPlayerToGame(gameId, playerId, player);
 
