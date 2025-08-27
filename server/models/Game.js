@@ -8,7 +8,12 @@ export default class Game {
 		players: {},
 		deadPlayers: {},
 		bullets: {},
-		powerups: {}
+		powerups: {},
+		pause: {
+			startTime: null,
+			duration: 1000,
+			timeRemaining: 0,
+		}
 	};
 	#settings = {
 		private: false,
