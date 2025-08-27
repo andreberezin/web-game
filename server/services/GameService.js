@@ -57,8 +57,21 @@ export default class GameService {
         }
     }
 
-    pauseGame() {
+    pauseGame(game, io, gameId) {
+        game.updateState({pause: {
+            ...game.state.pause,
+            startTime: Date.now(),
+            }});
+        this.handlePauseTimer(game, io, gameId);
+    }
 
+    resumeGame(game, io, gameId) {
+        game.state.status = "started"
+        console.log("Game status changed: started");
+        io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+
+        // resume timer
+        this.handleGameTimer(game);
     }
 
     finishGame(gameId) {
@@ -67,10 +80,31 @@ export default class GameService {
         }, 1000)
     }
 
+    handlePauseTimer(game, io, gameId) {
+        const pauseCountdown = () => {
+            const state = game.state;
+            const pause = state.pause;
+
+            const elapsed = Date.now() - pause.startTime;
+            pause.timeRemaining = Math.max(0, pause.duration - elapsed);
+            console.log("Pause time remaining:", pause.timeRemaining);
+            debugger
+
+            if (pause.timeRemaining > 0 && state.status === "paused") {
+                setTimeout(pauseCountdown, 10)
+
+            } else {
+                console.log("Game pause has ended");
+                this.resumeGame(game, io, gameId);
+            }
+        }
+
+        setTimeout(pauseCountdown, 10);
+    }
+
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
     handleGameTimer(game) {
-
-        function countdown() {
+        function gameCountdown() {
             const state = game.state;
 
             const elapsed = Date.now() - state.startTime;
@@ -78,15 +112,15 @@ export default class GameService {
             //console.log("Time remaining:", game.state.timeRemaining);
 
             if (state.timeRemaining > 0 && state.status === "started") {
-                setTimeout(countdown, 10)
+                setTimeout(gameCountdown, 10)
 
             } else {
                 // todo logs randomly
-                console.log("Timer has stopped: ", game.state.timeRemaining / 1000);
+                console.log("Timer has stopped: ", state.timeRemaining / 1000);
             }
         }
 
-        setTimeout(countdown, 10);
+        setTimeout(gameCountdown, 10);
     }
 
     checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {

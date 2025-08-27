@@ -241,26 +241,34 @@ export default class SocketHandler {
 		})
 
 
-		this.on('gameStatusChangeSuccess', (gameId, status) => {
-			this.#clientStore.games.get(gameId).state.status = status;
-			console.log("Game status changed: ", status);
+		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
+			console.log("Game status changed: ", status, "by player: ", playerId);
 
 			switch (status) {
 				case "waiting":
 					break;
 				case "started":
-					this.#gameService.startGame();
+					if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
+						this.#gameService.startGame();
+					}
+					this.#playerInterfaceService.togglePauseButton();
+					this.#gameFieldService.togglePauseOverlay();
 					break;
 				case "paused":
 					this.#gameService.pauseGame();
+					this.#playerInterfaceService.togglePauseButton();
+					this.#gameFieldService.togglePauseOverlay();
 					break;
 				case "finished":
 					this.#gameService.endGame(gameId);
 					break;
 				default:
 					console.log("default: ", status);
-
+					break;
 			}
+
+			this.#clientStore.games.get(gameId).state.status = status;
+
 		});
 
 		socket.on('disconnect', () => {

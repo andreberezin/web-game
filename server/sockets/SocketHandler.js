@@ -12,6 +12,14 @@ export default class SocketHandler {
 		this.#serverStore = serverStore;
 	}
 
+	set io(io) {
+		this.#io = io;
+	}
+
+	get io() {
+		return this.#io;
+	}
+
 	setGamesManager(gamesManager) {
 		this.#gamesManager = gamesManager;
 	}
@@ -162,13 +170,14 @@ export default class SocketHandler {
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})
 
-		socket.on('gameStatusChange', (gameId, status) => {
+		socket.on('gameStatusChange', (gameId, status, playerId = null) => {
 			const game = this.#serverStore.games.get(gameId);
 			if (!game) return;
 
 			// shared update, per game
 			if (game.state.status !== status) {
-				console.log("Game status changed: ", status);
+				console.log("Game status changed: ", status, "by player: ", playerId);
+				game.state.status = status;
 
 				switch (status) {
 				case "waiting":
@@ -177,7 +186,7 @@ export default class SocketHandler {
 					this.#gameService.startGame(game);
 					break;
 				case "paused":
-					this.#gameService.pauseGame(game);
+					this.#gameService.pauseGame(game, this.#io, gameId);
 					break;
 				case "finished":
 					this.#gameService.finishGame(gameId);
@@ -186,8 +195,7 @@ export default class SocketHandler {
 					console.log("default: ", status);
 				}
 
-				game.state.status = status;
-				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status, playerId);
 
 				this.#io.emit('updateAvailableGames', this.getPublicGameList());
 			}
