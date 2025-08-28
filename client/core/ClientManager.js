@@ -51,6 +51,10 @@ export default class ClientManager {
 				this.#gameFieldService.updateLobbyPlayersCount();
 			}
 
+			if (game.state.status === "paused") {
+				this.#gameFieldService.updatePauseTimer(game.state.pause.timeRemaining);
+			}
+
 			for (let bulletID in bullets) {
 				if (bulletID && bullets[bulletID] != null) {
 					this.#bulletService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
@@ -58,7 +62,7 @@ export default class ClientManager {
 			}
 
 			// todo no need to check anymore?
-			if (store.games.get(store.gameId).state.status !== "finished") {
+			if (game.state.status !== "finished") {
 				for (let playerID in players) {
 					if (playerID && players[playerID] != null) {
 						this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);

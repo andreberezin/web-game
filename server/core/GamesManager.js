@@ -20,15 +20,22 @@ export default class GamesManager {
 
 			if (game) {
 				const currentTime = Date.now();
-				this.updateGame(gameId, currentTime);
-				this.broadcastGameState(gameId)
+				this.updateGame(game, currentTime);
+				this.broadcastGameState(game)
 				setTimeout(gameLoop, store.TICK_RATE);
+			} else {
+				throw new Error(`Game ${gameId} not found`);
 			}
 		}
 		gameLoop();
 	}
 
 	createGame(socket, hostId, settings) {
+
+		if (!this.#gameService.canCreateGame(hostId)) {
+			throw new Error(`Game with id ${hostId} already exists`);
+		}
+
 		console.log("Creating game with id: ", hostId);
 		const game = this.#gameService.createGame(hostId, settings);
 
@@ -37,46 +44,28 @@ export default class GamesManager {
 
 		this.#serverStore.updateGames(game.id, game);
 
-		// this.#io.emit("gameCreated", hostId, game.getState, game.getSettings);
-		//socket.emit("gameCreated", hostId, game.getState, game.getSettings);
-
 		this.startGameLoop(hostId);
 
-		//this.broadcastGameId(game.getId);
-
-		//this.socketHandler.createSocketConnection(1);
+		return game;
 	}
 
-	broadcastGameState(gameId) {
-		const game = this.#serverStore.games.get(gameId);
-		if (!game) {
-			console.warn("Game with id:", gameId, " not found");
-			return;
-		}
-
-		// console.log("game:", game.state);
-		this.#io.to(gameId).emit('updateGameState', gameId, game.state);
-
-		// const players = game.state.players;
-
-		// if (players && players.length > 0) {
-		// 	players.forEach((player) => {
-		// 		console.log("player respawn timer: ", player.respawnTimer);
-		// 	})
+	broadcastGameState(game) {
+		// const game = this.#serverStore.games.get(gameId);
+		// if (!game) {
+		// 	throw new Error(`Game with id ${gameId} not found`);
 		// }
-	}
 
-	// broadcastGameId(gameId) {
-	// 	this.#io.emit('updateGameId', (gameId))
-	// }
+		this.#io.to(game.id).emit('updateGameState', game.id, game.state);
+	}
 
 	// todo broadcast game settings if needed
 
-	updateGame(gameId, currentTime) {
-		const game = this.#serverStore.games.get(gameId);
-		if (game) { // && game.state.status !== "finished"
-			this.#gameService.updateGameState(game, currentTime);
-		}
+	updateGame(game, currentTime) {
+		// const game = this.#serverStore.games.get(gameId);
+		// if (game) { // && game.state.status !== "finished"
+		// 	this.#gameService.updateGameState(game, currentTime);
+		// }
+		this.#gameService.updateGameState(game, currentTime);
 	}
 
 	deleteGame(gameId) {

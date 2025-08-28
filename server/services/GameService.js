@@ -24,11 +24,11 @@ export default class GameService {
         return new Game(hostId, settings);
     }
 
-    updateGameState(game, currentTime) {
+    canCreateGame(gameId) {
+        return !this.#serverStore.games.has(gameId);
+    }
 
-        // if (game.state.status === "started" && game.state.timeRemaining > 0) {
-        //     this.handleGameTimer(game, currentTime);
-        // }
+    updateGameState(game, currentTime) {
         const status = game.state.status;
 
         if (status !== "paused" && status !== "waiting") {
@@ -88,7 +88,6 @@ export default class GameService {
             const elapsed = Date.now() - pause.startTime;
             pause.timeRemaining = Math.max(0, pause.duration - elapsed);
             console.log("Pause time remaining:", pause.timeRemaining);
-            debugger
 
             if (pause.timeRemaining > 0 && state.status === "paused") {
                 setTimeout(pauseCountdown, 10)
@@ -169,18 +168,53 @@ export default class GameService {
     addPlayerToGame(gameId, playerId, player) {
         const game = this.#serverStore.games.get(gameId);
         if (!game) {
-            throw new Error("Game not found, cannot add player");
+            throw new Error("Game not found");
         }
 
-        return this.canAddPlayer(game)
-            ? this.addPlayer(game, playerId, player)
-            : false;
+        if (this.doesPlayerExistInGame(game, playerId)) {
+            throw new Error("Player already exists in game");
+        }
+
+        if (this.doesPlayerNameExistInGame(player.name, game)) {
+            throw new Error(`Player name '${player.name}' is already taken`);
+        }
+
+        if (this.isGameFull(game)) {
+            throw new Error("Game is full, cannot add more players");
+        }
+
+        this.addPlayer(game, playerId, player);
+        return game;
+        // const game = this.#serverStore.games.get(gameId);
+        // if (!game) {
+        //     throw new Error("Game not found, cannot add player");
+        // }
+        //
+        // if (this.doesPlayerExistInGame(game, playerId)) {
+        //     throw new Error("Player already exists in game");
+        // }
+        //
+        // return this.isGameFull(game)
+        //     ? this.addPlayer(game, playerId, player)
+        //     : false;
     }
 
-    canAddPlayer(game) {
+    doesPlayerNameExistInGame(playerName, game) {
+        return Object.values(game.state.players).some(p => p.name === playerName);
+    }
+
+    // canAddPlayer(game, playerId) {
+    //     return this.isGameFull(game) && this.doesPlayerExistInGame(game, playerId);
+    // }
+
+    isGameFull(game) {
         const currentPlayerCount = Object.keys(game.state.players).length;
         const maxPlayersAllowed = game.settings.maxPlayers;
-        return currentPlayerCount < maxPlayersAllowed;
+        return currentPlayerCount >= maxPlayersAllowed;
+    }
+
+    doesPlayerExistInGame(game, playerId) {
+        return Object.hasOwnProperty.call(game.state.players, playerId);
     }
 
     addPlayer(game, playerId, player) {

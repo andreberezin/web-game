@@ -45,47 +45,25 @@ export default class SocketHandler {
 			})
 
 			socket.on('createGame', (hostId, playerName, settings) => {
+				try {
+					this.#gamesManager.createGame(socket, hostId, settings);
 
-				if (this.#serverStore.games.get(hostId)) {
-					console.error(`Game with id: ${hostId} already exists`);
-					socket.emit('error', "Game already exists");
-					return;
+					const gameId = hostId;
+
+					socket.emit("createGameSuccess", gameId);
+
+					this.joinGame(socket, gameId, hostId, playerName);
+				} catch (error) {
+					console.log(error.message);
+					socket.emit('error', error.message);
 				}
-
-				const gameId = hostId;
-
-				this.#gamesManager.createGame(socket, gameId, settings);
-
-				this.joinGame(socket, gameId, hostId, playerName);
-
-				const game = this.#serverStore.games.get(gameId);
-				socket.emit("createGameSuccess", gameId);
-				socket.emit("joinGameSuccess", gameId, game.state, game.settings, hostId);
 			})
 
 			socket.on('joinGame', (gameId, playerName) => {
-				const game = this.#serverStore.games.get(gameId);
-				if (!game) {
-					console.error(`Game does not exist: ${gameId}`);
-					socket.emit('error', "Game not found");
-					return;
-				}
-
-				for (const playerId in game.state.players) {
-					const player = game.state.players[playerId];
-					if (player.name === playerName) {
-						console.error(`Player already exists: ${playerId}`);
-						socket.emit('error', "Player with name '"+ playerName + "' already exists in game")
-						return;
-					}
-				}
-
 				const playerId = socket.id;
+				console.log("test");
+
 				this.joinGame(socket, gameId, playerId, playerName);
-
-				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
-
-				socket.to(gameId).emit("playerJoined", playerId);
 			})
 
 			socket.on('disconnect', () => {
@@ -115,29 +93,27 @@ export default class SocketHandler {
 		})
 	}
 
-
 	joinGame(socket, gameId, playerId, playerName) {
-
-		// if (gameId !== playerId) debugger;
-
 		socket.join(gameId);
 		socket.gameId = gameId;
 
-		// const player = new Player(playerId, playerName);
-		// const player = container.build(Player, { id: playerId, name: playerName });
 		const player = new Player(playerId, playerName, container.resolve('playerService'));
 
-		// const player = container.build(container.resolve('player'), {
-		// 	id: playerId,
-		// 	name: playerName
-		// });
+		try {
+			this.#gameService.addPlayerToGame(gameId, playerId, player);
+			socket.emit("joinGameSuccess", gameId, this.#serverStore.games.get(gameId).state,
+				this.#serverStore.games.get(gameId).settings, playerId);
 
-		this.#gameService.addPlayerToGame(gameId, playerId, player);
+			socket.to(gameId).emit("playerJoined", playerId);
+
+			console.log("Player: ", playerId, " joined game: ", gameId);
+		} catch (error) {
+			console.error(error.message);
+			socket.emit("error", error.message);
+		}
 
 		const game = this.#serverStore.games.get(gameId);
 		const gameState = game.state;
-
-		console.log("Player: ", playerId, " joined game: ", gameId);
 
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
 
