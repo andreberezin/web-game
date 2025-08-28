@@ -40,6 +40,7 @@ export default class Player {
     #status = {
         alive: true,
     };
+    #pauses = 2;
 
 	constructor(id, name) {
         this.#id = id;
@@ -178,5 +179,13 @@ export default class Player {
 
     set direction(direction) {
         this.#direction = direction;
+    }
+
+    get pauses() {
+        return this.#pauses;
+    }
+
+    set pauses(pauses) {
+        this.#pauses = pauses;
     }
 }

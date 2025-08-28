@@ -47,6 +47,7 @@ export default class Player {
         alive: true
     };
     color = null;
+    pauses = 2;
 
     // movement = {
     //     pos: {},
@@ -96,6 +97,22 @@ export default class Player {
         this.lastShotTime = currentTime;
     }
 
+    hasPause() {
+        return this.pauses > 0;
+    }
+
+    deductPause() {
+        this.pauses -= 1;
+    }
+
+    get pauses() {
+        return this.pauses;
+    }
+
+    set pauses(pauses) {
+        this.pauses = pauses;
+    }
+
     get position() {
         return this.pos;
     }
@@ -117,30 +134,4 @@ export default class Player {
             y: y,
         }
     }
-
-    // get respawnTimer() {
-    //     return this.respawnTime;
-    // }
-    //
-    // set respawnTimer(time) {
-    //     this.respawnTime = time;
-    // }
-
-
-    // get getShift() {
-    //     return this.shift;
-    // }
-    //
-
-    // setHp(hp) {
-    //     this.hp = hp;
-    // }
-    //
-    // getHp() {
-    //     return this.hp;
-    // }
-
-    // setShift(data) {
-    //     this.shift = data;
-    // }
 }
