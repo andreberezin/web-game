@@ -70,4 +70,20 @@ export default class GamesManager {
 		console.log("Deleting game: ", gameId);
 		this.#serverStore.games.delete(gameId);
 	}
+
+	// todo possibly create a DTO for this?
+	getPublicGameList() {
+		return Array.from(this.#serverStore.games.entries())
+			// todo commented out for testing so all games can be seen on the list rather than selected games
+			//eslint-disable-next-line
+			// .filter(([_, game]) => !game.settings.private)
+			// .filter(([_, game]) => game.state.status === "waiting")
+			// .filter(([_, game]) => Object.keys(game.state.players).length < game.settings.maxPlayers)
+			.map(([id, game]) => ({
+				id: id,
+				settings: game.settings,
+				state: game.state,
+				// players: Object.keys(game.state.players).length,
+			}));
+	}
 }
