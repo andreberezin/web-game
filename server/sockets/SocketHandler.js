@@ -12,6 +12,14 @@ export default class SocketHandler {
 		this.#serverStore = serverStore;
 	}
 
+	get io() {
+		return this.#io;
+	}
+
+	set io(io) {
+		this.#io = io;
+	}
+
 	setGamesManager(gamesManager) {
 		this.#gamesManager = gamesManager;
 	}
@@ -33,7 +41,7 @@ export default class SocketHandler {
 			socket.once("fetchAvailableGames", () => {
 				console.log("Fetching available games");
 
-				socket.emit('updateAvailableGames', this.getPublicGameList());
+				socket.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 			})
 
 			socket.on('createGame', (hostId, playerName, settings) => {
@@ -79,12 +87,13 @@ export default class SocketHandler {
 				}
 
 				if (!game.settings.private) {
-					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+					this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 				}
 			});
 		})
 	}
 
+	// todo refactor this monstrum as well
 	joinGame(socket, gameId, playerId, playerName) {
 		socket.join(gameId);
 		socket.gameId = gameId;
@@ -146,34 +155,16 @@ export default class SocketHandler {
 		})
 
 		socket.on('gameStatusChange', (gameId, status, playerId = null) => {
-			const game = this.#serverStore.games.get(gameId);
-			if (!game) return;
 
-			// shared update, per game
-			if (game.state.status !== status) {
-				console.log("Game status changed: ", status, "by player: ", playerId);
-				game.state.status = status;
-
-				switch (status) {
-				case "waiting":
-					break;
-				case "started":
-					this.#gameService.startGame(game);
-					break;
-				case "paused":
-					this.#gameService.pauseGame(game, this.#io, gameId);
-					break;
-				case "finished":
-					this.#gameService.finishGame(gameId);
-					break;
-				default:
-					console.log("default: ", status);
-				}
-
-				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status, playerId);
-
-				this.#io.emit('updateAvailableGames', this.getPublicGameList());
+			try {
+				this.#gameService.updateGameStatus(gameId, status, playerId, this.io);
+			} catch (error) {
+				console.error(error.message);
+				socket.emit('error', error.message);
 			}
+
+			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status, playerId);
+			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 
 			// separate update, per socket
 			if (status === "finished") {
@@ -183,7 +174,7 @@ export default class SocketHandler {
 		})
 
 		if (!game.settings.private) {
-			this.#io.emit('updateAvailableGames', this.getPublicGameList());
+			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 		}
 	}
 
@@ -194,21 +185,5 @@ export default class SocketHandler {
 	removeListeners(socket) {
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
-	}
-
-	// todo possibly create a DTO for this?
-	getPublicGameList() {
-		return Array.from(this.#serverStore.games.entries())
-			// todo commented out for testing so all games can be seen on the list rather than selected games
-			//eslint-disable-next-line
-			// .filter(([_, game]) => !game.settings.private)
-			// .filter(([_, game]) => game.state.status === "waiting")
-			// .filter(([_, game]) => Object.keys(game.state.players).length < game.settings.maxPlayers)
-			.map(([id, game]) => ({
-				id: id,
-				settings: game.settings,
-				state: game.state,
-				// players: Object.keys(game.state.players).length,
-			}));
 	}
 }

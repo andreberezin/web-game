@@ -50,6 +50,47 @@ export default class GameService {
         }
     }
 
+    updateGameStatus(gameId, status, playerId, io) {
+        debugger
+
+        const game = this.#serverStore.games.get(gameId);
+        if (!game) {
+            throw new Error(`Game ${gameId} not found`);
+        }
+
+        const player = game.state.players[playerId];
+
+        // shared update, per game
+        if (game.state.status !== status) {
+            console.log("Game status changed: ", status, "by player: ", playerId);
+
+            if (status === "paused" && !player.hasPause()) {
+                console.warn(`Player ${playerId} cannot pause: no pauses left`);
+                throw new Error(`No pauses left`);
+            }
+
+            switch (status) {
+            case "waiting":
+                break;
+            case "started":
+                this.startGame(game);
+                break;
+            case "paused":
+                this.pauseGame(game, io, gameId);
+                player.deductPause();
+                console.log("player pauses:", player.pauses);
+                break;
+            case "finished":
+                this.finishGame(gameId);
+                break;
+            default:
+                console.log("default: ", status);
+            }
+
+            game.state.status = status;
+        }
+    }
+
     startGame(game) {
         game.state.startTime = Date.now();
         if (game.state.timeRemaining > 0) {
@@ -185,27 +226,11 @@ export default class GameService {
 
         this.addPlayer(game, playerId, player);
         return game;
-        // const game = this.#serverStore.games.get(gameId);
-        // if (!game) {
-        //     throw new Error("Game not found, cannot add player");
-        // }
-        //
-        // if (this.doesPlayerExistInGame(game, playerId)) {
-        //     throw new Error("Player already exists in game");
-        // }
-        //
-        // return this.isGameFull(game)
-        //     ? this.addPlayer(game, playerId, player)
-        //     : false;
     }
 
     doesPlayerNameExistInGame(playerName, game) {
         return Object.values(game.state.players).some(p => p.name === playerName);
     }
-
-    // canAddPlayer(game, playerId) {
-    //     return this.isGameFull(game) && this.doesPlayerExistInGame(game, playerId);
-    // }
 
     isGameFull(game) {
         const currentPlayerCount = Object.keys(game.state.players).length;
