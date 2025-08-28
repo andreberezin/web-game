@@ -132,8 +132,8 @@ export default class PlayerInterfaceService {
 			button.textContent = `PAUSE(${pauseCount})`;
 
 			const emit = () => {
-				if (this.#clientStore.games.get(this.#clientStore.gameId).state.status === "started") {
-					this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "paused", myId)
+				if (store.games.get(store.gameId).state.status === "started") {
+					this.#socketHandler.socket.emit('gameStatusChange', store.gameId, "paused", myId)
 				}
 			}
 
@@ -143,18 +143,14 @@ export default class PlayerInterfaceService {
 			// button.innerHTML = `<i class="fas fa-stop"></i>`;
 			button.textContent = `QUIT`;
 			button.classList.add('enabled');
+
+			button.addEventListener('click', () => {
+				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId)
+			})
+
 			// quite game
 		}
 		return button;
-	}
-
-	togglePauseButton(gameId, playerId) {
-		// const pauseCount = this.#clientStore.games.get(gameId).state.players[playerId].pauses;
-		//
-		// if (pauseCount > 0) {
-			const button = document.getElementById('pause');
-			button.classList.toggle('enabled')
-		// }
 	}
 
 	updatePauseCounter(pauseCount) {

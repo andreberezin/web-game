@@ -8,14 +8,16 @@ export default class GameService {
 	#playerService;
 	#playerInterfaceService;
 	#gameInterfaceService;
+	#playerInputService;
 
-	constructor({clientStore, socketHandler, gameFieldService, playerService, playerInterfaceService, gameInterfaceService}) {
+	constructor({clientStore, socketHandler, gameFieldService, playerService, playerInterfaceService, gameInterfaceService, playerInputService}) {
 		this.#clientStore = clientStore;
 		this.#socketHandler = socketHandler;
 		this.#gameFieldService = gameFieldService;
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterfaceService = gameInterfaceService;
+		this.#playerInputService = playerInputService;
 	}
 
 	setClientManager(clientManager) {
@@ -90,7 +92,12 @@ export default class GameService {
 	}
 
 	leaveGame() {
-
+		this.#clientManager.stopRenderLoop();
+		this.#playerInputService.removeEventListeners();
+		this.#socketHandler.cleanupGameListeners();
+		this.#gameFieldService.removeGameElements();
+		this.#clientStore.gameId = null;
+		if (this.#clientManager.onGameEnd) this.#clientManager.onGameEnd();
 	}
 
 	updateGameState() {

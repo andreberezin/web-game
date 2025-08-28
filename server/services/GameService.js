@@ -246,6 +246,15 @@ export default class GameService {
         game.state.players[playerId] = player;
     }
 
+    removePlayer(game, playerId) {
+        if (!game || !game.state.players[playerId]) {
+            return false; // nothing removed
+        }
+
+        delete game.state.players[playerId];
+        return true; // player successfully removed
+    }
+
     raycastToWalls(startX, startY, endX, endY, objectSize, game) {
         const steps = Math.max(Math.abs(endX - startX), Math.abs(endY - startY));
         const stepSize = Math.max(1, Math.floor(steps / 10));

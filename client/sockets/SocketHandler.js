@@ -246,6 +246,16 @@ export default class SocketHandler {
 
 		this.on('playerLeft', (playerId) => {
 			console.log("Player:", playerId, "left the game");
+
+			if (playerId === this.#clientStore.myId) {
+
+				this.#gameService.leaveGame();
+				this.cleanupGameListeners();
+			} else {
+				this.#playerService.removePlayerElement(playerId);
+				delete this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId];
+			}
+
 		})
 
 		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {

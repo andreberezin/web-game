@@ -112,13 +112,8 @@ export default class ClientManager {
 	}
 
 	gameCleanup(gameId) {
-		this.stopRenderLoop();
-		this.#playerInputService.removeEventListeners();
-		this.#socketHandler.cleanupGameListeners();
-		this.#gameFieldService.removeGameElements();
+		this.#gameService.leaveGame();
 		this.#clientStore.games.delete(gameId)
-		this.#clientStore.gameId = null;
-		if (this.onGameEnd) this.onGameEnd();
 	}
 
 	setupCleanup() {

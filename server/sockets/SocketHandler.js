@@ -38,7 +38,7 @@ export default class SocketHandler {
 		this.#io.on('connection', (socket) => {
 			console.log("Connected servers");
 
-			socket.once("fetchAvailableGames", () => {
+			socket.on("fetchAvailableGames", () => {
 				console.log("Fetching available games");
 
 				socket.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
@@ -173,6 +173,31 @@ export default class SocketHandler {
 			}
 		})
 
+		socket.on('leaveGame', (gameId, playerId) => {
+			const game = this.#serverStore.games.get(gameId);
+
+			const removed = this.#gameService.removePlayer(game, playerId);
+
+			if (!removed) {
+				console.warn(`Tried to remove player ${playerId}, but they were not in game ${gameId}`);
+				return;
+			}
+
+
+			this.#io.to(gameId).emit("playerLeft", playerId);
+
+			this.leaveSocketRoom(socket, gameId);
+			this.removeListeners(socket);
+
+			// delete game if no players left
+			if (Object.keys(game.state.players).length === 0) {
+				this.#serverStore.games.delete(gameId);
+				console.log(`Game ${gameId} deleted because no players left`);
+				this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
+
+			}
+		})
+
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 		}
@@ -185,5 +210,6 @@ export default class SocketHandler {
 	removeListeners(socket) {
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
+		socket.removeAllListeners('leaveGame');
 	}
 }

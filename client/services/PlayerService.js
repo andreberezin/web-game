@@ -135,26 +135,9 @@ export default class PlayerService {
 		return playerElement;
 	}
 
-	// removePlayerModels() {
-	// 	const store = this.#clientStore;
-	// 	const {players} = store.games.get(store.gameId).state;
-	//
-	// 	for (const playerID in players) {
-	// 		delete players[playerID];
-	//
-	// 		const element = document.getElementById(playerID);
-	// 		console.log("removed player: ",  playerID);
-	//
-	// 		if (element) {
-	// 			element.remove();
-	// 		}
-	// 	}
-	//
-	// 	// cleanup for any other player elements just in case
-	// 	const elements = document.getElementsByClassName("player")
-	//
-	// 	if (elements.length > 0) {
-	// 		[...elements].forEach((element) => {element.remove()});
-	// 	}
-	// }
+	removePlayerElement(playerId) {
+		const element = document.getElementById(playerId);
+		if (!element) return;
+		element.remove();
+	}
 }
