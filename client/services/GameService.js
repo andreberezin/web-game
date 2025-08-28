@@ -96,4 +96,33 @@ export default class GameService {
 	updateGameState() {
 		// todo logic from SocketHandler into smaller methods
 	}
+
+	updateGameStatus(gameId, status, playerId) {
+		switch (status) {
+		case "waiting":
+			break;
+		case "started":
+			if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
+				this.startGame();
+			}
+			this.#playerInterfaceService.togglePauseButton(gameId, playerId);
+			this.#gameFieldService.togglePauseOverlay();
+			break;
+		case "paused":
+			this.pauseGame();
+			this.#playerInterfaceService.togglePauseButton(gameId, playerId);
+			this.#gameFieldService.togglePauseOverlay();
+			this.#gameFieldService.updatePausedBy(playerId, gameId);
+			this.#playerInterfaceService.updatePauseCounter(gameId, playerId);
+			break;
+		case "finished":
+			this.endGame(gameId);
+			break;
+		default:
+			console.log("default: ", status);
+			break;
+		}
+
+		this.#clientStore.games.get(gameId).state.status = status;
+	}
 }

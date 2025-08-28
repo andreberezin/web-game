@@ -111,7 +111,7 @@ export default class SocketHandler {
 			this.#gameService.createGame(gameId, myId);
 		})
 
-		// todo refactor this socket connection into smaller methods
+		// todo refactor this monstrum
 		this.on('updateGameState', (gameId, updatedGameState) => {
 
 			const game = this.#clientStore.games.get(gameId)
@@ -137,6 +137,13 @@ export default class SocketHandler {
 
 			} else {
 				console.error("Cannot update time remaining")
+			}
+
+			if (currentGameState.status === "paused") {
+				currentGameState.pause = {
+					...currentGameState.pause,
+					timeRemaining: updatedGameState.pause.timeRemaining,
+				}
 			}
 
 
@@ -172,6 +179,7 @@ export default class SocketHandler {
 					player.respawnTimer = updatedPlayer.respawnTimer;
 					player.size = updatedPlayer.size;
 					player.deathCooldown = updatedPlayer.deathCooldown;
+					player.pauses = updatedPlayer.pauses;
 				}
 			}
 
@@ -244,30 +252,7 @@ export default class SocketHandler {
 		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
 			console.log("Game status changed: ", status, "by player: ", playerId);
 
-			switch (status) {
-				case "waiting":
-					break;
-				case "started":
-					if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
-						this.#gameService.startGame();
-					}
-					this.#playerInterfaceService.togglePauseButton();
-					this.#gameFieldService.togglePauseOverlay();
-					break;
-				case "paused":
-					this.#gameService.pauseGame();
-					this.#playerInterfaceService.togglePauseButton();
-					this.#gameFieldService.togglePauseOverlay();
-					break;
-				case "finished":
-					this.#gameService.endGame(gameId);
-					break;
-				default:
-					console.log("default: ", status);
-					break;
-			}
-
-			this.#clientStore.games.get(gameId).state.status = status;
+			this.#gameService.updateGameStatus(gameId, status, playerId);
 
 		});
 
