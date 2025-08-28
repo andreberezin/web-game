@@ -80,6 +80,8 @@ function App() {
                 // setIsGameStarted(false);
                 setView('main')
                 console.log("Rerendering menu");
+                const socket = clientManager.socketHandler.socket;
+                socket.emit('fetchAvailableGames');
             }, 100)
         };
     }, []);
