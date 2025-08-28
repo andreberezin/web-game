@@ -16,6 +16,7 @@ export default function manualDI(io) {
 	const powerupService = container.resolve('powerupService');
 
 	socketHandler.setGamesManager(gamesManager);
+	gameService.setGamesManager(gamesManager);
 	socketHandler.setGameService(gameService);
 	playerInputService.setGameService(gameService);
 	bulletService.setGameService(gameService);

@@ -1,90 +1,166 @@
 import Game from '../models/Game.js';
-import Bullet from "../models/Bullet.js";
-import Powerup from "../models/Powerup.js";
 
 export default class GameService {
-    #playerInputService
-    #serverStore
-    #bulletService
-    #powerupService
+    #playerInputService;
+    #serverStore;
+    #bulletService;
+    #powerupService;
+    #gamesManager;
+    #playerService
 
-    constructor({playerInputService, serverStore, bulletService, powerupService}) {
+    constructor({playerInputService, serverStore, bulletService, powerupService, playerService}) {
         this.#playerInputService = playerInputService;
         this.#serverStore = serverStore;
         this.#bulletService = bulletService;
         this.#powerupService = powerupService;
+        this.#playerService = playerService;
+    }
+
+    setGamesManager(gamesManager) {
+        this.#gamesManager = gamesManager;
     }
 
     createGame(hostId, settings) {
         return new Game(hostId, settings);
     }
 
+    canCreateGame(gameId) {
+        return !this.#serverStore.games.has(gameId);
+    }
+
     updateGameState(game, currentTime) {
+        const status = game.state.status;
 
-        // if (game.state.status === "started" && game.state.timeRemaining > 0) {
-        //     this.handleGameTimer(game, currentTime);
-        // }
-
-        this.#bulletService.updateBullets(game);
-
-        if (game.state.status === "started") {
+        if (status !== "paused" && status !== "waiting") {
+            this.#bulletService.updateBullets(game);
             this.#powerupService.updatePowerups(game, currentTime);
+        }
 
+        if (status === "started") {
             for (const playerID in game.state.players) {
                 const player = game.state.players[playerID];
 
                 this.#powerupService.updatePlayerPowerups(player, currentTime);
-                this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
+                this.checkForCollisions(player, currentTime, game.state);
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
         }
     }
 
-    startGame() {
+    updateGameStatus(gameId, status, playerId, io) {
+        debugger
 
+        const game = this.#serverStore.games.get(gameId);
+        if (!game) {
+            throw new Error(`Game ${gameId} not found`);
+        }
+
+        const player = game.state.players[playerId];
+
+        // shared update, per game
+        if (game.state.status !== status) {
+            console.log("Game status changed: ", status, "by player: ", playerId);
+
+            if (status === "paused" && !player.hasPause()) {
+                console.warn(`Player ${playerId} cannot pause: no pauses left`);
+                throw new Error(`No pauses left`);
+            }
+
+            switch (status) {
+            case "waiting":
+                break;
+            case "started":
+                this.startGame(game);
+                break;
+            case "paused":
+                this.pauseGame(game, io, gameId);
+                player.deductPause();
+                console.log("player pauses:", player.pauses);
+                break;
+            case "finished":
+                this.finishGame(gameId);
+                break;
+            default:
+                console.log("default: ", status);
+            }
+
+            game.state.status = status;
+        }
     }
 
-    pauseGame() {
+    startGame(game) {
+        game.state.startTime = Date.now();
+        if (game.state.timeRemaining > 0) {
+            this.handleGameTimer(game);
+        }
+    }
 
+    pauseGame(game, io, gameId) {
+        game.updateState({pause: {
+            ...game.state.pause,
+            startTime: Date.now(),
+            }});
+        this.handlePauseTimer(game, io, gameId);
+    }
+
+    resumeGame(game, io, gameId) {
+        game.state.status = "started"
+        console.log("Game status changed: started");
+        io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+
+        // resume timer
+        this.handleGameTimer(game);
     }
 
     finishGame(gameId) {
-        // setTimeout(() => {
-        //     this.deleteGame(gameId);
-        //     console.log("Games: ", this.#serverStore.games);
-        // }, 1500)
-        this.deleteGame(gameId);
+        setTimeout(() => {
+            this.#gamesManager.deleteGame(gameId);
+        }, 1000)
     }
 
-    deleteGame(gameId) {
-        console.log("Deleting game: ", gameId);
-        this.#serverStore.games.delete(gameId);
-    }
+    handlePauseTimer(game, io, gameId) {
+        const pauseCountdown = () => {
+            const state = game.state;
+            const pause = state.pause;
 
-    // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
-    handleGameTimer(game, socket) {
-        // const timer = setTimeout(countdown, 10);
+            const elapsed = Date.now() - pause.startTime;
+            pause.timeRemaining = Math.max(0, pause.duration - elapsed);
+            console.log("Pause time remaining:", pause.timeRemaining);
 
-        function countdown() {
-            const elapsed = Date.now() - game.state.startTime;
-            game.state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
-            //console.log("Time remaining:", game.state.timeRemaining);
-
-            if (game.state.timeRemaining > 0) {
-                setTimeout(countdown, 10)
+            if (pause.timeRemaining > 0 && state.status === "paused") {
+                setTimeout(pauseCountdown, 10)
 
             } else {
-                // game.state.status = "finished"
-                // socket.emit('gameStatusChangeSuccess', game.id, game.state.status);
-                // todo logs randomly
-                console.log("Timer has finished: ", game.state.timeRemaining);
+                console.log("Game pause has ended");
+                this.resumeGame(game, io, gameId);
             }
         }
 
-        setTimeout(countdown, 10);
+        setTimeout(pauseCountdown, 10);
+    }
+
+    // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
+    handleGameTimer(game) {
+        function gameCountdown() {
+            const state = game.state;
+
+            const elapsed = Date.now() - state.startTime;
+            state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
+            //console.log("Time remaining:", game.state.timeRemaining);
+
+            if (state.timeRemaining > 0 && state.status === "started") {
+                setTimeout(gameCountdown, 10)
+
+            } else {
+                // todo logs randomly
+                console.log("Timer has stopped: ", state.timeRemaining / 1000);
+            }
+        }
+
+        setTimeout(gameCountdown, 10);
     }
 
     checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
@@ -98,20 +174,11 @@ export default class GameService {
                     let bulletEndY = bullet.pos.y + bullet.velocityPerSecond * bullet.direction.y;
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
-                        console.log("PLAYER GOT HIT");
+                        console.log("player hit");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             // Player dies if hp is 0
-                            player.lives -= 1;
-                            player.input = {
-                                space: false,
-                                ArrowUp: false,
-                                ArrowRight: false,
-                                ArrowLeft: false,
-                                ArrowDown: false};
-                            player.shift = 0;
-                            player.movementStart = undefined;
-                            player.status.alive = false;
+                            player.handleDeath();
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
                             //delete game.state.players[playerID];
@@ -142,22 +209,50 @@ export default class GameService {
     addPlayerToGame(gameId, playerId, player) {
         const game = this.#serverStore.games.get(gameId);
         if (!game) {
-            throw new Error("Game not found, cannot add player");
+            throw new Error("Game not found");
         }
 
-        return this.canAddPlayer(game)
-            ? this.addPlayer(game, playerId, player)
-            : false;
+        if (this.doesPlayerExistInGame(game, playerId)) {
+            throw new Error("Player already exists in game");
+        }
+
+        if (this.doesPlayerNameExistInGame(player.name, game)) {
+            throw new Error(`Player name '${player.name}' is already taken`);
+        }
+
+        if (this.isGameFull(game)) {
+            throw new Error("Game is full, cannot add more players");
+        }
+
+        this.addPlayer(game, playerId, player);
+        return game;
     }
 
-    canAddPlayer(game) {
+    doesPlayerNameExistInGame(playerName, game) {
+        return Object.values(game.state.players).some(p => p.name === playerName);
+    }
+
+    isGameFull(game) {
         const currentPlayerCount = Object.keys(game.state.players).length;
         const maxPlayersAllowed = game.settings.maxPlayers;
-        return currentPlayerCount < maxPlayersAllowed;
+        return currentPlayerCount >= maxPlayersAllowed;
+    }
+
+    doesPlayerExistInGame(game, playerId) {
+        return Object.hasOwnProperty.call(game.state.players, playerId);
     }
 
     addPlayer(game, playerId, player) {
         game.state.players[playerId] = player;
+    }
+
+    removePlayer(game, playerId) {
+        if (!game || !game.state.players[playerId]) {
+            return false; // nothing removed
+        }
+
+        delete game.state.players[playerId];
+        return true; // player successfully removed
     }
 
     raycastToWalls(startX, startY, endX, endY, objectSize, game) {
@@ -186,7 +281,7 @@ export default class GameService {
             const checkX = bulletStartX + (bulletEndX - bulletStartX) * t;
             const checkY = bulletStartY + (bulletEndY - bulletStartY) * t;
 
-            if(this.wouldCollideWithPlayer(checkX, checkY, bullet, player)) {
+            if (this.wouldCollideWithPlayer(checkX, checkY, bullet, player)) {
                 return true;
             }
         }

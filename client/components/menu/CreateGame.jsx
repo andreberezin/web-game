@@ -79,7 +79,7 @@ export function CreateGame({clientManager, setView}) {
 				className={"submit other-button"}
 				type={"submit"}
 				form={"create-game-form"}
-				disabled={!name || (name.length <= 3)}
+				disabled={!name || (name.length < 3)}
 			>
 				Play
 			</button>

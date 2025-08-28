@@ -47,6 +47,7 @@ export default class Player {
         alive: true
     };
     color = null;
+    pauses = 2;
 
     // movement = {
     //     pos: {},
@@ -69,19 +70,16 @@ export default class Player {
     //     timer: null,
     // }
 
-	constructor(id, name) {
+	constructor(id, name, playerService) {
         this.id = id;
         this.name = name;
         this.pos = this.spawnPos;
+        this.playerService = playerService;
 	}
 
-    // setStatus(status) {
-    //     this.status = status;
-    // }
-    //
-    // getStatus() {
-    //     return this.status;
-    // }
+    handleDeath() {
+        return this.playerService.handlePlayerDeath(this);
+    }
 
     canRespawn(currentTime) {
         return (currentTime - this.deathTime) >= this.deathCooldown;
@@ -97,6 +95,22 @@ export default class Player {
 
     lastBulletShotAt(currentTime) {
         this.lastShotTime = currentTime;
+    }
+
+    hasPause() {
+        return this.pauses > 0;
+    }
+
+    deductPause() {
+        this.pauses -= 1;
+    }
+
+    get pauses() {
+        return this.pauses;
+    }
+
+    set pauses(pauses) {
+        this.pauses = pauses;
     }
 
     get position() {
@@ -120,30 +134,4 @@ export default class Player {
             y: y,
         }
     }
-
-    // get respawnTimer() {
-    //     return this.respawnTime;
-    // }
-    //
-    // set respawnTimer(time) {
-    //     this.respawnTime = time;
-    // }
-
-
-    // get getShift() {
-    //     return this.shift;
-    // }
-    //
-
-    // setHp(hp) {
-    //     this.hp = hp;
-    // }
-    //
-    // getHp() {
-    //     return this.hp;
-    // }
-
-    // setShift(data) {
-    //     this.shift = data;
-    // }
 }

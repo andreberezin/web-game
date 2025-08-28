@@ -46,59 +46,6 @@ export default class SocketHandler {
 		this.#gameService = gameService;
 	}
 
-	initializePlayers(gameId, players, myPlayer) {
-		if (!this.#clientStore.myId) {
-			this.#clientStore.myId = myPlayer.id;
-		}
-
-		const gameState = this.#clientStore.games.get(gameId).state;
-		let currentIndex = Object.keys(gameState.players).length
-
-		for (const playerID in players) {
-			// if (!gameState.players[playerID]) {
-				currentIndex++;
-				gameState.players[playerID] = new Player(playerID, players[playerID].name);
-				gameState.players[playerID].colorIndex = currentIndex;
-				this.#playerService.createPlayerModel(players[playerID], playerID);
-
-				// todo I don't think it's necessary to create the playerInterface object and save it for each player
-				//gameState.interfaces[playerID] = new PlayerInterface(playerID);
-
-			//}
-
-			if (playerID === myPlayer.id) {
-				this.#playerInterfaceService.createPlayerUI(playerID);
-			}
-		}
-	}
-
-	initializeGameField(mapType, gameId, myId) {
-		const gameField = this.#gameFieldService
-		gameField.createElement(mapType);
-
-		const game = this.#clientStore.games.get(gameId);
-
-		if (gameId === myId) {
-			// create and append start game button
-			gameField.createStartButton(game);
-		} else {
-			// create and append a message that says, "Waiting for the host to start the game..."
-		}
-	}
-
-	// todo probably should be part of GameService class instead
-	createGame(gameId, myId) {
-		const game  = this.#clientStore.games.get(gameId);
-
-		const players = game.state.players;
-		const settings = game.settings;
-
-		this.initializeGameField(settings.mapType, gameId, myId);
-		this.initializePlayers(gameId, players, players[myId]);
-		this.#gameInterfaceService.createGameUI(gameId, settings, players);
-		this.#clientManager.startRenderLoop();
-	}
-
 	on(event, callback) {
 		if (callback === null) {
 			delete this.#listeners[event];
@@ -161,10 +108,10 @@ export default class SocketHandler {
 			game.state = {...game.state, ...state};
 			game.settings = {...game.settings, ...settings};
 
-			this.createGame(gameId, myId);
+			this.#gameService.createGame(gameId, myId);
 		})
 
-		// todo refactor this socket connection into smaller methods
+		// todo refactor this monstrum
 		this.on('updateGameState', (gameId, updatedGameState) => {
 
 			const game = this.#clientStore.games.get(gameId)
@@ -190,6 +137,13 @@ export default class SocketHandler {
 
 			} else {
 				console.error("Cannot update time remaining")
+			}
+
+			if (currentGameState.status === "paused") {
+				currentGameState.pause = {
+					...currentGameState.pause,
+					timeRemaining: updatedGameState.pause.timeRemaining,
+				}
 			}
 
 
@@ -225,6 +179,7 @@ export default class SocketHandler {
 					player.respawnTimer = updatedPlayer.respawnTimer;
 					player.size = updatedPlayer.size;
 					player.deathCooldown = updatedPlayer.deathCooldown;
+					player.pauses = updatedPlayer.pauses;
 				}
 			}
 
@@ -291,32 +246,23 @@ export default class SocketHandler {
 
 		this.on('playerLeft', (playerId) => {
 			console.log("Player:", playerId, "left the game");
+
+			if (playerId === this.#clientStore.myId) {
+
+				this.#gameService.leaveGame();
+				this.cleanupGameListeners();
+			} else {
+				this.#playerService.removePlayerElement(playerId);
+				delete this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId];
+			}
+
 		})
 
+		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
+			console.log("Game status changed: ", status, "by player: ", playerId);
 
-		this.on('gameStatusChangeSuccess', (gameId, status) => {
-			this.#clientStore.games.get(gameId).state.status = status;
-			console.log("Game status changed: ", status);
+			this.#gameService.updateGameStatus(gameId, status, playerId);
 
-			switch (status) {
-				case "waiting":
-					break;
-			case "started":
-					this.#gameFieldService.hideLobby();
-					break;
-				case "paused":
-					break;
-				case "finished":
-					this.#gameFieldService.showScoreboard();
-					// this.#gameService.handleGameFinish(gameId);
-					setTimeout(() => {
-						this.#clientManager.gameCleanup(gameId);
-					}, 1000)
-					break;
-				default:
-					console.log("default: ", status);
-
-			}
 		});
 
 		socket.on('disconnect', () => {

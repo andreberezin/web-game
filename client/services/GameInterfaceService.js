@@ -45,7 +45,7 @@ export default class GameInterfaceService {
 		button.id = "game-id-value";
 		button.className = "value";
 		button.type = "button";
-		button.title = "Click to copy";
+		button.title = "Double click to copy";
 		button.textContent = gameId;
 
 		button.addEventListener("dblclick", () => {
@@ -66,34 +66,28 @@ export default class GameInterfaceService {
 	}
 
 	createFullscreenButton() {
-		const store = this.#clientStore;
-
 		const fullscreenButton = document.createElement("button");
 		fullscreenButton.id = "fullscreen-button";
 		fullscreenButton.innerHTML = `<i class="fas fa-expand"></i>`
 
 		const page = document.documentElement;
 
+		// event listener straight on the button
 		fullscreenButton.addEventListener("click", async () => {
 
 			try {
-				const isFullscreen = store.uiState.isFullscreen;
-
-				if (isFullscreen) {
+				if (document.fullscreenElement !== null) {
 					await document.exitFullscreen();
 				} else {
 					await page.requestFullscreen();
 				}
-
-				store.updateUIState({isFullscreen: !isFullscreen});
 			} catch (e) {
 				console.error(e);
 			}
 		})
 
-		document.addEventListener("fullscreenchange", () => {
+		window.addEventListener("fullscreenchange", () => {
 			const isFullscreen = !!document.fullscreenElement;
-			store.updateUIState({isFullscreen: isFullscreen});
 
 			if (isFullscreen) {
 				fullscreenButton.innerHTML = `<i class="fas fa-compress"></i>`

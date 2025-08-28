@@ -45,20 +45,6 @@ $player-colors: (
 	}
   }
 
-
-  //&::before {
-	//content: var(--name);
-	//position: absolute;
-	//top: -30px;
-	//left: 50%;
-	//transform: translateX(-50%);
-	//color: lightgray;
-	//white-space: nowrap;
-	//font-size: 1.5rem;
-	////text-shadow: 2px 0 #fff, -2px 0 #fff, 0 2px #fff, 0 -2px #fff,
-	////1px 1px #fff, -1px -1px #fff, 1px -1px #fff, -1px 1px #fff;
-  //}
-
   &.me {
 	.player-inner {
 	  .player-name {

@@ -1,4 +1,5 @@
 import Player from '../models/Player.js';
+import container from '../di/container.js';
 
 export default class SocketHandler {
 	#io
@@ -9,6 +10,14 @@ export default class SocketHandler {
 	constructor({io, serverStore}) {
 		this.#io = io;
 		this.#serverStore = serverStore;
+	}
+
+	get io() {
+		return this.#io;
+	}
+
+	set io(io) {
+		this.#io = io;
 	}
 
 	setGamesManager(gamesManager) {
@@ -29,47 +38,32 @@ export default class SocketHandler {
 		this.#io.on('connection', (socket) => {
 			console.log("Connected servers");
 
-			socket.once("fetchAvailableGames", () => {
+			socket.on("fetchAvailableGames", () => {
 				console.log("Fetching available games");
 
-				socket.emit('updateAvailableGames', this.getPublicGameList());
+				socket.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 			})
 
 			socket.on('createGame', (hostId, playerName, settings) => {
-				const gameId = hostId;
+				try {
+					this.#gamesManager.createGame(socket, hostId, settings);
 
-				this.#gamesManager.createGame(socket, gameId, settings);
+					const gameId = hostId;
 
-				this.joinGame(socket, gameId, hostId, playerName);
+					socket.emit("createGameSuccess", gameId);
 
-				const game = this.#serverStore.games.get(gameId);
-				socket.emit("createGameSuccess", gameId);
-				socket.emit("joinGameSuccess", gameId, game.state, game.settings, hostId);
+					this.joinGame(socket, gameId, hostId, playerName);
+				} catch (error) {
+					console.log(error.message);
+					socket.emit('error', error.message);
+				}
 			})
 
 			socket.on('joinGame', (gameId, playerName) => {
-				const game = this.#serverStore.games.get(gameId);
-				if (!game) {
-					console.error(`Game does not exist: ${gameId}`);
-					socket.emit('error', "Game not found");
-					return;
-				}
-
-				for (const playerId in game.state.players) {
-					const player = game.state.players[playerId];
-					if (player.name === playerName) {
-						console.error(`Player already exists: ${playerId}`);
-						socket.emit('error', "Player with name '"+ playerName + "' already exists in game")
-						return;
-					}
-				}
-
 				const playerId = socket.id;
+				console.log("test");
+
 				this.joinGame(socket, gameId, playerId, playerName);
-
-				socket.emit("joinGameSuccess", gameId, game.state, game.settings, playerId);
-
-				socket.to(gameId).emit("playerJoined", playerId);
 			})
 
 			socket.on('disconnect', () => {
@@ -93,28 +87,34 @@ export default class SocketHandler {
 				}
 
 				if (!game.settings.private) {
-					this.#io.emit('updateAvailableGames', this.getPublicGameList());
+					this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 				}
 			});
 		})
 	}
 
-
+	// todo refactor this monstrum as well
 	joinGame(socket, gameId, playerId, playerName) {
-
-		// if (gameId !== playerId) debugger;
-
 		socket.join(gameId);
 		socket.gameId = gameId;
 
-		const player = new Player(playerId, playerName);
+		const player = new Player(playerId, playerName, container.resolve('playerService'));
 
-		this.#gameService.addPlayerToGame(gameId, playerId, player);
+		try {
+			this.#gameService.addPlayerToGame(gameId, playerId, player);
+			socket.emit("joinGameSuccess", gameId, this.#serverStore.games.get(gameId).state,
+				this.#serverStore.games.get(gameId).settings, playerId);
+
+			socket.to(gameId).emit("playerJoined", playerId);
+
+			console.log("Player: ", playerId, " joined game: ", gameId);
+		} catch (error) {
+			console.error(error.message);
+			socket.emit("error", error.message);
+		}
 
 		const game = this.#serverStore.games.get(gameId);
 		const gameState = game.state;
-
-		console.log("Player: ", playerId, " joined game: ", gameId);
 
 		this.#io.to(gameId).emit('myPlayerCreated', gameState.players[playerId], playerId);
 
@@ -154,38 +154,17 @@ export default class SocketHandler {
 			type === "keydown" ? input[key] = true : input[key] = false;
 		})
 
-		socket.on('gameStatusChange', (gameId, status) => {
-			const game = this.#serverStore.games.get(gameId);
-			if (!game) return;
+		socket.on('gameStatusChange', (gameId, status, playerId = null) => {
 
-			// shared update, per game
-			if (game.state.status !== status) {
-				console.log("Game status changed: ", status);
-
-				switch (status) {
-				case "waiting":
-					break;
-				case "started":
-					game.state.startTime = Date.now();
-					if (game.state.timeRemaining > 0) {
-						this.#gameService.handleGameTimer(game, socket);
-					}
-					this.#io.emit('updateAvailableGames', this.getPublicGameList());
-					break;
-				case "paused":
-					break;
-				case "finished":
-					setTimeout(() => {
-						this.#gameService.finishGame(gameId);
-					}, 1000)
-					break;
-				default:
-					console.log("default: ", status);
-				}
-
-				game.state.status = status;
-				this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status);
+			try {
+				this.#gameService.updateGameStatus(gameId, status, playerId, this.io);
+			} catch (error) {
+				console.error(error.message);
+				socket.emit('error', error.message);
 			}
+
+			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status, playerId);
+			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 
 			// separate update, per socket
 			if (status === "finished") {
@@ -194,8 +173,33 @@ export default class SocketHandler {
 			}
 		})
 
+		socket.on('leaveGame', (gameId, playerId) => {
+			const game = this.#serverStore.games.get(gameId);
+
+			const removed = this.#gameService.removePlayer(game, playerId);
+
+			if (!removed) {
+				console.warn(`Tried to remove player ${playerId}, but they were not in game ${gameId}`);
+				return;
+			}
+
+
+			this.#io.to(gameId).emit("playerLeft", playerId);
+
+			this.leaveSocketRoom(socket, gameId);
+			this.removeListeners(socket);
+
+			// delete game if no players left
+			if (Object.keys(game.state.players).length === 0) {
+				this.#serverStore.games.delete(gameId);
+				console.log(`Game ${gameId} deleted because no players left`);
+				this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
+
+			}
+		})
+
 		if (!game.settings.private) {
-			this.#io.emit('updateAvailableGames', this.getPublicGameList());
+			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 		}
 	}
 
@@ -206,21 +210,6 @@ export default class SocketHandler {
 	removeListeners(socket) {
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
-	}
-
-	// todo possibly create a DTO for this?
-	getPublicGameList() {
-		return Array.from(this.#serverStore.games.entries())
-			// todo commented out for testing so all games can be seen on the list rather than selected games
-			//eslint-disable-next-line
-			// .filter(([_, game]) => !game.settings.private)
-			// .filter(([_, game]) => game.state.status === "waiting")
-			// .filter(([_, game]) => Object.keys(game.state.players).length < game.settings.maxPlayers)
-			.map(([id, game]) => ({
-				id: id,
-				settings: game.settings,
-				state: game.state,
-				// players: Object.keys(game.state.players).length,
-			}));
+		socket.removeAllListeners('leaveGame');
 	}
 }

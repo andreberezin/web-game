@@ -8,8 +8,9 @@ export default class ClientManager {
 	#gameFieldService
 	onGameEnd
 	#bulletService
+	#playerInputService
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService}) {
+	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService, playerInputService}) {
 		this.#gameService = gameService;
 		this.#gameInterfaceService = gameInterfaceService
 		this.#playerInterfaceService = playerInterfaceService
@@ -17,8 +18,9 @@ export default class ClientManager {
 		this.#socketHandler = socketHandler;
 		this.#gameFieldService = gameFieldService
 		this.#clientStore = clientStore;
-		this.onGameEnd = null;
 		this.#bulletService = bulletService;
+		this.#playerInputService = playerInputService;
+		this.onGameEnd = null;
 	}
 
 	get socketHandler() {
@@ -49,6 +51,10 @@ export default class ClientManager {
 				this.#gameFieldService.updateLobbyPlayersCount();
 			}
 
+			if (game.state.status === "paused") {
+				this.#gameFieldService.updatePauseTimer(game.state.pause.timeRemaining);
+			}
+
 			for (let bulletID in bullets) {
 				if (bulletID && bullets[bulletID] != null) {
 					this.#bulletService.updateBulletModel(timestamp, bullets[bulletID], bulletID);
@@ -56,7 +62,7 @@ export default class ClientManager {
 			}
 
 			// todo no need to check anymore?
-			if (store.games.get(store.gameId).state.status !== "finished") {
+			if (game.state.status !== "finished") {
 				for (let playerID in players) {
 					if (playerID && players[playerID] != null) {
 						this.#playerService.updatePlayerModel(timestamp, players[playerID], playerID);
@@ -101,18 +107,13 @@ export default class ClientManager {
 
 		this.#clientStore.myID = null;
 
-		this.#playerService.removeEventListeners();
+		this.#playerInputService.removeEventListeners();
 
 	}
 
 	gameCleanup(gameId) {
-		this.stopRenderLoop();
-		this.#playerService.removeEventListeners();
-		this.#socketHandler.cleanupGameListeners();
-		this.#gameFieldService.removeGameElements();
+		this.#gameService.leaveGame();
 		this.#clientStore.games.delete(gameId)
-		this.#clientStore.gameId = null;
-		if (this.onGameEnd) this.onGameEnd();
 	}
 
 	setupCleanup() {
