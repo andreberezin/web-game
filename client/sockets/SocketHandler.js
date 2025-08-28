@@ -248,7 +248,6 @@ export default class SocketHandler {
 			console.log("Player:", playerId, "left the game");
 		})
 
-
 		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
 			console.log("Game status changed: ", status, "by player: ", playerId);
 

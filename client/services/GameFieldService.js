@@ -108,8 +108,8 @@ export default class GameFieldService {
 		const pausedBy = this.createPausedBy();
 		const pauseTimer = this.createPauseTimer();
 
+		pauseOverlay.appendChild(pauseTimer);
 		pauseOverlay.appendChild(pausedBy);
-		// pauseOverlay.appendChild(pauseTimer);
 
 		return pauseOverlay;
 	}
@@ -134,12 +134,17 @@ export default class GameFieldService {
 		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
 	}
 
-	updatePauseOverlay(playerName, pauseTimeRemaining) {
+	updatePausedBy(gameId, playerId) {
+		const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;
+		console.log("Playername: " + playerName);
 		const pausedBy = document.getElementById('paused-by');
-		pausedBy.te
+		pausedBy.textContent = `Game paused by ${playerName}`;
+	}
 
+	updatePauseTimer(timeRemaining) {
 		const pauseTimer = document.getElementById('paused-timer');
 
+		pauseTimer.textContent = ((timeRemaining / 1000).toFixed(2));
 	}
 
 

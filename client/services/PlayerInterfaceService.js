@@ -17,19 +17,19 @@ export default class PlayerInterfaceService {
 		if (existingUI('player-ui')) return;
 
 		const playerUI = document.createElement("div");
-		playerUI.id= "player-ui" ;
+		playerUI.id = "player-ui";
 		playerUI.className = 'ui'
 
 		const playerUIleft = document.createElement("div");
-		playerUIleft.id= "player-ui-left" ;
+		playerUIleft.id = "player-ui-left";
 		playerUIleft.className = 'ui-part'
 
 		const playerUImid = document.createElement("div");
-		playerUImid.id= "player-ui-mid" ;
+		playerUImid.id = "player-ui-mid";
 		playerUImid.className = 'ui-part'
 
 		const playerUIright = document.createElement("div");
-		playerUIright.id= "player-ui-right" ;
+		playerUIright.id = "player-ui-right";
 		playerUIright.className = 'ui-part'
 
 		const game = document.getElementById("game");
@@ -39,24 +39,24 @@ export default class PlayerInterfaceService {
 			const element = uiPart === "respawnTimer" ? this.createRespawnTimer(uiPart) : (uiPart === "pause" || uiPart === "quit" ? this.createMenuButton(uiPart) : this.createElement(uiPart));
 
 			switch (uiPart) {
-				case "respawnTimer":
-					const gameInner = document.getElementById("game-inner");
-					gameInner.appendChild(element);
-					break;
-				case "hp":
-					playerUIleft.appendChild(element);
-					break;
-				case "lives":
-					playerUIleft.appendChild(element);
-					break;
-				case "pause":
-					playerUImid.appendChild(element);
-					break;
-				case "quit":
-					playerUImid.appendChild(element);
-					break;
-				default:
-					playerUIright.appendChild(element);
+			case "respawnTimer":
+				const gameInner = document.getElementById("game-inner");
+				gameInner.appendChild(element);
+				break;
+			case "hp":
+				playerUIleft.appendChild(element);
+				break;
+			case "lives":
+				playerUIleft.appendChild(element);
+				break;
+			case "pause":
+				playerUImid.appendChild(element);
+				break;
+			case "quit":
+				playerUImid.appendChild(element);
+				break;
+			default:
+				playerUIright.appendChild(element);
 			}
 		})
 
@@ -72,7 +72,7 @@ export default class PlayerInterfaceService {
 		if (!playerUI) return;
 
 		this.#uiParts.forEach(key => {
-			if(player[key] !== undefined) {
+			if (player[key] !== undefined) {
 				this.updateElement(key, player);
 			}
 		})
@@ -81,7 +81,7 @@ export default class PlayerInterfaceService {
 	createElement(type) {
 
 		const element = document.createElement("div");
-		element.id= `player-${type}`;
+		element.id = `player-${type}`;
 		element.className = 'ui-item';
 		element.innerHTML = `${type.toUpperCase()}: <span id="player-${type}-value" class='value'></span>`;
 
@@ -109,7 +109,7 @@ export default class PlayerInterfaceService {
 
 	createRespawnTimer(type) {
 		const element = document.createElement("div");
-		element.id= `player-${type}`;
+		element.id = `player-${type}`;
 		element.className = 'ui-item';
 		element.innerHTML = `<span id="player-${type}-value" class='value'></span>`;
 		element.hidden = true;
@@ -121,17 +121,23 @@ export default class PlayerInterfaceService {
 		const button = document.createElement('button');
 		button.id = type;
 
-		const myId = this.#clientStore.myId;
+		const store = this.#clientStore
+
+		const myId = store.myId;
+
+		const pauseCount = store.games.get(store.gameId).state.players[store.myId].pauses;
 
 		if (type === "pause") {
 			// button.innerHTML = `<i class="fas fa-pause"></i>`;
-			button.textContent = `PAUSE`;
+			button.textContent = `PAUSE(${pauseCount})`;
 
-			button.addEventListener('click', () => {
+			const emit = () => {
 				if (this.#clientStore.games.get(this.#clientStore.gameId).state.status === "started") {
 					this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "paused", myId)
 				}
-			})
+			}
+
+			button.addEventListener('click', emit)
 			// pause game
 		} else if (type === "quit") {
 			// button.innerHTML = `<i class="fas fa-stop"></i>`;
@@ -142,8 +148,35 @@ export default class PlayerInterfaceService {
 		return button;
 	}
 
-	togglePauseButton() {
+	togglePauseButton(gameId, playerId) {
+		// const pauseCount = this.#clientStore.games.get(gameId).state.players[playerId].pauses;
+		//
+		// if (pauseCount > 0) {
+			const button = document.getElementById('pause');
+			button.classList.toggle('enabled')
+		// }
+	}
+
+	updatePauseCounter(pauseCount) {
+		// const pauseCount = this.#clientStore.games.get(gameId).state.players[playerId].pauses - 1;
+
 		const button = document.getElementById('pause');
-		button.classList.toggle('enabled')
+		button.textContent = `PAUSE(${pauseCount})`;
+	}
+
+	disablePauseButton() {
+		const button = document.getElementById('pause');
+		if (!button) return;
+
+		button.disabled = true;        // built-in way to disable clicks
+		button.classList.remove('enabled'); // optional, for styling
+	}
+
+	enablePauseButton() {
+		const button = document.getElementById('pause');
+		if (!button) return;
+
+		button.disabled = false;
+		button.classList.add('enabled');
 	}
 }

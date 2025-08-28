@@ -98,6 +98,9 @@ export default class GameService {
 	}
 
 	updateGameStatus(gameId, status, playerId) {
+		const myId = this.#clientStore.myId;
+		const game = this.#clientStore.games.get(gameId);
+
 		switch (status) {
 		case "waiting":
 			break;
@@ -105,15 +108,32 @@ export default class GameService {
 			if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
 				this.startGame();
 			}
-			this.#playerInterfaceService.togglePauseButton(gameId, playerId);
+
+			// Always re-enable MY pause button if I still have pauses left
+			if (game.state.players[myId].pauses > 0) {
+				this.#playerInterfaceService.enablePauseButton();
+			}
+
 			this.#gameFieldService.togglePauseOverlay();
 			break;
 		case "paused":
 			this.pauseGame();
-			this.#playerInterfaceService.togglePauseButton(gameId, playerId);
 			this.#gameFieldService.togglePauseOverlay();
-			this.#gameFieldService.updatePausedBy(playerId, gameId);
-			this.#playerInterfaceService.updatePauseCounter(gameId, playerId);
+			this.#gameFieldService.updatePausedBy(gameId, playerId);
+
+			// Only decrement my pauses if *I* was the one who paused
+			if (playerId === myId) {
+				const pauseCount = game.state.players[myId].pauses - 1;
+				this.#playerInterfaceService.updatePauseCounter(pauseCount);
+
+				if (pauseCount <= 0) {
+					this.#playerInterfaceService.disablePauseButton();
+					console.log("pause disabled");
+				} else {
+					this.#playerInterfaceService.enablePauseButton();
+					console.log("pause still available");
+				}
+			}
 			break;
 		case "finished":
 			this.endGame(gameId);
