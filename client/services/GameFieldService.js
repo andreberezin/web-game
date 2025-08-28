@@ -84,7 +84,10 @@ export default class GameFieldService {
 
 	removeGameElements() {
 		const game = document.getElementById('game');
-		// if (!game) return;
+		if (!game) {
+			console.warn('Game element does not exist. Cannot remove.')
+			return;
+		}
 		game.remove();
 	}
 
@@ -106,20 +109,24 @@ export default class GameFieldService {
 		const pauseTimer = this.createPauseTimer();
 
 		pauseOverlay.appendChild(pausedBy);
-		pauseOverlay.appendChild(pauseTimer);
+		// pauseOverlay.appendChild(pauseTimer);
 
 		return pauseOverlay;
 	}
 
 	createPausedBy() {
 		const pausedBy = document.createElement('div');
-		pausedBy.te
+		pausedBy.id = 'paused-by';
+		pausedBy.textContent = 'Game paused by'
 
 		return pausedBy;
 	}
 
 	createPauseTimer() {
+		const pauseTimer = document.createElement('div');
+		pauseTimer.id = 'paused-timer';
 
+		return pauseTimer;
 	}
 
 	togglePauseOverlay() {
@@ -127,7 +134,11 @@ export default class GameFieldService {
 		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
 	}
 
-	updatePauseOverlay() {
+	updatePauseOverlay(playerName, pauseTimeRemaining) {
+		const pausedBy = document.getElementById('paused-by');
+		pausedBy.te
+
+		const pauseTimer = document.getElementById('paused-timer');
 
 	}
 
