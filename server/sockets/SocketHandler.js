@@ -45,6 +45,13 @@ export default class SocketHandler {
 			})
 
 			socket.on('createGame', (hostId, playerName, settings) => {
+
+				if (this.#serverStore.games.get(hostId)) {
+					console.error(`Game with id: ${hostId} already exists`);
+					socket.emit('error', "Game already exists");
+					return;
+				}
+
 				const gameId = hostId;
 
 				this.#gamesManager.createGame(socket, gameId, settings);
