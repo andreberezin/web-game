@@ -23,8 +23,6 @@ export default class GamesManager {
 				this.updateGame(game, currentTime);
 				this.broadcastGameState(game)
 				setTimeout(gameLoop, store.TICK_RATE);
-			} else {
-				throw new Error(`Game ${gameId} not found`);
 			}
 		}
 		gameLoop();

@@ -12,14 +12,6 @@ export default class SocketHandler {
 		this.#serverStore = serverStore;
 	}
 
-	set io(io) {
-		this.#io = io;
-	}
-
-	get io() {
-		return this.#io;
-	}
-
 	setGamesManager(gamesManager) {
 		this.#gamesManager = gamesManager;
 	}
