@@ -24,9 +24,9 @@ export default class PlayerInputService {
 
 		//console.log("Adding event listeners");
 
-		this.#keydownHandler = (event) => this.handleKeyPress(event, playerId);
-		this.#keyupHandler = (event) => this.handleKeyPress(event, playerId);
-		this.#mouseClickHandler = (event) => this.handleMouseClicking(event, playerId);
+		this.#keydownHandler = (event) => this.handleKeyPress(event);
+		this.#keyupHandler = (event) => this.handleKeyPress(event);
+		this.#mouseClickHandler = (event) => this.handleMouseClicking(event);
 		this.#mouseMoveHandler = (event) => this.handleMouseMove(event);
 
 		window.addEventListener("keydown", this.#keydownHandler);
@@ -129,8 +129,9 @@ export default class PlayerInputService {
 		}
 	}
 
-	handleMouseClicking(event, playerId) {
+	handleMouseClicking(event) {
 		const store = this.#clientStore;
+		const playerId = store.myId;
 		const player = store.games.get(store.gameId).state.players[playerId];
 
 		this.handleMouseClick(event, player);
@@ -171,22 +172,45 @@ export default class PlayerInputService {
 		this.#mouseClickHandler = null;
 	}
 
-	handleKeyPress(event, playerId) {
-		//if (event.type === 'keydown' && event.repeat) return;
-		//if (event.repeat) return;
+	handleKeyPress(event) {
 		const currentGame = this.#clientStore.games.get(this.#clientStore.gameId);
 
-		if (currentGame.state.status === "started") {
-			const player = currentGame.state.players[playerId];
-			const socket = this.#socketHandler.socket
-			player.shootingAngle = this.calculateShootingAngle(player.pos, player.size);
+		if (!currentGame || currentGame.state.status !== "started") return;
 
-			socket.emit('updateMyPlayerInput', {
-				// playerId: playerId,
-				key: event.key,
-				type: event.type,
-				shootingAngle: player.shootingAngle
-			})
+		// const player = currentGame.state.players[playerId];
+		const myId = this.#clientStore.myId;
+		const player = currentGame.state.players[myId];
+		if (!player) {
+			console.warn(`Player ${myId} not found in game, ignoring input`);
+			return;
 		}
+
+		const socket = this.#socketHandler.socket;
+		player.shootingAngle = this.calculateShootingAngle(player.pos, player.size);
+
+		socket.emit('updateMyPlayerInput', {
+			key: event.key,
+			type: event.type,
+			shootingAngle: player.shootingAngle
+		});
 	}
+
+	// handleKeyPress(event, playerId) {
+	// 	//if (event.type === 'keydown' && event.repeat) return;
+	// 	//if (event.repeat) return;
+	// 	const currentGame = this.#clientStore.games.get(this.#clientStore.gameId);
+	//
+	// 	if (currentGame.state.status === "started") {
+	// 		const player = currentGame.state.players[playerId];
+	// 		const socket = this.#socketHandler.socket
+	// 		player.shootingAngle = this.calculateShootingAngle(player.pos, player.size);
+	//
+	// 		socket.emit('updateMyPlayerInput', {
+	// 			// playerId: playerId,
+	// 			key: event.key,
+	// 			type: event.type,
+	// 			shootingAngle: player.shootingAngle
+	// 		})
+	// 	}
+	// }
 }
