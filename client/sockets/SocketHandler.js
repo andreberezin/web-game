@@ -240,12 +240,18 @@ export default class SocketHandler {
 
 		})
 
-		this.on('playerJoined', (playerId) => {
+		this.on('playerJoined', (playerId, playerName) => {
 			console.log("Player:", playerId, "joined the game");
+			const text = `${playerName} joined`;
+			this.#gameFieldService.showNotification(text);
 		})
 
 		this.on('playerLeft', (playerId) => {
 			console.log("Player:", playerId, "left the game");
+
+			const playerName = this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId].name;
+			const text = `${playerName} left`;
+			this.#gameFieldService.showNotification(text);
 
 			if (playerId === this.#clientStore.myId) {
 

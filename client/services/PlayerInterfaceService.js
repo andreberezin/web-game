@@ -128,7 +128,6 @@ export default class PlayerInterfaceService {
 		const pauseCount = store.games.get(store.gameId).state.players[store.myId].pauses;
 
 		if (type === "pause") {
-			// button.innerHTML = `<i class="fas fa-pause"></i>`;
 			button.textContent = `PAUSE(${pauseCount})`;
 
 			const emit = () => {
@@ -138,17 +137,15 @@ export default class PlayerInterfaceService {
 			}
 
 			button.addEventListener('click', emit)
-			// pause game
 		} else if (type === "quit") {
 			// button.innerHTML = `<i class="fas fa-stop"></i>`;
 			button.textContent = `QUIT`;
 			button.classList.add('enabled');
 
 			button.addEventListener('click', () => {
-				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId)
+				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId);
 			})
 
-			// quite game
 		}
 		return button;
 	}
