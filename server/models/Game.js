@@ -11,7 +11,7 @@ export default class Game {
 		powerups: {},
 		pause: {
 			startTime: null,
-			duration: 1000,
+			duration: 10000,
 			timeRemaining: 0,
 		}
 	};

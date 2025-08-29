@@ -51,8 +51,6 @@ export default class GameService {
     }
 
     updateGameStatus(gameId, status, playerId, io) {
-        debugger
-
         const game = this.#serverStore.games.get(gameId);
         if (!game) {
             throw new Error(`Game ${gameId} not found`);
@@ -126,11 +124,13 @@ export default class GameService {
             const state = game.state;
             const pause = state.pause;
 
+            const currentGame = this.#serverStore.games.get(gameId);
+
             const elapsed = Date.now() - pause.startTime;
             pause.timeRemaining = Math.max(0, pause.duration - elapsed);
             console.log("Pause time remaining:", pause.timeRemaining);
 
-            if (pause.timeRemaining > 0 && state.status === "paused") {
+            if (pause.timeRemaining > 0 && state.status === "paused" && currentGame) {
                 setTimeout(pauseCountdown, 10)
 
             } else {

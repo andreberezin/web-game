@@ -107,11 +107,24 @@ export default class GameFieldService {
 
 		const pausedBy = this.createPausedBy();
 		const pauseTimer = this.createPauseTimer();
+		const resume = this.createResumeButton();
 
 		pauseOverlay.appendChild(pauseTimer);
 		pauseOverlay.appendChild(pausedBy);
+		pauseOverlay.appendChild(resume);
 
 		return pauseOverlay;
+	}
+
+	createResumeButton() {
+		const button = document.createElement('button');
+		button.id = 'resume';
+		button.textContent = 'Resume';
+		button.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId);
+		})
+
+		return button;
 	}
 
 	createPausedBy() {
@@ -130,6 +143,7 @@ export default class GameFieldService {
 	}
 
 	togglePauseOverlay() {
+		console.log("toggling pause overlay");
 		const pauseOverlay = document.getElementById('paused');
 		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
 	}
@@ -143,6 +157,7 @@ export default class GameFieldService {
 
 	updatePauseTimer(timeRemaining) {
 		const pauseTimer = document.getElementById('paused-timer');
+		if (!pauseTimer) return;
 
 		pauseTimer.textContent = ((timeRemaining / 1000).toFixed(2));
 	}
