@@ -71,6 +71,7 @@ export default class GameFieldService {
 		const lobbyOverlay = this.createLobbyOverlay();
 		const scoreboardOverlay = this.createScoreboardOverlay();
 		const pauseOverlay = this.createPauseOverlay();
+		const notification = this.createNotification();
 
 		root.append(game);
 		game.append(gameField);
@@ -78,6 +79,7 @@ export default class GameFieldService {
 		gameField.append(lobbyOverlay);
 		gameField.append(scoreboardOverlay);
 		gameField.append(pauseOverlay);
+		gameField.append(notification);
 
 		this.generateWalls();
 	}
@@ -105,12 +107,12 @@ export default class GameFieldService {
 		pauseOverlay.id = 'paused';
 		pauseOverlay.classList.add('overlay');
 
-		const pausedBy = this.createPausedBy();
+		// const pausedBy = this.createPausedBy();
 		const pauseTimer = this.createPauseTimer();
 		const resume = this.createResumeButton();
 
 		pauseOverlay.appendChild(pauseTimer);
-		pauseOverlay.appendChild(pausedBy);
+		// pauseOverlay.appendChild(pausedBy);
 		pauseOverlay.appendChild(resume);
 
 		return pauseOverlay;
@@ -177,6 +179,23 @@ export default class GameFieldService {
 	showScoreboard() {
 		const scoreboard = document.getElementById('scoreboard')
 		scoreboard.style.display = 'flex'
+	}
+
+	createNotification() {
+		const notification = document.createElement('div');
+		notification.id = 'notification';
+		return notification;
+	}
+
+	showNotification(text) {
+		const notification = document.getElementById('notification');
+		notification.textContent = text;
+		notification.style.display = 'flex';
+
+		setTimeout(() => {
+			notification.style.display = 'none';
+			notification.textContent = "";
+		}, 3000)
 	}
 
 	// instructions overlay

@@ -8,6 +8,7 @@ import '../styles/powerup.css'
 import '../styles/userInterfaces.scss'
 import '../styles/error.scss'
 import '../styles/wallTile.scss'
+import '../styles/notifcation.scss'
 import {Menu} from '../components/menu/Menu.jsx';
 import {useEffect, useRef, useState} from 'react';
 import {createClientManager} from './createClientManager.js';

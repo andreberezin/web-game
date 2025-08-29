@@ -122,12 +122,22 @@ export default class GameService {
 					this.#playerInterfaceService.enablePauseButton();
 				}
 
+				if (game.state.status === "paused") {
+					const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;
+					const text = `Game resumed by ${playerName}`;
+					this.#gameFieldService.showNotification(text);
+				}
+
 				this.#gameFieldService.togglePauseOverlay();
 				break;
 			case "paused":
 				this.pauseGame();
 				this.#gameFieldService.togglePauseOverlay();
-				this.#gameFieldService.updatePausedBy(gameId, playerId);
+				// this.#gameFieldService.updatePausedBy(gameId, playerId);
+
+				const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;
+				const text = `Game paused by ${playerName}`;
+				this.#gameFieldService.showNotification(text);
 
 				// Only decrement my pauses if *I* was the one who paused
 				if (playerId === myId) {
