@@ -159,9 +159,18 @@ export default class GameFieldService {
 		return scoreboard;
 	}
 
-	showScoreboard() {
+	showScoreboard(playerId, gameId) {
+		const game = this.#clientStore.games.get(gameId);
+		const player = game.state.players[playerId];
 		const scoreboard = document.getElementById('scoreboard')
+		console.log("scoreboard:", scoreboard);
+		console.log("scoreboard.style:", scoreboard.style);
 		scoreboard.style.display = 'flex'
+		if (playerId === null) {
+			scoreboard.textContent = (`The game is a draw!`);
+		} else if (playerId) {
+			scoreboard.textContent = (`Player ${player.name} has won the game!`);
+		}
 	}
 
 	// instructions overlay
