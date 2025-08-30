@@ -83,9 +83,43 @@ export default class GameService {
                 player.deductPause();
                 console.log("player pauses:", player.pauses);
                 break;
-            case "finished":
-                this.finishGame(gameId);
+            case "finished": {
+                let playersWhoHaventLost = [];
+
+                for (const playerID in game.state.players) {
+                    const player = game.state.players[playerID];
+
+                    if (player.lives > 0) {
+                        playersWhoHaventLost.push(player);
+                    }
+                }
+
+                if (playersWhoHaventLost.length > 0) {
+                    let mostLives = 0;
+                    let playersWithMostLives = [];
+                    for (const player of playersWhoHaventLost) {
+                        if (player.lives > mostLives) {
+                            playersWithMostLives = [];
+                            playersWithMostLives.push(player);
+                            mostLives = player.lives;
+                        } else if (player.lives === mostLives) {
+                            playersWithMostLives.push(player);
+                        }
+                    }
+                    let playerWhoWon;
+                    if (playersWithMostLives.length === 1) {
+                        playerWhoWon = playersWithMostLives[0];
+                        console.log("%s player WON!", playerWhoWon.name);
+                        this.#io.emit('declareWinner', game.id, playerWhoWon);
+                    } else if (playersWithMostLives.length > 1) {
+                        console.log("The game is a draw.");
+                        this.#io.emit('declareWinner', game.id, null);
+                    }
+                }
+
+                this.finishGame(game.id);
                 break;
+                }
             default:
                 console.log("default: ", status);
             }
@@ -133,33 +167,6 @@ export default class GameService {
             if (player.lives > 0) {
                 playersWhoHaventLost.push(player);
             }
-        }
-
-        if (game.state.status === "finished" && playersWhoHaventLost.length > 0) {
-            let mostLives = 0;
-            let playersWithMostLives = [];
-            for (const player of playersWhoHaventLost) {
-                if (player.lives > mostLives) {
-                    playersWithMostLives = [];
-                    playersWithMostLives.push(player);
-                    mostLives = player.lives;
-                } else if (player.lives === mostLives) {
-                    playersWithMostLives.push(player);
-                }
-            }
-            let playerWhoWon;
-            if (playersWithMostLives.length === 1) {
-                playerWhoWon = playersWithMostLives[0];
-                console.log("%s player WON!", playerWhoWon.name);
-                this.#io.emit('declareWinner', game.id, playerWhoWon);
-            } else if (playersWithMostLives.length > 1) {
-                console.log("The game is a draw.");
-                this.#io.emit('declareWinner', game.id, null);
-            }
-            game.state.status = "finished";
-            this.finishGame(game.id);
-        } else if (game.state.status === "finished") {
-            return;
         }
 
         if (playersWhoHaventLost.length === 1) {
