@@ -11,6 +11,7 @@ import GameFieldService from '../services/GameFieldService.js';
 import clientStore from '../stores/clientStore.js';
 import {BulletService} from '../services/BulletService.js';
 import {PowerupService} from '../services/PowerupService.js';
+import AudioService from '../services/AudioService.js';
 
 const container = createContainer();
 
@@ -27,6 +28,7 @@ container.register({
 	socketHandler: asClass(SocketHandler).singleton(),
 	clientManager: asClass(ClientManager).singleton(),
 	clientStore: asClass(clientStore).singleton(),
+	audioService: asClass(AudioService).singleton()
 });
 
 
