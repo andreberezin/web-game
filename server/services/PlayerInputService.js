@@ -187,7 +187,7 @@ export default class PlayerInputService {
         for (let playerID in deadPlayers) {
             const player = players[playerID];
 
-                if (player.canRespawn(currentTime)) {
+                if (player.lives > 0 && player.canRespawn(currentTime)) {
                     player.hp = 100;
                     player.status.alive = true;
                     player.pos = { x: 100, y: 100 };

@@ -25,7 +25,7 @@ function App() {
         private: false,
         maxPlayers: 4,
         mapType: "empty",
-        duration: 600000,
+        duration: 15000,
     });
 
     // temporary to render the game without the menu

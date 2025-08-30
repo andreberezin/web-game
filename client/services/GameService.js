@@ -84,11 +84,11 @@ export default class GameService {
 
 	}
 
-	endGame(gameId) {
-		this.#gameFieldService.showScoreboard();
+	endGame(gameId, playerId) {
+		this.#gameFieldService.showScoreboard(playerId, gameId);
 		setTimeout(() => {
 			this.#clientManager.gameCleanup(gameId);
-		}, 1000)
+		}, 120000)
 	}
 
 	leaveGame() {
@@ -143,7 +143,7 @@ export default class GameService {
 			}
 			break;
 		case "finished":
-			this.endGame(gameId);
+			this.endGame(gameId, playerId);
 			break;
 		default:
 			console.log("default: ", status);
