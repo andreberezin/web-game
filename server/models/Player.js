@@ -70,10 +70,10 @@ export default class Player {
     //     timer: null,
     // }
 
-	constructor(id, name, playerService) {
+	constructor(id, name, playerService, spawnPos) {
         this.id = id;
         this.name = name;
-        this.pos = this.spawnPos;
+        this.pos = spawnPos;
         this.playerService = playerService;
 	}
 
