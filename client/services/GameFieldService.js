@@ -224,17 +224,20 @@ export default class GameFieldService {
 
 	updateWinnerAndScores(playerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
-		const player = game.state.players[playerId];
-
 		const winner = document.getElementById('winner');
 		const scores = document.getElementById('scores');
 
+		const livesDisplay = document.getElementById('lives-display');
+		if (livesDisplay) livesDisplay.style.display = 'none';
+
 		if (playerId === null) {
-			winner.innerHTML = (`The game is a draw!`);
-			scores.innerHTML = ``;
+			winner.innerHTML = 'The game is a draw!';
+			scores.innerHTML = this.getFinalScores(game.state.players);
 		} else if (playerId) {
+			const player = game.state.players[playerId];
+
 			if (playerId === this.#clientStore.myId) {
-				winner.textContent = `You won the game!`;
+				winner.textContent = 'You won the game!';
 			} else {
 				winner.textContent = `${player.name} has won the game!`;
 			}
@@ -242,8 +245,18 @@ export default class GameFieldService {
 			const trophy = document.createElement("i");
 			trophy.classList.add("fas", "fa-trophy");
 			winner.appendChild(trophy);
-			scores.innerHTML = ``;
+
+			scores.innerHTML = this.getFinalScores(game.state.players);
 		}
+	}
+
+	getFinalScores(players) {
+		const sorted = Object.values(players).sort((a, b) => b.lives - a.lives);
+		let html = '<h3>Final Scores:</h3>';
+		sorted.forEach((player, i) => {
+			html += `<div style="margin: 5px 0; ${i === 0 ? 'font-weight: bold; color: gold;' : ''}">${i + 1}. ${player.name}: ${player.lives} lives</div>`;
+		});
+		return html;
 	}
 
 	createNotification() {
