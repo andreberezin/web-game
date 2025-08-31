@@ -7,7 +7,7 @@ export function CreateGame({clientManager, setView}) {
 		private: false,
 		maxPlayers: 4,
 		mapType: "empty",
-		duration: 1000,
+		duration: 60000,
 	});
 	const [name, setName] = useState(null)
 
@@ -74,9 +74,9 @@ export function CreateGame({clientManager, setView}) {
 							gameSettings.current.duration = e.target.value;
 						}}
 					>
-						<option value="1000">1 second</option>
 						<option value="60000">1 minute</option>
 						<option value="120000">2 minutes</option>
+						<option value="1000">1 second</option>
 					</select>
 				</label>
 
