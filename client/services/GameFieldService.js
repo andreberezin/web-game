@@ -208,24 +208,41 @@ export default class GameFieldService {
 		const scores = document.createElement('div');
 		scores.id = 'scores';
 
+		scoreboard.appendChild(winner);
+		scoreboard.appendChild(scores);
 
 		return scoreboard;
 	}
 
 	showScoreboard(playerId, gameId) {
+		const scoreboard = document.getElementById('scoreboard');
+
+		this.updateWinnerAndScores(playerId, gameId);
+
+		scoreboard.style.display = 'flex'
+	}
+
+	updateWinnerAndScores(playerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
 		const player = game.state.players[playerId];
-		const scoreboard = document.getElementById('scoreboard');
+
 		const winner = document.getElementById('winner');
 		const scores = document.getElementById('scores');
 
-		scoreboard.style.display = 'flex'
 		if (playerId === null) {
 			winner.innerHTML = (`The game is a draw!`);
-			scores.innerHTML = '';
+			scores.innerHTML = ``;
 		} else if (playerId) {
-			winner.innerHTML = (`Player ${player.name} has won the game! <i class="fas fa-trophy"></i>`);
-			scores.innerHTML = '';
+			if (playerId === this.#clientStore.myId) {
+				winner.textContent = `You won the game!`;
+			} else {
+				winner.textContent = `${player.name} has won the game!`;
+			}
+
+			const trophy = document.createElement("i");
+			trophy.classList.add("fas", "fa-trophy");
+			winner.appendChild(trophy);
+			scores.innerHTML = ``;
 		}
 	}
 
