@@ -138,6 +138,7 @@ export default class GameService {
             player.lives = 3;
             player.pos = { x: 100, y: 100 }; // or random spawn
             player.pauses = 2; // reset pause count
+            player.status.alive = true;
         }
 
         // Reset bullets, powerups, etc.
