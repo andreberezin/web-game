@@ -74,6 +74,9 @@ export default class GameService {
 
             switch (status) {
             case "waiting":
+                if (game.state.status === "paused") {
+                    this.restartGame(gameId);
+                }
                 break;
             case "started":
                 this.startGame(game);
@@ -153,9 +156,10 @@ export default class GameService {
     }
 
     finishGame(gameId) {
+        const game = this.#serverStore.games.get(gameId);
         setTimeout(() => {
             this.#gamesManager.deleteGame(gameId);
-        }, 120000)
+        }, game.state.pause.duration)
     }
 
     checkForWinner(game) {
@@ -178,26 +182,81 @@ export default class GameService {
         }
     }
 
+    restartGame(gameId) {
+        const game = this.#serverStore.games.get(gameId);
+        if (!game) return;
+
+        if (game.pauseTimeout) {
+            clearTimeout(game.pauseTimeout);
+            game.pauseTimeout = null;
+        }
+
+        // Reset players
+        for (const playerId in game.state.players) {
+            const player = game.state.players[playerId];
+            player.hp = 100;
+            player.lives = 3;
+            player.pos = { x: 100, y: 100 }; // or random spawn
+            player.pauses = 2; // reset pause count
+            player.status.alive = true;
+        }
+
+        // Reset bullets, powerups, etc.
+        game.state.status = "waiting";
+        game.state.pause = { startTime: null, duration: 10000, timeRemaining: 0 };
+        game.state.bullets = {};
+        game.state.powerups = {};
+        game.state.deadPlayers = {};
+        game.state.timeRemaining = game.settings.duration;
+        game.state.startTime = null;
+
+        console.log(`Game ${gameId} restarted`);
+    }
+
+    // handlePauseTimer(game, io, gameId) {
+    //     const pauseCountdown = () => {
+    //         const state = game.state;
+    //         const pause = state.pause;
+    //
+    //         const currentGame = this.#serverStore.games.get(gameId);
+    //
+    //         const elapsed = Date.now() - pause.startTime;
+    //         pause.timeRemaining = Math.max(0, pause.duration - elapsed);
+    //         console.log("Pause time remaining:", pause.timeRemaining);
+    //
+    //         if (pause.timeRemaining > 0 && state.status === "paused" && currentGame) {
+    //             setTimeout(pauseCountdown, 10)
+    //
+    //         } else {
+    //             console.log("Game pause has ended");
+    //             this.resumeGame(game, io, gameId);
+    //         }
+    //     }
+    //
+    //     setTimeout(pauseCountdown, 10);
+    // }
+
     handlePauseTimer(game, io, gameId) {
         const pauseCountdown = () => {
             const state = game.state;
             const pause = state.pause;
 
+            const currentGame = this.#serverStore.games.get(gameId);
+            if (!currentGame) return;
+
             const elapsed = Date.now() - pause.startTime;
             pause.timeRemaining = Math.max(0, pause.duration - elapsed);
-            console.log("Pause time remaining:", pause.timeRemaining);
 
             if (pause.timeRemaining > 0 && state.status === "paused") {
-                setTimeout(pauseCountdown, 10)
-
+                game.pauseTimeout = setTimeout(pauseCountdown, 10);
             } else {
                 console.log("Game pause has ended");
                 this.resumeGame(game, io, gameId);
             }
-        }
+        };
 
-        setTimeout(pauseCountdown, 10);
-    }
+        game.pauseTimeout = setTimeout(pauseCountdown, 10);
+    }r
 
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
     handleGameTimer(game) {

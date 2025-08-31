@@ -90,6 +90,10 @@ export default class SocketHandler {
 
 		this.on('createGameSuccess', (gameId) => {
 			console.log("Game created: ", gameId);
+
+			if (!this.#clientStore.myId) {
+				this.#clientStore.myId = gameId;
+			}
 		})
 
 		this.on('joinGameSuccess', (gameId, state, settings, myId) => {
@@ -99,6 +103,7 @@ export default class SocketHandler {
 				this.#externalListeners["joinGameSuccess"]();
 			}
 			this.#clientStore.gameId = gameId;
+			this.#clientStore.myId = myId;
 
 			// if the game object is not found in the Map, then create the game object
 			if (!this.#clientStore.games.has(gameId)) {
@@ -130,9 +135,8 @@ export default class SocketHandler {
 				currentGameState.timeRemaining = updatedGameState.timeRemaining;
 
 				// handle timer end
-				if (currentGameState.timeRemaining <= 0 && currentGameState.status !== "finished") {
+				if (currentGameState.timeRemaining <= 0 && currentGameState.status === "started") {
 					// todo goes here 5 times
-					console.log("here");
 					socket.emit('gameStatusChange', gameId, "finished")
 					return;
 				}
@@ -242,12 +246,19 @@ export default class SocketHandler {
 
 		})
 
-		this.on('playerJoined', (playerId) => {
+		this.on('playerJoined', (playerId, playerName) => {
 			console.log("Player:", playerId, "joined the game");
+			const text = `${playerName} joined`;
+			this.#gameFieldService.showNotification(text);
+			this.#gameFieldService.enableStartButton();
 		})
 
 		this.on('playerLeft', (playerId) => {
 			console.log("Player:", playerId, "left the game");
+
+			const playerName = this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId].name;
+			const text = `${playerName} left`;
+			this.#gameFieldService.showNotification(text);
 
 			if (playerId === this.#clientStore.myId) {
 
@@ -298,6 +309,7 @@ export default class SocketHandler {
 		this.on("playerJoined", null);
 		this.on("playerLeft", null);
 		this.on("gameStatusChangeSuccess", null);
+		this.on("declareWinner", null);
 		this.on("powerupNotification", null);
 	}
 }

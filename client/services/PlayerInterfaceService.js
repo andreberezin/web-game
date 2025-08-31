@@ -85,10 +85,6 @@ export default class PlayerInterfaceService {
 		element.className = 'ui-item';
 		element.innerHTML = `${type.toUpperCase()}: <span id="player-${type}-value" class='value'></span>`;
 
-		if (type === "deathCooldown") {
-			element.hidden = true;
-		}
-
 		return element;
 	}
 
@@ -100,7 +96,7 @@ export default class PlayerInterfaceService {
 		if (!element || !elementValue) return;
 
 		if (key === "respawnTimer") {
-			element.hidden = player.status.alive;
+			player.status.alive ? element.style.display = "none" : element.style.display = "flex";
 			elementValue.textContent = (value / 1000).toFixed(2);
 		} else {
 			elementValue.textContent = value
@@ -112,9 +108,14 @@ export default class PlayerInterfaceService {
 		element.id = `player-${type}`;
 		element.className = 'ui-item';
 		element.innerHTML = `<span id="player-${type}-value" class='value'></span>`;
-		element.hidden = true;
+		element.style.display = "flex";
 
 		return element;
+	}
+
+	hideRespawnTimer() {
+		const element = document.getElementById("player-respawnTimer");
+		element.style.display = "none";
 	}
 
 	createMenuButton(type) {
@@ -128,7 +129,6 @@ export default class PlayerInterfaceService {
 		const pauseCount = store.games.get(store.gameId).state.players[store.myId].pauses;
 
 		if (type === "pause") {
-			// button.innerHTML = `<i class="fas fa-pause"></i>`;
 			button.textContent = `PAUSE(${pauseCount})`;
 
 			const emit = () => {
@@ -138,24 +138,20 @@ export default class PlayerInterfaceService {
 			}
 
 			button.addEventListener('click', emit)
-			// pause game
 		} else if (type === "quit") {
 			// button.innerHTML = `<i class="fas fa-stop"></i>`;
 			button.textContent = `QUIT`;
 			button.classList.add('enabled');
 
 			button.addEventListener('click', () => {
-				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId)
+				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId);
 			})
 
-			// quite game
 		}
 		return button;
 	}
 
 	updatePauseCounter(pauseCount) {
-		// const pauseCount = this.#clientStore.games.get(gameId).state.players[playerId].pauses - 1;
-
 		const button = document.getElementById('pause');
 		button.textContent = `PAUSE(${pauseCount})`;
 	}
