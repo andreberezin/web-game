@@ -21,6 +21,7 @@ $player-colors: (
   //background-color: var(--player-color);
   background-color: transparent;
   aspect-ratio: 1/1;
+	z-index: 15;
 
   .player-inner {
 	width: 100%;

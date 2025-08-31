@@ -7,6 +7,7 @@ import '../styles/bullet.css'
 import '../styles/powerup.css'
 import '../styles/userInterfaces.scss'
 import '../styles/error.scss'
+import '../styles/notifications.css'
 import '../styles/wallTile.scss'
 import '../styles/notifcation.scss'
 import {Menu} from '../components/menu/Menu.jsx';

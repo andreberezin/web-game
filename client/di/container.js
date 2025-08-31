@@ -12,6 +12,7 @@ import clientStore from '../stores/clientStore.js';
 import {BulletService} from '../services/BulletService.js';
 import {PowerupService} from '../services/PowerupService.js';
 import AudioService from '../services/AudioService.js';
+import {NotificationService} from '../services/NotificationService.js';
 
 const container = createContainer();
 
@@ -28,7 +29,8 @@ container.register({
 	socketHandler: asClass(SocketHandler).singleton(),
 	clientManager: asClass(ClientManager).singleton(),
 	clientStore: asClass(clientStore).singleton(),
-	audioService: asClass(AudioService).singleton()
+	audioService: asClass(AudioService).singleton(),
+	notificationService: asClass(NotificationService).singleton()
 });
 
 

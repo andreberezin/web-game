@@ -45,7 +45,7 @@ export default class GameService {
                 this.#powerupService.updatePlayerPowerups(player, currentTime);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
-                this.checkForCollisions(player, currentTime, game.state);
+                this.checkForCollisions(player, currentTime, game.state, game);
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
@@ -173,7 +173,7 @@ export default class GameService {
             }
         }
 
-        if (playersWhoHaventLost.length === 1) {
+        if (game.playersInLobby > 1 && playersWhoHaventLost.length === 1) {
             const playerWhoWon = playersWhoHaventLost[0];
             console.log("%s player WON!", playerWhoWon.name);
             this.#io.emit('declareWinner', game.id, playerWhoWon);
@@ -279,7 +279,7 @@ export default class GameService {
         setTimeout(gameCountdown, 10);
     }
 
-    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
+    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}, game) {
         const bulletsToDelete = [];
         const powerupsToDelete = [];
 
@@ -309,6 +309,12 @@ export default class GameService {
 
                     if (powerup.pos.x + 10 > player.pos.x && powerup.pos.x < player.pos.x + 20 && powerup.pos.y + 10 > player.pos.y && powerup.pos.y < player.pos.y + 20) {
                         powerup.givePowerup(player, currentTime);
+                        this.#io.to(player.id).emit('powerupNotification', {
+                            playerId: player.id,
+                            powerupType: powerup.typeOfPowerup,
+                            powerupId: powerupID,
+                            gameId: game.id
+                        });
                         powerupsToDelete.push(powerupID);
                     }
                 }
