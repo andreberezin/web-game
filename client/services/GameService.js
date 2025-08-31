@@ -84,11 +84,27 @@ export default class GameService {
 
 	}
 
+	restartGame(player) {
+		// reset local visuals
+		// this.#gameFieldService.removeGameElements();
+		// this.#gameFieldService.createElement(this.#clientStore.games.get(this.#clientStore.gameId).settings.mapType);
+		// add game ui
+		// add player ui
+		this.#gameFieldService.hidePauseOverlay();
+		const text = `${player.name} restarted the game`
+		this.#gameFieldService.showNotification(text);
+		this.#gameFieldService.showLobby();
+
+		// todo use actual player.pauses value. Currently hardcoded 2 because player.pauses isn't reset at this point yet
+		this.#playerInterfaceService.updatePauseCounter(2);
+	}
+
 	endGame(gameId, playerId) {
 		this.#gameFieldService.showScoreboard(playerId, gameId);
+		const game = this.#clientStore.games.get(gameId);
 		setTimeout(() => {
 			this.#clientManager.gameCleanup(gameId);
-		}, 120000)
+		}, game.state.pause.duration)
 	}
 
 	leaveGame() {
@@ -108,48 +124,74 @@ export default class GameService {
 		const myId = this.#clientStore.myId;
 		const game = this.#clientStore.games.get(gameId);
 
-		switch (status) {
-		case "waiting":
-			break;
-		case "started":
-			if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
-				this.startGame();
-			}
-
-			// Always re-enable MY pause button if I still have pauses left
-			if (game.state.players[myId].pauses > 0) {
-				this.#playerInterfaceService.enablePauseButton();
-			}
-
-			this.#gameFieldService.togglePauseOverlay();
-			break;
-		case "paused":
-			this.pauseGame();
-			this.#gameFieldService.togglePauseOverlay();
-			this.#gameFieldService.updatePausedBy(gameId, playerId);
-
-			// Only decrement my pauses if *I* was the one who paused
-			if (playerId === myId) {
-				const pauseCount = game.state.players[myId].pauses - 1;
-				this.#playerInterfaceService.updatePauseCounter(pauseCount);
-
-				if (pauseCount <= 0) {
-					this.#playerInterfaceService.disablePauseButton();
-					console.log("pause disabled");
-				} else {
-					this.#playerInterfaceService.enablePauseButton();
-					console.log("pause still available");
+		if (status !== game.state.status) {
+			switch (status) {
+			case "waiting":
+				if (game.state.status === "paused") {
+					this.restartGame(game.state.players[playerId]);
 				}
+				break;
+			case "started":
+				if (game.state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
+					this.startGame();
+					this.#gameFieldService.hidePauseOverlay();
+				}
+
+				// Always re-enable MY pause button if I still have pauses left
+				if (game.state.players[myId].pauses > 0) {
+					this.#playerInterfaceService.enablePauseButton();
+				}
+
+				if (game.state.status === "paused") {
+					const player = this.#clientStore.games.get(gameId).state.players[playerId]
+					let text
+
+					// if player leaves during the pause
+					if (player) {
+						text = `Game resumed by ${player.name}`;
+					} else {
+						text = `Game resumed`;
+					}
+					this.#gameFieldService.showNotification(text);
+
+					this.#gameFieldService.togglePauseOverlay();
+				}
+
+
+				break;
+			case "paused":
+				this.pauseGame();
+				this.#gameFieldService.showPauseOverlay();
+				// this.#gameFieldService.updatePausedBy(gameId, playerId);
+
+				const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;
+				const text = `Game paused by ${playerName}`;
+				this.#gameFieldService.showNotification(text);
+
+				// Only decrement my pauses if *I* was the one who paused
+				if (playerId === myId) {
+					const pauseCount = game.state.players[myId].pauses - 1;
+					this.#playerInterfaceService.updatePauseCounter(pauseCount);
+
+					if (pauseCount <= 0) {
+						this.#playerInterfaceService.disablePauseButton();
+						console.log("pause disabled");
+					} else {
+						this.#playerInterfaceService.enablePauseButton();
+						console.log("pause still available");
+					}
+				}
+				break;
+			case "finished":
+				this.endGame(gameId, playerId);
+				break;
+			default:
+				console.log("default: ", status);
+				break;
 			}
-			break;
-		case "finished":
-			this.endGame(gameId, playerId);
-			break;
-		default:
-			console.log("default: ", status);
-			break;
+
+			this.#clientStore.games.get(gameId).state.status = status;
 		}
 
-		this.#clientStore.games.get(gameId).state.status = status;
 	}
 }

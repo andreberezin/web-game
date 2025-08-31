@@ -115,7 +115,8 @@ export default class SocketHandler {
 			socket.emit("joinGameSuccess", gameId, this.#serverStore.games.get(gameId).state,
 				this.#serverStore.games.get(gameId).settings, playerId);
 
-			socket.to(gameId).emit("playerJoined", playerId);
+
+			socket.to(gameId).emit("playerJoined", playerId, playerName);
 
 			console.log("Player: ", playerId, " joined game: ", gameId);
 		} catch (error) {

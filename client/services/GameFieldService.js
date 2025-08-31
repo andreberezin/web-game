@@ -71,6 +71,7 @@ export default class GameFieldService {
 		const lobbyOverlay = this.createLobbyOverlay();
 		const scoreboardOverlay = this.createScoreboardOverlay();
 		const pauseOverlay = this.createPauseOverlay();
+		const notification = this.createNotification();
 
 		root.append(game);
 		game.append(gameField);
@@ -78,6 +79,7 @@ export default class GameFieldService {
 		gameField.append(lobbyOverlay);
 		gameField.append(scoreboardOverlay);
 		gameField.append(pauseOverlay);
+		gameField.append(notification);
 
 		this.generateWalls();
 	}
@@ -105,13 +107,44 @@ export default class GameFieldService {
 		pauseOverlay.id = 'paused';
 		pauseOverlay.classList.add('overlay');
 
-		const pausedBy = this.createPausedBy();
+		// const pausedBy = this.createPausedBy();
 		const pauseTimer = this.createPauseTimer();
+		const resume = this.createResumeButton();
+		const restart = this.createRestartButton();
+
+		const buttonsContainer = document.createElement('div');
+		buttonsContainer.id = 'buttons-container';
 
 		pauseOverlay.appendChild(pauseTimer);
-		pauseOverlay.appendChild(pausedBy);
+		pauseOverlay.appendChild(buttonsContainer);
+		// pauseOverlay.appendChild(pausedBy);
+		buttonsContainer.appendChild(resume);
+		buttonsContainer.appendChild(restart);
 
 		return pauseOverlay;
+	}
+
+	createResumeButton() {
+		const button = document.createElement('button');
+		button.id = 'resume';
+		button.textContent = 'Resume';
+		button.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId);
+		})
+
+		return button;
+	}
+
+	createRestartButton() {
+		const button = document.createElement('button');
+		button.id = 'restart';
+		button.textContent = 'Restart';
+
+		button.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "waiting", this.#clientStore.myId);
+		})
+
+		return button;
 	}
 
 	createPausedBy() {
@@ -130,8 +163,20 @@ export default class GameFieldService {
 	}
 
 	togglePauseOverlay() {
+		console.log("toggling pause overlay");
 		const pauseOverlay = document.getElementById('paused');
 		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
+	}
+
+	showPauseOverlay() {
+		console.log("toggling pause overlay");
+		const pauseOverlay = document.getElementById('paused');
+		pauseOverlay.style.display = 'flex'
+	}
+
+	hidePauseOverlay() {
+		const pauseOverlay = document.getElementById('paused');
+		pauseOverlay.style.display = 'none'
 	}
 
 	updatePausedBy(gameId, playerId) {
@@ -143,6 +188,7 @@ export default class GameFieldService {
 
 	updatePauseTimer(timeRemaining) {
 		const pauseTimer = document.getElementById('paused-timer');
+		if (!pauseTimer) return;
 
 		pauseTimer.textContent = ((timeRemaining / 1000).toFixed(2));
 	}
@@ -156,21 +202,65 @@ export default class GameFieldService {
 		scoreboard.id = 'scoreboard';
 		scoreboard.classList.add('overlay')
 
+		const winner = document.createElement('div');
+		winner.id = 'winner';
+
+		const scores = document.createElement('div');
+		scores.id = 'scores';
+
+		scoreboard.appendChild(winner);
+		scoreboard.appendChild(scores);
+
 		return scoreboard;
 	}
 
 	showScoreboard(playerId, gameId) {
+		const scoreboard = document.getElementById('scoreboard');
+
+		this.updateWinnerAndScores(playerId, gameId);
+
+		scoreboard.style.display = 'flex'
+	}
+
+	updateWinnerAndScores(playerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
 		const player = game.state.players[playerId];
-		const scoreboard = document.getElementById('scoreboard')
-		console.log("scoreboard:", scoreboard);
-		console.log("scoreboard.style:", scoreboard.style);
-		scoreboard.style.display = 'flex'
+
+		const winner = document.getElementById('winner');
+		const scores = document.getElementById('scores');
+
 		if (playerId === null) {
-			scoreboard.textContent = (`The game is a draw!`);
+			winner.innerHTML = (`The game is a draw!`);
+			scores.innerHTML = ``;
 		} else if (playerId) {
-			scoreboard.textContent = (`Player ${player.name} has won the game!`);
+			if (playerId === this.#clientStore.myId) {
+				winner.textContent = `You won the game!`;
+			} else {
+				winner.textContent = `${player.name} has won the game!`;
+			}
+
+			const trophy = document.createElement("i");
+			trophy.classList.add("fas", "fa-trophy");
+			winner.appendChild(trophy);
+			scores.innerHTML = ``;
 		}
+	}
+
+	createNotification() {
+		const notification = document.createElement('div');
+		notification.id = 'notification';
+		return notification;
+	}
+
+	showNotification(text) {
+		const notification = document.getElementById('notification');
+		notification.textContent = text;
+		notification.style.display = 'flex';
+
+		setTimeout(() => {
+			notification.style.display = 'none';
+			notification.textContent = "";
+		}, 3000)
 	}
 
 	// instructions overlay
@@ -200,13 +290,17 @@ export default class GameFieldService {
 		lobby.id = 'lobby';
 		lobby.classList.add('overlay')
 
-		const startButton = this.createStartButton();
 		const lobbyPlayersCount = this.createLobbyPlayersCount();
 		const lobbyGameId = this.createLobbyGameId();
 
 		lobby.append(lobbyGameId);
 		lobby.append(lobbyPlayersCount);
-		lobby.append(startButton);
+
+		// start button only for the host
+		if (this.#clientStore.gameId === this.#clientStore.myId) {
+			const startButton = this.createStartButton();
+			lobby.append(startButton);
+		}
 
 		return lobby;
 	}
@@ -218,6 +312,11 @@ export default class GameFieldService {
 		}
 	}
 
+	showLobby() {
+		const lobby = document.getElementById('lobby')
+		lobby.style.display = 'flex'
+	}
+
 	createStartButton() {
 		if (existingUI('start-button')) return;
 
@@ -225,12 +324,27 @@ export default class GameFieldService {
 		const startButton = document.createElement('button');
 		startButton.id = 'start-button';
 		startButton.textContent = 'Start';
+		startButton.disabled = true;
 		startButton.addEventListener('click', () => {
 			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId)
 			// this.hideLobby();
 		})
 
 		return startButton;
+	}
+
+	enableStartButton() {
+		const startButton = document.getElementById('start-button');
+
+		const store = this.#clientStore;
+		const game = store.games.get(store.gameId);
+
+		// todo use actual player count. Currently +1 because at this point the new player object has not been created
+		const playerCount = Object.keys(game.state.players).length + 1
+
+		if (playerCount >= 2 && playerCount <= 4) {
+			startButton.disabled = false;
+		}
 	}
 
 	createLobbyGameId() {

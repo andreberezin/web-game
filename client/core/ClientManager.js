@@ -93,6 +93,8 @@ export default class ClientManager {
 	clientCleanup = () => {
 		const store = this.#clientStore;
 
+		this.#socketHandler.socket.emit('leaveGame', store.gameId, store.myId);
+
 		this.stopRenderLoop();
 
 		if (store.gameId) {
