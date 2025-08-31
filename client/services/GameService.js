@@ -90,14 +90,13 @@ export default class GameService {
 		// this.#gameFieldService.createElement(this.#clientStore.games.get(this.#clientStore.gameId).settings.mapType);
 		// add game ui
 		// add player ui
-		this.#gameFieldService.togglePauseOverlay();
+		this.#gameFieldService.hidePauseOverlay();
+		const text = `${player.name} restarted the game`
+		this.#gameFieldService.showNotification(text);
 		this.#gameFieldService.showLobby();
 
 		// todo use actual player.pauses value. Currently hardcoded 2 because player.pauses isn't reset at this point yet
 		this.#playerInterfaceService.updatePauseCounter(2);
-
-		const text = `${player.name} restarted the game`
-		this.#gameFieldService.showNotification(text);
 	}
 
 	endGame(gameId) {
