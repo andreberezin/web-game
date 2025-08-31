@@ -45,7 +45,7 @@ export default class GameService {
                 this.#powerupService.updatePlayerPowerups(player, currentTime);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
-                this.checkForCollisions(player, currentTime, game.state);
+                this.checkForCollisions(player, currentTime, game.state, game);
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
@@ -220,7 +220,7 @@ export default class GameService {
         setTimeout(gameCountdown, 10);
     }
 
-    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
+    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}, game) {
         const bulletsToDelete = [];
         const powerupsToDelete = [];
 
