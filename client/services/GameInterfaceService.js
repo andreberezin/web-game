@@ -158,4 +158,25 @@ export default class GameInterfaceService {
 		this.#gameInterface.playerCount = count;
 		return count;
 	}
+
+	createLivesDisplay() {
+		if (document.getElementById('lives-display')) return;
+
+		const livesDisplay = document.createElement('div');
+		livesDisplay.id = 'lives-display';
+		livesDisplay.style.cssText = `
+        position: fixed;
+        top: 80px;
+        right: 20px;
+        background: rgba(0,0,0,0.8);
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        font-size: 14px;
+        z-index: 1000;
+        min-width: 150px;
+    `;
+
+		document.body.appendChild(livesDisplay);
+	}
 }
