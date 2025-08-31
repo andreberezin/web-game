@@ -248,6 +248,7 @@ export default class SocketHandler {
 			console.log("Player:", playerId, "joined the game");
 			const text = `${playerName} joined`;
 			this.#gameFieldService.showNotification(text);
+			this.#gameFieldService.enableStartButton();
 		})
 
 		this.on('playerLeft', (playerId) => {
@@ -299,5 +300,6 @@ export default class SocketHandler {
 		this.on("playerJoined", null);
 		this.on("playerLeft", null);
 		this.on("gameStatusChangeSuccess", null);
+		this.on("declareWinner", null);
 	}
 }
