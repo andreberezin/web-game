@@ -156,9 +156,10 @@ export default class GameService {
     }
 
     finishGame(gameId) {
+        const game = this.#serverStore.games.get(gameId);
         setTimeout(() => {
             this.#gamesManager.deleteGame(gameId);
-        }, 10000)
+        }, game.state.pause.duration)
     }
 
     checkForWinner(game) {

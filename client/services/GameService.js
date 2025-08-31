@@ -101,9 +101,10 @@ export default class GameService {
 
 	endGame(gameId, playerId) {
 		this.#gameFieldService.showScoreboard(playerId, gameId);
+		const game = this.#clientStore.games.get(gameId);
 		setTimeout(() => {
 			this.#clientManager.gameCleanup(gameId);
-		}, 10000)
+		}, game.state.pause.duration)
 	}
 
 	leaveGame() {
