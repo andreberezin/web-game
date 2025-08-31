@@ -7,7 +7,7 @@ export function CreateGame({clientManager, setView}) {
 		private: false,
 		maxPlayers: 4,
 		mapType: "empty",
-		duration: 120000,
+		duration: 1000,
 	});
 	const [name, setName] = useState(null)
 
@@ -18,6 +18,7 @@ export function CreateGame({clientManager, setView}) {
 		socket.emit('createGame', socket.id, name, gameSettings.current);
 	}
 
+	// todo add map choice in next version
 	return (
 		<div
 			id={"create-game"}
@@ -50,17 +51,32 @@ export function CreateGame({clientManager, setView}) {
 					/>
 				</label>
 
+				{/*<label>*/}
+				{/*	Map*/}
+				{/*	<select*/}
+				{/*		id={"map"}*/}
+				{/*		name={"map"}*/}
+				{/*		onChange={(e) => {*/}
+				{/*			gameSettings.current.mapType = e.target.value;*/}
+				{/*		}}*/}
+				{/*	>*/}
+				{/*		<option value="empty">Empty</option>*/}
+				{/*		<option value="simple">Simple</option>*/}
+				{/*	</select>*/}
+				{/*</label>*/}
+
 				<label>
-					Map
+					Duration
 					<select
-						id={"map"}
-						name={"map"}
+						id={"duration"}
+						name={"duration"}
 						onChange={(e) => {
-							gameSettings.current.mapType = e.target.value;
+							gameSettings.current.duration = e.target.value;
 						}}
 					>
-						<option value="empty">Empty</option>
-						<option value="simple">Simple</option>
+						<option value="1000">1 second</option>
+						<option value="60000">1 minute</option>
+						<option value="120000">2 minutes</option>
 					</select>
 				</label>
 
