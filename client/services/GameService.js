@@ -25,9 +25,9 @@ export default class GameService {
 	}
 
 	initializePlayers(gameId, players, myPlayer) {
-		if (!this.#clientStore.myId) {
-			this.#clientStore.myId = myPlayer.id;
-		}
+		// if (!this.#clientStore.myId) {
+		// 	this.#clientStore.myId = myPlayer.id;
+		// }
 
 		const gameState = this.#clientStore.games.get(gameId).state;
 		let currentIndex = Object.keys(gameState.players).length

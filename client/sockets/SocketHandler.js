@@ -88,6 +88,10 @@ export default class SocketHandler {
 
 		this.on('createGameSuccess', (gameId) => {
 			console.log("Game created: ", gameId);
+
+			if (!this.#clientStore.myId) {
+				this.#clientStore.myId = gameId;
+			}
 		})
 
 		this.on('joinGameSuccess', (gameId, state, settings, myId) => {
@@ -97,6 +101,7 @@ export default class SocketHandler {
 				this.#externalListeners["joinGameSuccess"]();
 			}
 			this.#clientStore.gameId = gameId;
+			this.#clientStore.myId = myId;
 
 			// if the game object is not found in the Map, then create the game object
 			if (!this.#clientStore.games.has(gameId)) {
