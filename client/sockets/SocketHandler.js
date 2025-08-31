@@ -243,6 +243,17 @@ export default class SocketHandler {
 					delete currentGameState.powerups[powerupID];
 				}
 			}
+
+			// Delete the destroyed wall from the client if not present in game state sent from server
+			for (const destroyableWallID in currentGameState.mapOfDestroyableWalls) {
+				if (!updatedGameState.mapOfDestroyableWalls[destroyableWallID]) {
+					const destroyableWallElement = document.getElementById(destroyableWallID);
+					if (destroyableWallElement) {
+						destroyableWallElement.remove();
+					}
+					delete currentGameState.mapOfDestroyableWalls[destroyableWallID];
+				}
+			}
 		})
 
 		// todo more error handling

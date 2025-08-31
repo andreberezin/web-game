@@ -41,7 +41,7 @@ export default class GamesManager {
 		game.updateState({ isRunning: true});
 
 		this.#serverStore.updateGames(game.id, game);
-
+		this.#gameService.generateWalls(game);
 		this.startGameLoop(hostId);
 
 		return game;
