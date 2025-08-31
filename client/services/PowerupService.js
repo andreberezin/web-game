@@ -31,11 +31,24 @@ export class PowerupService {
 		powerupElement.style.left = `${powerup.pos.x}px`
 		powerupElement.tabIndex = 0;
 
+		const imagePath = this.getPowerupImagePath(powerup.typeOfPowerup);
+		powerupElement.style.backgroundImage = `url('${imagePath}')`;
+		powerupElement.style.backgroundSize = 'contain';
+		powerupElement.style.backgroundRepeat = 'no-repeat';
+		powerupElement.style.backgroundPosition = 'center';
+
 		// for (const property in powerup.styles) {
 		// 	powerupElement.style[property] = powerup.styles[property]
 		// }
 
 		powerup.element = powerupElement;
 		return powerupElement;
+	}
+
+	getPowerupImagePath(typeOfPowerup) {
+		switch (typeOfPowerup) {
+			case 0: return '/images/heart.png';
+			case 1: return '/images/damage.png';
+		}
 	}
 }

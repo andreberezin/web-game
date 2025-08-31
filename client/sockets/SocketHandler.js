@@ -18,8 +18,9 @@ export default class SocketHandler {
 	#clientStore;
 	#powerupService;
 	#bulletService;
+	#notificationService;
 
-	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore, powerupService, bulletService}) {
+	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore, powerupService, bulletService, notificationService}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
@@ -28,6 +29,7 @@ export default class SocketHandler {
 		this.#clientStore = clientStore;
 		this.#powerupService = powerupService;
 		this.#bulletService = bulletService;
+		this.#notificationService = notificationService;
 	}
 
 	get socket() {
@@ -210,7 +212,7 @@ export default class SocketHandler {
 				const powerup = updatedGameState.powerups[powerupID];
 
 				if (!currentGameState.powerups[powerupID]) {
-					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y);
+					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y, powerup.typeOfPowerup);
 					this.#powerupService.createPowerupModel(powerup, powerupID);
 				}  else {
 					// console.log(updatedGameState.powerups[powerupID].position);
@@ -277,6 +279,13 @@ export default class SocketHandler {
 			}
 		});
 
+		this.on('powerupNotification', (data) => {
+			if (this.#notificationService && data.playerId === this.#clientStore.myId) {
+				this.#notificationService.showPowerupNotification(data.powerupType);
+				console.log(`Powerup collected! Type: ${data.powerupType}`);
+			}
+		});
+
 		socket.on('disconnect', () => {
 			console.log('Disconnected from the server ');
 		})
@@ -289,5 +298,6 @@ export default class SocketHandler {
 		this.on("playerJoined", null);
 		this.on("playerLeft", null);
 		this.on("gameStatusChangeSuccess", null);
+		this.on("powerupNotification", null);
 	}
 }
