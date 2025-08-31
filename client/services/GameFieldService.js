@@ -254,13 +254,19 @@ export default class GameFieldService {
 		lobby.id = 'lobby';
 		lobby.classList.add('overlay')
 
-		const startButton = this.createStartButton();
 		const lobbyPlayersCount = this.createLobbyPlayersCount();
 		const lobbyGameId = this.createLobbyGameId();
 
 		lobby.append(lobbyGameId);
 		lobby.append(lobbyPlayersCount);
-		lobby.append(startButton);
+
+		// start button only for the host
+		console.log("game id:", this.#clientStore.gameId);
+		console.log("my id:", this.#clientStore.myId);
+		if (this.#clientStore.gameId === this.#clientStore.myId) {
+			const startButton = this.createStartButton();
+			lobby.append(startButton);
+		}
 
 		return lobby;
 	}
