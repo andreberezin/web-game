@@ -465,7 +465,10 @@ export default class GameService {
             return true;
         } else if (mapArray[index] === 2) {
             let destroyableWall = game.state.mapOfDestroyableWalls[index];
-            destroyableWall.hp = destroyableWall.hp - 20;
+            if (!destroyableWall) {
+                return false;
+            }
+            destroyableWall.hp = destroyableWall.hp - 5;
             if (destroyableWall.hp <= 0) {
                 delete game.state.mapOfDestroyableWalls[index];
             }
