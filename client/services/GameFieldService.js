@@ -261,8 +261,6 @@ export default class GameFieldService {
 		lobby.append(lobbyPlayersCount);
 
 		// start button only for the host
-		console.log("game id:", this.#clientStore.gameId);
-		console.log("my id:", this.#clientStore.myId);
 		if (this.#clientStore.gameId === this.#clientStore.myId) {
 			const startButton = this.createStartButton();
 			lobby.append(startButton);
