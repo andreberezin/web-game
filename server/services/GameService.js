@@ -1,4 +1,5 @@
 import Game from '../models/Game.js';
+import DestroyableWall from "../models/DestroyableWall.js";
 
 export default class GameService {
     #playerInputService;
@@ -427,7 +428,7 @@ export default class GameService {
         const TILE_SIZE = 40;
         const TILES_X = 48;
 
-        // Convert pixel coordinates to tile coordinates
+        // convert pixel coordinates to tile coordinates
         const topLeft = {
             x: Math.floor(x / TILE_SIZE),
             y: Math.floor(y / TILE_SIZE)
@@ -440,7 +441,7 @@ export default class GameService {
 
         for (let tileY = topLeft.y; tileY <= bottomRight.y; tileY++) {
             for (let tileX = topLeft.x; tileX <= bottomRight.x; tileX++) {
-                if (this.getTileAt(game.map, tileX, tileY, TILES_X)) {
+                if (this.getTileAt(game.map, tileX, tileY, TILES_X, game)) {
                     return true;
                 }
             }
@@ -449,19 +450,33 @@ export default class GameService {
         return false;
     }
 
-    getTileAt(mapArray, tileX, tileY, tilesX) {
-        // Check bounds (treat out-of-bounds as walls)
+    getTileAt(mapArray, tileX, tileY, tilesX, game) {
         if (tileX < 0 || tileX >= tilesX || tileY < 0) {
-            return true; // Wall
+            return true;
         }
 
         const index = tileY * tilesX + tileX;
 
-        // Check if index is valid
         if (index >= mapArray.length) {
-            return true; // Wall
+            return true;
         }
 
-        return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
+        if (mapArray[index] === 1) {
+            return true;
+        } else if (mapArray[index] === 2) {
+            let destroyableWall = game.state.mapOfDestroyableWalls[index];
+            destroyableWall.hp = destroyableWall.hp - 20;
+            if (destroyableWall.hp <= 0) {
+                delete game.state.mapOfDestroyableWalls[index];
+            }
+            return true;
+        }
+    }
+
+    generateWalls(game) {
+        for (let i = 0; i < game.map.length; i++) {
+            if (game.map[i] !== 2) continue;
+            game.state.mapOfDestroyableWalls[i] = new DestroyableWall(i);
+        }
     }
 }
