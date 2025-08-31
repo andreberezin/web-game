@@ -1,5 +1,6 @@
 export default class PlayerInputService {
 	#clientStore;
+	#audioService;
 	#socketHandler
 	#keydownHandler = null;
 	#keyupHandler = null;
@@ -9,8 +10,9 @@ export default class PlayerInputService {
 	#gameFieldElement = null;
 	#mousePosition = {x: 0, y: 0};
 
-	constructor({clientStore}) {
+	constructor({clientStore, audioService}) {
 		this.#clientStore = clientStore;
+		this.#audioService = audioService;
 		this.initializeMouseTracking();
 	}
 
@@ -122,6 +124,7 @@ export default class PlayerInputService {
 		if(player.pos && player.size) {
 			player.shootingAngle = this.calculateShootingAngle(player.pos, player.size);
 			player.input.space = true;
+			this.#audioService.playShoot();
 
 			setTimeout(() => {
 				player.input.space = false;

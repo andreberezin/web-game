@@ -7,13 +7,15 @@ export default class GameService {
     #powerupService;
     #gamesManager;
     #playerService
+    #io
 
-    constructor({playerInputService, serverStore, bulletService, powerupService, playerService}) {
+    constructor({playerInputService, serverStore, bulletService, powerupService, playerService, io}) {
         this.#playerInputService = playerInputService;
         this.#serverStore = serverStore;
         this.#bulletService = bulletService;
         this.#powerupService = powerupService;
         this.#playerService = playerService;
+        this.#io = io;
     }
 
     setGamesManager(gamesManager) {
@@ -47,10 +49,13 @@ export default class GameService {
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
+
+            this.checkForWinner(game);
         }
     }
 
     updateGameStatus(gameId, status, playerId, io) {
+
         const game = this.#serverStore.games.get(gameId);
         if (!game) {
             throw new Error(`Game ${gameId} not found`);
@@ -81,9 +86,43 @@ export default class GameService {
                 player.deductPause();
                 console.log("player pauses:", player.pauses);
                 break;
-            case "finished":
-                this.finishGame(gameId);
+            case "finished": {
+                let playersWhoHaventLost = [];
+
+                for (const playerID in game.state.players) {
+                    const player = game.state.players[playerID];
+
+                    if (player.lives > 0) {
+                        playersWhoHaventLost.push(player);
+                    }
+                }
+
+                if (playersWhoHaventLost.length > 0) {
+                    let mostLives = 0;
+                    let playersWithMostLives = [];
+                    for (const player of playersWhoHaventLost) {
+                        if (player.lives > mostLives) {
+                            playersWithMostLives = [];
+                            playersWithMostLives.push(player);
+                            mostLives = player.lives;
+                        } else if (player.lives === mostLives) {
+                            playersWithMostLives.push(player);
+                        }
+                    }
+                    let playerWhoWon;
+                    if (playersWithMostLives.length === 1) {
+                        playerWhoWon = playersWithMostLives[0];
+                        console.log("%s player WON!", playerWhoWon.name);
+                        this.#io.emit('declareWinner', game.id, playerWhoWon);
+                    } else if (playersWithMostLives.length > 1) {
+                        console.log("The game is a draw.");
+                        this.#io.emit('declareWinner', game.id, null);
+                    }
+                }
+
+                this.finishGame(game.id);
                 break;
+                }
             default:
                 console.log("default: ", status);
             }
@@ -119,7 +158,27 @@ export default class GameService {
     finishGame(gameId) {
         setTimeout(() => {
             this.#gamesManager.deleteGame(gameId);
-        }, 1000)
+        }, 120000)
+    }
+
+    checkForWinner(game) {
+        let playersWhoHaventLost = [];
+
+        for (const playerID in game.state.players) {
+            const player = game.state.players[playerID];
+
+            if (player.lives > 0) {
+                playersWhoHaventLost.push(player);
+            }
+        }
+
+        if (playersWhoHaventLost.length === 1) {
+            const playerWhoWon = playersWhoHaventLost[0];
+            console.log("%s player WON!", playerWhoWon.name);
+            this.#io.emit('declareWinner', game.id, playerWhoWon);
+            game.state.status = "finished";
+            this.finishGame(game.id);
+        }
     }
 
     restartGame(gameId) {
@@ -177,10 +236,6 @@ export default class GameService {
     // }
 
     handlePauseTimer(game, io, gameId) {
-        if (game.pauseTimeout) {
-            clearTimeout(game.pauseTimeout);
-        }
-
         const pauseCountdown = () => {
             const state = game.state;
             const pause = state.pause;

@@ -52,7 +52,7 @@ export default class SocketHandler {
 
 					socket.emit("createGameSuccess", gameId);
 
-					this.joinGame(socket, gameId, hostId, playerName);
+					this.joinGame(socket, gameId, hostId, playerName, {x: 100, y: 100});
 				} catch (error) {
 					console.log(error.message);
 					socket.emit('error', error.message);
@@ -61,8 +61,19 @@ export default class SocketHandler {
 
 			socket.on('joinGame', (gameId, playerName) => {
 				const playerId = socket.id;
+				const game = this.#serverStore.games.get(gameId);
+				let playerPos;
+				if (game.playersInLobby === 1) {
+					playerPos = {x: 1700, y: 900};
+				} else if (game.playersInLobby === 2) {
+					playerPos = {x: 100, y: 900};
+				} else if (game.playersInLobby === 3){
+					playerPos = {x: 1700, y: 100};
+				}
+				game.playersInLobby += 1;
+				console.log("test");
 
-				this.joinGame(socket, gameId, playerId, playerName);
+				this.joinGame(socket, gameId, playerId, playerName, playerPos);
 			})
 
 			socket.on('disconnect', () => {
@@ -93,11 +104,11 @@ export default class SocketHandler {
 	}
 
 	// todo refactor this monstrum as well
-	joinGame(socket, gameId, playerId, playerName) {
+	joinGame(socket, gameId, playerId, playerName, spawnPos) {
 		socket.join(gameId);
 		socket.gameId = gameId;
 
-		const player = new Player(playerId, playerName, container.resolve('playerService'));
+		const player = new Player(playerId, playerName, container.resolve('playerService'), spawnPos);
 
 		try {
 			this.#gameService.addPlayerToGame(gameId, playerId, player);

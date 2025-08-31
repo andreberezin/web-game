@@ -7,7 +7,7 @@ export function CreateGame({clientManager, setView}) {
 		private: false,
 		maxPlayers: 4,
 		mapType: "empty",
-		duration: 60000,
+		duration: 120000,
 	});
 	const [name, setName] = useState(null)
 

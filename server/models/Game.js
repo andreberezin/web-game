@@ -15,9 +15,10 @@ export default class Game {
 			timeRemaining: 0,
 		}
 	};
+	#playersInLobby = 1;
 	#settings = {
 		private: false,
-		duration: 600000, // milliseconds = 1 minute
+		duration: 120000, // milliseconds = 1 minute
 		maxPlayers: 4,
 		mapType: "empty"
 	};
@@ -75,6 +76,14 @@ export default class Game {
 
 	set state(updatedState) {
 		this.#state = updatedState;
+	}
+
+	get playersInLobby() {
+		return this.#playersInLobby;
+	}
+
+	set playersInLobby(playersInLobby) {
+		this.#playersInLobby = playersInLobby;
 	}
 
 	updateState(updatedState) {

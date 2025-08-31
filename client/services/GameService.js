@@ -25,9 +25,9 @@ export default class GameService {
 	}
 
 	initializePlayers(gameId, players, myPlayer) {
-		// if (!this.#clientStore.myId) {
-		// 	this.#clientStore.myId = myPlayer.id;
-		// }
+		if (!this.#clientStore.myId) {
+			this.#clientStore.myId = myPlayer.id;
+		}
 
 		const gameState = this.#clientStore.games.get(gameId).state;
 		let currentIndex = Object.keys(gameState.players).length
@@ -99,11 +99,11 @@ export default class GameService {
 		this.#playerInterfaceService.updatePauseCounter(2);
 	}
 
-	endGame(gameId) {
-		this.#gameFieldService.showScoreboard();
+	endGame(gameId, playerId) {
+		this.#gameFieldService.showScoreboard(playerId, gameId);
 		setTimeout(() => {
 			this.#clientManager.gameCleanup(gameId);
-		}, 1000)
+		}, 120000)
 	}
 
 	leaveGame() {
@@ -182,7 +182,7 @@ export default class GameService {
 				}
 				break;
 			case "finished":
-				this.endGame(gameId);
+				this.endGame(gameId, playerId);
 				break;
 			default:
 				console.log("default: ", status);

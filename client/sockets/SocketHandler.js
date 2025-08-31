@@ -271,8 +271,20 @@ export default class SocketHandler {
 		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
 			console.log("Game status changed: ", status, "by player: ", playerId);
 
-			this.#gameService.updateGameStatus(gameId, status, playerId);
+			if (status !== "finished") {
+				this.#gameService.updateGameStatus(gameId, status, playerId);
+			}
 
+		});
+
+		this.on('declareWinner', (gameId, player) => {
+			if (player === null) {
+				console.log("The game is a draw!");
+				this.#gameService.updateGameStatus(gameId, "finished", null);
+			} else if (player) {
+				console.log("Player %s won the game!", player.name);
+				this.#gameService.updateGameStatus(gameId, "finished", player.id);
+			}
 		});
 
 		socket.on('disconnect', () => {
