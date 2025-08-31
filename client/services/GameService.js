@@ -103,7 +103,7 @@ export default class GameService {
 		this.#gameFieldService.showScoreboard(playerId, gameId);
 		setTimeout(() => {
 			this.#clientManager.gameCleanup(gameId);
-		}, 120000)
+		}, 10000)
 	}
 
 	leaveGame() {

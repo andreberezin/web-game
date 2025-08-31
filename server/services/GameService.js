@@ -158,7 +158,7 @@ export default class GameService {
     finishGame(gameId) {
         setTimeout(() => {
             this.#gamesManager.deleteGame(gameId);
-        }, 120000)
+        }, 10000)
     }
 
     checkForWinner(game) {
