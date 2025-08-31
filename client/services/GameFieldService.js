@@ -324,12 +324,27 @@ export default class GameFieldService {
 		const startButton = document.createElement('button');
 		startButton.id = 'start-button';
 		startButton.textContent = 'Start';
+		startButton.disabled = true;
 		startButton.addEventListener('click', () => {
 			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId)
 			// this.hideLobby();
 		})
 
 		return startButton;
+	}
+
+	enableStartButton() {
+		const startButton = document.getElementById('start-button');
+
+		const store = this.#clientStore;
+		const game = store.games.get(store.gameId);
+
+		// todo use actual player count. Currently +1 because at this point the new player object has not been created
+		const playerCount = Object.keys(game.state.players).length + 1
+
+		if (playerCount >= 2 && playerCount <= 4) {
+			startButton.disabled = false;
+		}
 	}
 
 	createLobbyGameId() {
