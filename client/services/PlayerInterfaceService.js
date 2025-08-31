@@ -85,10 +85,6 @@ export default class PlayerInterfaceService {
 		element.className = 'ui-item';
 		element.innerHTML = `${type.toUpperCase()}: <span id="player-${type}-value" class='value'></span>`;
 
-		if (type === "deathCooldown") {
-			element.hidden = true;
-		}
-
 		return element;
 	}
 
@@ -100,7 +96,7 @@ export default class PlayerInterfaceService {
 		if (!element || !elementValue) return;
 
 		if (key === "respawnTimer") {
-			element.hidden = player.status.alive;
+			player.status.alive ? element.style.display = "none" : element.style.display = "flex";
 			elementValue.textContent = (value / 1000).toFixed(2);
 		} else {
 			elementValue.textContent = value
@@ -112,9 +108,14 @@ export default class PlayerInterfaceService {
 		element.id = `player-${type}`;
 		element.className = 'ui-item';
 		element.innerHTML = `<span id="player-${type}-value" class='value'></span>`;
-		element.hidden = true;
+		element.style.display = "flex";
 
 		return element;
+	}
+
+	hideRespawnTimer() {
+		const element = document.getElementById("player-respawnTimer");
+		element.style.display = "none";
 	}
 
 	createMenuButton(type) {
