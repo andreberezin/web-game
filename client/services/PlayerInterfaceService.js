@@ -151,8 +151,6 @@ export default class PlayerInterfaceService {
 	}
 
 	updatePauseCounter(pauseCount) {
-		// const pauseCount = this.#clientStore.games.get(gameId).state.players[playerId].pauses - 1;
-
 		const button = document.getElementById('pause');
 		button.textContent = `PAUSE(${pauseCount})`;
 	}

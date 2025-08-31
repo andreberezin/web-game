@@ -110,10 +110,16 @@ export default class GameFieldService {
 		// const pausedBy = this.createPausedBy();
 		const pauseTimer = this.createPauseTimer();
 		const resume = this.createResumeButton();
+		const restart = this.createRestartButton();
+
+		const buttonsContainer = document.createElement('div');
+		buttonsContainer.id = 'buttons-container';
 
 		pauseOverlay.appendChild(pauseTimer);
+		pauseOverlay.appendChild(buttonsContainer);
 		// pauseOverlay.appendChild(pausedBy);
-		pauseOverlay.appendChild(resume);
+		buttonsContainer.appendChild(resume);
+		buttonsContainer.appendChild(restart);
 
 		return pauseOverlay;
 	}
@@ -124,6 +130,18 @@ export default class GameFieldService {
 		button.textContent = 'Resume';
 		button.addEventListener('click', () => {
 			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId);
+		})
+
+		return button;
+	}
+
+	createRestartButton() {
+		const button = document.createElement('button');
+		button.id = 'restart';
+		button.textContent = 'Restart';
+
+		button.addEventListener('click', () => {
+			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "waiting", this.#clientStore.myId);
 		})
 
 		return button;
@@ -148,6 +166,17 @@ export default class GameFieldService {
 		console.log("toggling pause overlay");
 		const pauseOverlay = document.getElementById('paused');
 		pauseOverlay.style.display === 'none' ? pauseOverlay.style.display = 'flex' : pauseOverlay.style.display = 'none';
+	}
+
+	showPauseOverlay() {
+		console.log("toggling pause overlay");
+		const pauseOverlay = document.getElementById('paused');
+		pauseOverlay.style.display = 'flex'
+	}
+
+	hidePauseOverlay() {
+		const pauseOverlay = document.getElementById('paused');
+		pauseOverlay.style.display = 'none'
 	}
 
 	updatePausedBy(gameId, playerId) {
@@ -241,6 +270,11 @@ export default class GameFieldService {
 		if (lobby.style.display !== 'none') {
 			lobby.style.display = 'none'
 		}
+	}
+
+	showLobby() {
+		const lobby = document.getElementById('lobby')
+		lobby.style.display = 'flex'
 	}
 
 	createStartButton() {

@@ -84,6 +84,22 @@ export default class GameService {
 
 	}
 
+	restartGame(player) {
+		// reset local visuals
+		// this.#gameFieldService.removeGameElements();
+		// this.#gameFieldService.createElement(this.#clientStore.games.get(this.#clientStore.gameId).settings.mapType);
+		// add game ui
+		// add player ui
+		this.#gameFieldService.togglePauseOverlay();
+		this.#gameFieldService.showLobby();
+
+		// todo use actual player.pauses value. Currently hardcoded 2 because player.pauses isn't reset at this point yet
+		this.#playerInterfaceService.updatePauseCounter(2);
+
+		const text = `${player.name} restarted the game`
+		this.#gameFieldService.showNotification(text);
+	}
+
 	endGame(gameId) {
 		this.#gameFieldService.showScoreboard();
 		setTimeout(() => {
@@ -111,10 +127,14 @@ export default class GameService {
 		if (status !== game.state.status) {
 			switch (status) {
 			case "waiting":
+				if (game.state.status === "paused") {
+					this.restartGame(game.state.players[playerId]);
+				}
 				break;
 			case "started":
-				if (this.#clientStore.games.get(gameId).state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
+				if (game.state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
 					this.startGame();
+					this.#gameFieldService.hidePauseOverlay();
 				}
 
 				// Always re-enable MY pause button if I still have pauses left
@@ -123,16 +143,25 @@ export default class GameService {
 				}
 
 				if (game.state.status === "paused") {
-					const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;
-					const text = `Game resumed by ${playerName}`;
+					const player = this.#clientStore.games.get(gameId).state.players[playerId]
+					let text
+
+					// if player leaves during the pause
+					if (player) {
+						text = `Game resumed by ${player.name}`;
+					} else {
+						text = `Game resumed`;
+					}
 					this.#gameFieldService.showNotification(text);
+
+					this.#gameFieldService.togglePauseOverlay();
 				}
 
-				this.#gameFieldService.togglePauseOverlay();
+
 				break;
 			case "paused":
 				this.pauseGame();
-				this.#gameFieldService.togglePauseOverlay();
+				this.#gameFieldService.showPauseOverlay();
 				// this.#gameFieldService.updatePausedBy(gameId, playerId);
 
 				const playerName = this.#clientStore.games.get(gameId).state.players[playerId].name;

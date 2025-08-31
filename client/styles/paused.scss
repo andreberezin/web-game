@@ -10,9 +10,18 @@
     font-size: 3rem;
   }
 
-  button#resume {
-    width: 20%;
-    height: 30px;
-    border: 1px solid black;
+  #buttons-container {
+    display: flex;
+    gap: 4rem;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 30%;
+
+    button {
+      width: 50%;
+      height: 30px;
+      border: 1px solid black;
+    }
   }
 }
