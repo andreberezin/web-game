@@ -250,7 +250,6 @@ export default class GameFieldService {
 		scoreboard.style.display = 'flex'
 	}
 
-	// todo base score on lives left + kills. Currently based on lives left
 	updateWinnerAndScores(winnerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
 		const winner = game.state.players[winnerId];

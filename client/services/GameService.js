@@ -110,6 +110,7 @@ export default class GameService {
 	}
 
 	leaveGame() {
+		console.log("Cleaning up...");
 		this.#clientManager.stopRenderLoop();
 		this.#playerInputService.removeEventListeners();
 		this.#socketHandler.cleanupGameListeners();
