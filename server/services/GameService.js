@@ -1,4 +1,5 @@
 import Game from '../models/Game.js';
+import DestroyableWall from "../models/DestroyableWall.js";
 
 export default class GameService {
     #playerInputService;
@@ -45,7 +46,7 @@ export default class GameService {
                 this.#powerupService.updatePlayerPowerups(player, currentTime);
                 this.#playerInputService.handlePlayerMovement(player, game);
                 this.#playerInputService.handlePlayerShooting(player, currentTime, game);
-                this.checkForCollisions(player, currentTime, game.state);
+                this.checkForCollisions(player, currentTime, game.state, game);
                 this.#playerInputService.handlePlayerRespawning(game.state, currentTime);
                 this.#playerInputService.handlePlayerRespawnTimer(player, currentTime);
             }
@@ -173,7 +174,7 @@ export default class GameService {
             }
         }
 
-        if (playersWhoHaventLost.length === 1) {
+        if (game.playersInLobby > 1 && playersWhoHaventLost.length === 1) {
             const playerWhoWon = playersWhoHaventLost[0];
             console.log("%s player WON!", playerWhoWon.name);
             this.#io.emit('declareWinner', game.id, playerWhoWon);
@@ -279,25 +280,29 @@ export default class GameService {
         setTimeout(gameCountdown, 10);
     }
 
-    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}) {
+    checkForCollisions(player, currentTime, {bullets, deadPlayers, powerups}, game) {
         const bulletsToDelete = [];
         const powerupsToDelete = [];
 
             if (player.status.alive) {
                 for (let bulletID in bullets) {
                     const bullet = bullets[bulletID];
-                    let bulletEndX = bullet.pos.x + bullet.velocityPerSecond * bullet.direction.x;
-                    let bulletEndY = bullet.pos.y + bullet.velocityPerSecond * bullet.direction.y;
+
+                    const deltaTime = Math.min(1/60, 0.016);
+                    const movementDistance = bullet.velocityPerSecond * deltaTime;
+
+                    let bulletEndX = bullet.pos.x + movementDistance * bullet.direction.x;
+                    let bulletEndY = bullet.pos.y + movementDistance * bullet.direction.y;
+
+                    console.log(`Checking collision: bullet at (${bullet.pos.x}, ${bullet.pos.y}) -> (${bulletEndX}, ${bulletEndY}), movement: ${movementDistance}`);
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
                         console.log("player hit");
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
-                            // Player dies if hp is 0
                             player.handleDeath();
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
-                            //delete game.state.players[playerID];
                         }
 
                         bulletsToDelete.push(bulletID);
@@ -309,6 +314,12 @@ export default class GameService {
 
                     if (powerup.pos.x + 10 > player.pos.x && powerup.pos.x < player.pos.x + 20 && powerup.pos.y + 10 > player.pos.y && powerup.pos.y < player.pos.y + 20) {
                         powerup.givePowerup(player, currentTime);
+                        this.#io.to(player.id).emit('powerupNotification', {
+                            playerId: player.id,
+                            powerupType: powerup.typeOfPowerup,
+                            powerupId: powerupID,
+                            gameId: game.id
+                        });
                         powerupsToDelete.push(powerupID);
                     }
                 }
@@ -417,7 +428,7 @@ export default class GameService {
         const TILE_SIZE = 40;
         const TILES_X = 48;
 
-        // Convert pixel coordinates to tile coordinates
+        // convert pixel coordinates to tile coordinates
         const topLeft = {
             x: Math.floor(x / TILE_SIZE),
             y: Math.floor(y / TILE_SIZE)
@@ -430,7 +441,7 @@ export default class GameService {
 
         for (let tileY = topLeft.y; tileY <= bottomRight.y; tileY++) {
             for (let tileX = topLeft.x; tileX <= bottomRight.x; tileX++) {
-                if (this.getTileAt(game.map, tileX, tileY, TILES_X)) {
+                if (this.getTileAt(game.map, tileX, tileY, TILES_X, game)) {
                     return true;
                 }
             }
@@ -439,19 +450,36 @@ export default class GameService {
         return false;
     }
 
-    getTileAt(mapArray, tileX, tileY, tilesX) {
-        // Check bounds (treat out-of-bounds as walls)
+    getTileAt(mapArray, tileX, tileY, tilesX, game) {
         if (tileX < 0 || tileX >= tilesX || tileY < 0) {
-            return true; // Wall
+            return true;
         }
 
         const index = tileY * tilesX + tileX;
 
-        // Check if index is valid
         if (index >= mapArray.length) {
-            return true; // Wall
+            return true;
         }
 
-        return mapArray[index] === 1; // Return true if wall (1), false if empty (0)
+        if (mapArray[index] === 1) {
+            return true;
+        } else if (mapArray[index] === 2) {
+            let destroyableWall = game.state.mapOfDestroyableWalls[index];
+            if (!destroyableWall) {
+                return false;
+            }
+            destroyableWall.hp = destroyableWall.hp - 5;
+            if (destroyableWall.hp <= 0) {
+                delete game.state.mapOfDestroyableWalls[index];
+            }
+            return true;
+        }
+    }
+
+    generateWalls(game) {
+        for (let i = 0; i < game.map.length; i++) {
+            if (game.map[i] !== 2) continue;
+            game.state.mapOfDestroyableWalls[i] = new DestroyableWall(i);
+        }
     }
 }

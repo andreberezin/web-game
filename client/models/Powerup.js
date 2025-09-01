@@ -8,9 +8,11 @@ export default class Powerup {
         width: 20,
         height: 20,
     }
+    typeOfPowerup = 0;
 
-    constructor(id, x, y) {
+    constructor(id, x, y, typeOfPowerup) {
         this.id = id;
+        this.typeOfPowerup = typeOfPowerup;
 
         this.pos = {
             x: x - this.size.width / 2,
