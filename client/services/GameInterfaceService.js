@@ -16,6 +16,11 @@ export default class GameInterfaceService {
 		gameUI.id= "game-ui" ;
 		gameUI.className = 'ui'
 
+		// top part
+		const gameUItop = document.createElement("div");
+		gameUItop.id= "game-ui-top" ;
+		gameUItop.className = 'game-ui-half'
+
 		const gameElement = document.getElementById("game");
 
 		const idElement = this.createGameIdElement(gameId);
@@ -26,11 +31,75 @@ export default class GameInterfaceService {
 		const countdownElement = this.createCountdownElement(timeRemaining);
 		const fullscreenButton = this.createFullscreenButton();
 
+		// lower part
+		const gameUIlower = document.createElement("div");
+		gameUIlower.id= "game-ui-lower" ;
+		gameUIlower.className = 'game-ui-half'
+
+		const scores = this.createScores();
+
 		gameElement.appendChild(gameUI);
-		gameUI.appendChild(idElement);
-		gameUI.appendChild(countdownElement);
-		gameUI.appendChild(playerCountElement);
-		gameUI.appendChild(fullscreenButton);
+
+		gameUI.appendChild(gameUItop);
+		gameUI.appendChild(gameUIlower);
+
+		gameUItop.appendChild(idElement);
+		gameUItop.appendChild(countdownElement);
+		gameUItop.appendChild(playerCountElement);
+		gameUItop.appendChild(fullscreenButton);
+
+		// gameUIlower.appendChild(idElement);
+	}
+
+	createScores() {
+		const element = document.createElement("div");
+		element.id = `players-scores}`;
+		element.className = 'ui-item';
+		element.innerHTML = `<span id="players-scores-value" class='value'></span>`;
+		element.style.display = "flex";
+
+		return element;
+	}
+
+	updateScores(gameId) {
+		const players = this.#clientStore.games.get(gameId).state.players;
+
+		for (let playerId in players) {
+			let element = document.getElementById(`${playerId}-score`);
+
+			if (!element) {
+				// Create the wrapper element
+				element = document.createElement("div");
+				element.id = `${playerId}-score`;
+				element.className = "ui-item";
+
+				// Add name span
+				const nameSpan = document.createElement("span");
+				nameSpan.className = "score-name";
+				const player = players[playerId];
+				nameSpan.textContent = `${player.name}:`;
+				// nameSpan.textContent = player.name.substring(10) + ": ";
+
+				// Add lives span
+				const livesSpan = document.createElement("span");
+				livesSpan.className = "score-lives";
+				livesSpan.textContent = player.score;
+
+				// Append to element
+				element.appendChild(nameSpan);
+				element.appendChild(livesSpan);
+
+				const gameUilower = document.getElementById("game-ui-lower");
+				gameUilower.appendChild(element);
+			} else {
+				// Just update the lives span
+				const livesSpan = element.querySelector(".score-lives");
+				if (livesSpan) {
+					const player = players[playerId];
+					livesSpan.textContent = player.score;
+				}
+			}
+		}
 	}
 
 	createGameIdElement(gameId) {

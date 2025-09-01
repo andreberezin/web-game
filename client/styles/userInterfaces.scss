@@ -5,9 +5,9 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-around;
-  position: fixed;
-  left: 50%;
-  transform: translateX(-50%);
+  //position: fixed;
+  //left: 50%;
+  //transform: translateX(-50%);
   box-shadow: 0 5px 30px 1px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.49);
   background: rgba(255, 255, 255, 0.52);
@@ -19,16 +19,40 @@
 
   &#game-ui {
     top: 0;
+    height: 10%;
+    flex-direction: column;
 
-    #countdown {
-      font-size: 1.75rem;
+    .game-ui-half {
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-around;
+      position: relative;
     }
 
-    button#fullscreen-button {
-      position: absolute;
-      right: 20px;
-      top: 5px;
-      font-size: 2rem;
+    #game-ui-top { // contains game id, countdown, player count and fullscreen button
+      border-bottom: 1px solid white;
+
+      #countdown {
+        font-size: 1.75rem;
+      }
+
+      button#fullscreen-button {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 2rem;
+      }
+    }
+
+    #game-ui-lower {
+      #players-scores {
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-around;
+      }
     }
   }
 

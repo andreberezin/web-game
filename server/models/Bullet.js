@@ -13,13 +13,15 @@ export default class Bullet {
         width: 10,
         height: 10,
     }
+    shooterId = null;
 
-    constructor(id, x, y, direction, damageMultiplier, angle) {
+    constructor(id, x, y, direction, damageMultiplier, angle, shooterId) {
         this.id = id;
         this.direction = direction;
         this.velocityPerSecond = 3000;
         this.damageMultiplier = damageMultiplier;
         this.angle = angle;
+        this.shooterId = shooterId;
 
         // Center the bullet at the given (x, y)
         this.pos = {
@@ -27,44 +29,4 @@ export default class Bullet {
             y: y - this.size.height / 2,
         };
     }
-
-    // get id() {
-    //     return this.#id;
-    // }
-    //
-    // set id(id) {
-    //     this.#id = id;
-    // }
-    //
-    // get pos() {
-    //     return this.#pos;
-    // }
-    //
-    // set pos(pos) {
-    //     this.#pos = pos;
-    // }
-    //
-    // get direction() {
-    //     return this.#direction;
-    // }
-    //
-    // set direction(direction) {
-    //     this.#direction = direction;
-    // }
-    //
-    // get velocity() {
-    //     return this.#velocity;
-    // }
-    //
-    // set velocity(velocity) {
-    //     this.#velocity = velocity;
-    // }
-    //
-    // get size() {
-    //     return this.#size;
-    // }
-
-    // set size(size) {
-    //     this.#size = size;
-    // }
 }

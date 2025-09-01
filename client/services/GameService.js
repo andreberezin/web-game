@@ -52,7 +52,7 @@ export default class GameService {
 
 	initializeGameField(mapType, gameId, myId) {
 		const gameField = this.#gameFieldService
-		gameField.createElement(mapType);
+		gameField.createGamefieldElement(mapType);
 
 		const game = this.#clientStore.games.get(gameId);
 
@@ -70,15 +70,16 @@ export default class GameService {
 		const players = game.state.players;
 		const settings = game.settings;
 
+		this.#gameFieldService.createGameElement();
+		this.#gameInterfaceService.createGameUI(gameId, settings, players);
 		this.initializeGameField(settings.mapType, gameId, myId);
 		this.initializePlayers(gameId, players, players[myId]);
-		this.#gameInterfaceService.createGameUI(gameId, settings, players);
 		this.#clientManager.startRenderLoop();
 	}
 
 	startGame() {
 		this.#gameFieldService.hideLobby();
-		this.#gameInterfaceService.createLivesDisplay();
+		// this.#gameInterfaceService.createLivesDisplay();
 	}
 
 	pauseGame() {
@@ -109,6 +110,7 @@ export default class GameService {
 	}
 
 	leaveGame() {
+		console.log("Cleaning up...");
 		this.#clientManager.stopRenderLoop();
 		this.#playerInputService.removeEventListeners();
 		this.#socketHandler.cleanupGameListeners();

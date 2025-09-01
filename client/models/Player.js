@@ -30,7 +30,9 @@ export default class Player {
     }
     #direction = null;
     #hp = 0;
+    #kills = 0;
     #lives = 3;
+    #score = 0;
     #shootingAngle = null;
     // lastShotTime = 0;
     // shotCooldown = 250;
@@ -68,12 +70,28 @@ export default class Player {
         this.#hp = hp;
     }
 
+    get kills() {
+        return this.#kills;
+    }
+
+    set kills(kills) {
+        this.#kills = kills;
+    }
+
     get lives() {
         return this.#lives;
     }
 
     set lives(lives) {
         this.#lives = lives;
+    }
+
+    get score() {
+        return this.#score;
+    }
+
+    set score(score) {
+        this.#score = score;
     }
 
     get shootingAngle() {

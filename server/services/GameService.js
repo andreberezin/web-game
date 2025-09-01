@@ -99,23 +99,23 @@ export default class GameService {
                 }
 
                 if (playersWhoHaventLost.length > 0) {
-                    let mostLives = 0;
-                    let playersWithMostLives = [];
+                    let mostScore = 0;
+                    let playersWithMostScore = [];
                     for (const player of playersWhoHaventLost) {
-                        if (player.lives > mostLives) {
-                            playersWithMostLives = [];
-                            playersWithMostLives.push(player);
-                            mostLives = player.lives;
-                        } else if (player.lives === mostLives) {
-                            playersWithMostLives.push(player);
+                        if (player.score > mostScore) {
+                            playersWithMostScore = [];
+                            playersWithMostScore.push(player);
+                            mostScore = player.score;
+                        } else if (player.score === mostScore) {
+                            playersWithMostScore.push(player);x
                         }
                     }
                     let playerWhoWon;
-                    if (playersWithMostLives.length === 1) {
-                        playerWhoWon = playersWithMostLives[0];
+                    if (playersWithMostScore.length === 1) {
+                        playerWhoWon = playersWithMostScore[0];
                         console.log("%s player WON!", playerWhoWon.name);
                         this.#io.emit('declareWinner', game.id, playerWhoWon);
-                    } else if (playersWithMostLives.length > 1) {
+                    } else if (playersWithMostScore.length > 1) {
                         console.log("The game is a draw.");
                         this.#io.emit('declareWinner', game.id, null);
                     }
@@ -197,9 +197,12 @@ export default class GameService {
             const player = game.state.players[playerId];
             player.hp = 100;
             player.lives = 3;
+            player.kills = 0;
+            player.score = 0;
             player.pos = { x: 100, y: 100 }; // or random spawn
             player.pauses = 2; // reset pause count
             player.status.alive = true;
+            player.damageMultiplier = 1;
         }
 
         // Reset bullets, powerups, etc.
@@ -213,29 +216,6 @@ export default class GameService {
 
         console.log(`Game ${gameId} restarted`);
     }
-
-    // handlePauseTimer(game, io, gameId) {
-    //     const pauseCountdown = () => {
-    //         const state = game.state;
-    //         const pause = state.pause;
-    //
-    //         const currentGame = this.#serverStore.games.get(gameId);
-    //
-    //         const elapsed = Date.now() - pause.startTime;
-    //         pause.timeRemaining = Math.max(0, pause.duration - elapsed);
-    //         console.log("Pause time remaining:", pause.timeRemaining);
-    //
-    //         if (pause.timeRemaining > 0 && state.status === "paused" && currentGame) {
-    //             setTimeout(pauseCountdown, 10)
-    //
-    //         } else {
-    //             console.log("Game pause has ended");
-    //             this.resumeGame(game, io, gameId);
-    //         }
-    //     }
-    //
-    //     setTimeout(pauseCountdown, 10);
-    // }
 
     handlePauseTimer(game, io, gameId) {
         const pauseCountdown = () => {
@@ -294,15 +274,23 @@ export default class GameService {
                     let bulletEndX = bullet.pos.x + movementDistance * bullet.direction.x;
                     let bulletEndY = bullet.pos.y + movementDistance * bullet.direction.y;
 
-                    console.log(`Checking collision: bullet at (${bullet.pos.x}, ${bullet.pos.y}) -> (${bulletEndX}, ${bulletEndY}), movement: ${movementDistance}`);
+                    // console.log(`Checking collision: bullet at (${bullet.pos.x}, ${bullet.pos.y}) -> (${bulletEndX}, ${bulletEndY}), movement: ${movementDistance}`);
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
-                        console.log("player hit");
+                        console.log(`${player.name} hit`);
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
                             player.handleDeath();
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
+
+                            const killer = game.state.players[bullet.shooterId];
+                            if (killer && killer.id !== player.id) {
+                                killer.kills += 1;
+                                killer.score += 1;
+                                console.log(`${killer.name} killed ${player.name}`);
+                            }
+
                         }
 
                         bulletsToDelete.push(bulletID);

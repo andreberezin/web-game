@@ -29,6 +29,7 @@ export default class Powerup {
         if (this.typeOfPowerup === 0) {
             if(player.lives < 5) {
                 player.lives += 1;
+                player.score += 1;
                 console.log("Giving extra life to player: ", player.lives);
             }
         } else if (this.typeOfPowerup === 1) {

@@ -157,6 +157,9 @@ export default class SocketHandler {
 			this.#gameInterface.gameId = gameId;
 			this.#clientStore.gameId = gameId;
 
+
+			this.#gameInterfaceService.updateScores(gameId);
+
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
@@ -186,17 +189,19 @@ export default class SocketHandler {
 					player.size = updatedPlayer.size;
 					player.deathCooldown = updatedPlayer.deathCooldown;
 					player.pauses = updatedPlayer.pauses;
+					player.kills = updatedPlayer.kills;
+					player.score = updatedPlayer.kills + updatedPlayer.lives;
 				}
 			}
 
-			const livesDisplay = document.getElementById('lives-display');
-			if (livesDisplay && currentGameState.players) {
-				let html = '<strong>Lives:</strong><br>';
-				Object.values(currentGameState.players).forEach(player => {
-					html += `${player.name}: ${player.lives} ♥<br>`;
-				});
-				livesDisplay.innerHTML = html;
-			}
+			// const livesDisplay = document.getElementById('lives-display');
+			// if (livesDisplay && currentGameState.players) {
+			// 	let html = '<strong>Lives:</strong><br>';
+			// 	Object.values(currentGameState.players).forEach(player => {
+			// 		html += `${player.name}: ${player.lives} ♥<br>`;
+			// 	});
+			// 	livesDisplay.innerHTML = html;
+			// }
 
 			for (const bulletID in updatedGameState.bullets) {
 				const bullet = updatedGameState.bullets[bulletID];
