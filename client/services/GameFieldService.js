@@ -49,13 +49,20 @@ export default class GameFieldService {
 		this.#socketHandler = handler;
 	}
 
-	createElement(mapType) {
+	createGameElement() {
 		if (existingUI('game')) return;
 
-		//console.log("Map type", mapType);
 		const root = document.getElementById('root');
 		const game = document.createElement('div');
 		game.id = 'game';
+
+		root.append(game);
+	}
+
+	createGamefieldElement(mapType) {
+		if (existingUI('game-field')) return;
+		//console.log("Map type", mapType);
+
 
 		const gameField = document.createElement('div');
 		gameField.id = 'game-field';
@@ -73,7 +80,8 @@ export default class GameFieldService {
 		const pauseOverlay = this.createPauseOverlay();
 		const notification = this.createNotification();
 
-		root.append(game);
+		const game = document.getElementById('game');
+
 		game.append(gameField);
 		gameField.append(gameInner);
 		gameField.append(lobbyOverlay);
@@ -205,8 +213,28 @@ export default class GameFieldService {
 		const winner = document.createElement('div');
 		winner.id = 'winner';
 
-		const scores = document.createElement('div');
+		const scores = document.createElement('table');
 		scores.id = 'scores';
+
+		const thead = document.createElement('thead');
+		thead.id = 'scores-head';
+
+		const row = document.createElement('tr');
+
+		const column1 = document.createElement('th');
+		column1.textContent = `Player`
+
+		const column2 = document.createElement('th');
+		column2.textContent = `Score`
+
+		const tbody = document.createElement('tbody');
+		tbody.id = 'scores-body';
+
+		row.appendChild(column1);
+		row.appendChild(column2);
+		thead.appendChild(row);
+		scores.appendChild(thead);
+		scores.appendChild(tbody);
 
 		scoreboard.appendChild(winner);
 		scoreboard.appendChild(scores);
@@ -222,27 +250,39 @@ export default class GameFieldService {
 		scoreboard.style.display = 'flex'
 	}
 
-	updateWinnerAndScores(playerId, gameId) {
+	// todo base score on lives left + kills. Currently based on lives left
+	updateWinnerAndScores(winnerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
-		const player = game.state.players[playerId];
+		const winner = game.state.players[winnerId];
 
-		const winner = document.getElementById('winner');
-		const scores = document.getElementById('scores');
+		const winnerElement = document.getElementById('winner');
+		const scoresBody = document.getElementById('scores-body');
 
-		if (playerId === null) {
-			winner.innerHTML = (`The game is a draw!`);
-			scores.innerHTML = ``;
-		} else if (playerId) {
-			if (playerId === this.#clientStore.myId) {
-				winner.textContent = `You won the game!`;
+		for (let playerId in game.state.players) {
+			const player = game.state.players[playerId];
+			const playerRow = document.createElement('tr');
+			const nameCell = document.createElement('td');
+			nameCell.textContent = `${player.name}`;
+			const scoreCell = document.createElement('td');
+			scoreCell.textContent = `${player.lives}`;
+			playerRow.classList.add('player-score');
+			playerRow.appendChild(nameCell);
+			playerRow.appendChild(scoreCell);
+			scoresBody.appendChild(playerRow);
+ 		}
+
+		if (winnerId === null) {
+			winnerElement.innerHTML = (`The game is a draw!`);
+		} else if (winnerId) {
+			if (winnerId === this.#clientStore.myId) {
+				winnerElement.textContent = `You won the game!`;
 			} else {
-				winner.textContent = `${player.name} has won the game!`;
+				winnerElement.textContent = `${winner.name} has won the game!`;
 			}
 
 			const trophy = document.createElement("i");
 			trophy.classList.add("fas", "fa-trophy");
-			winner.appendChild(trophy);
-			scores.innerHTML = ``;
+			winnerElement.appendChild(trophy);
 		}
 	}
 

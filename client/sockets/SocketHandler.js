@@ -155,6 +155,9 @@ export default class SocketHandler {
 			this.#gameInterface.gameId = gameId;
 			this.#clientStore.gameId = gameId;
 
+
+			this.#gameInterfaceService.updateScores(gameId);
+
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {

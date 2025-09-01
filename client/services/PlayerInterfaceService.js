@@ -36,6 +36,7 @@ export default class PlayerInterfaceService {
 
 		this.#uiParts.forEach(uiPart => {
 
+
 			const element = uiPart === "respawnTimer" ? this.createRespawnTimer(uiPart) : (uiPart === "pause" || uiPart === "quit" ? this.createMenuButton(uiPart) : this.createElement(uiPart));
 
 			switch (uiPart) {
@@ -102,6 +103,7 @@ export default class PlayerInterfaceService {
 			elementValue.textContent = value
 		}
 	}
+
 
 	createRespawnTimer(type) {
 		const element = document.createElement("div");

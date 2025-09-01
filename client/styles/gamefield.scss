@@ -7,9 +7,10 @@
   align-items: center;       /* center vertically */
   background-color: transparent;
   overflow: hidden;
+  flex-direction: column;
 
   #game-field {
-	height: 90%;
+	height: 85%;
 	width: 100%;
 	position: relative;
 	//overflow: hidden;

@@ -60,7 +60,7 @@ function App() {
     useEffect(() => {
         function updateScale() {
             const scaleX = (window.innerWidth * 1) / 1920;
-            const scaleY = (window.innerHeight * 0.90) / 1080; // match 90% height from #game-field
+            const scaleY = (window.innerHeight * 0.85) / 1080; // match 90% height from #game-field
             const scale = Math.min(scaleX, scaleY);
 
             document.documentElement.style.setProperty('--scale', scale);
