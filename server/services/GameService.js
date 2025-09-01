@@ -99,23 +99,23 @@ export default class GameService {
                 }
 
                 if (playersWhoHaventLost.length > 0) {
-                    let mostLives = 0;
-                    let playersWithMostLives = [];
+                    let mostScore = 0;
+                    let playersWithMostScore = [];
                     for (const player of playersWhoHaventLost) {
-                        if (player.lives > mostLives) {
-                            playersWithMostLives = [];
-                            playersWithMostLives.push(player);
-                            mostLives = player.lives;
-                        } else if (player.lives === mostLives) {
-                            playersWithMostLives.push(player);
+                        if (player.score > mostScore) {
+                            playersWithMostScore = [];
+                            playersWithMostScore.push(player);
+                            mostScore = player.score;
+                        } else if (player.score === mostScore) {
+                            playersWithMostScore.push(player);x
                         }
                     }
                     let playerWhoWon;
-                    if (playersWithMostLives.length === 1) {
-                        playerWhoWon = playersWithMostLives[0];
+                    if (playersWithMostScore.length === 1) {
+                        playerWhoWon = playersWithMostScore[0];
                         console.log("%s player WON!", playerWhoWon.name);
                         this.#io.emit('declareWinner', game.id, playerWhoWon);
-                    } else if (playersWithMostLives.length > 1) {
+                    } else if (playersWithMostScore.length > 1) {
                         console.log("The game is a draw.");
                         this.#io.emit('declareWinner', game.id, null);
                     }
@@ -274,7 +274,7 @@ export default class GameService {
                     let bulletEndX = bullet.pos.x + movementDistance * bullet.direction.x;
                     let bulletEndY = bullet.pos.y + movementDistance * bullet.direction.y;
 
-                    console.log(`Checking collision: bullet at (${bullet.pos.x}, ${bullet.pos.y}) -> (${bulletEndX}, ${bulletEndY}), movement: ${movementDistance}`);
+                    // console.log(`Checking collision: bullet at (${bullet.pos.x}, ${bullet.pos.y}) -> (${bulletEndX}, ${bulletEndY}), movement: ${movementDistance}`);
 
                     if (this.raycastToPlayer(bullet.pos.x, bullet.pos.y, bulletEndX, bulletEndY, bullet, player)) {
                         console.log(`${player.name} hit`);
