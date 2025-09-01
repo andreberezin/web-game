@@ -83,7 +83,7 @@ export default class GameInterfaceService {
 				// Add lives span
 				const livesSpan = document.createElement("span");
 				livesSpan.className = "score-lives";
-				livesSpan.textContent = player.lives;
+				livesSpan.textContent = player.score;
 
 				// Append to element
 				element.appendChild(nameSpan);
@@ -95,7 +95,8 @@ export default class GameInterfaceService {
 				// Just update the lives span
 				const livesSpan = element.querySelector(".score-lives");
 				if (livesSpan) {
-					livesSpan.textContent = players[playerId].lives;
+					const player = players[playerId];
+					livesSpan.textContent = player.score;
 				}
 			}
 		}

@@ -189,6 +189,8 @@ export default class SocketHandler {
 					player.size = updatedPlayer.size;
 					player.deathCooldown = updatedPlayer.deathCooldown;
 					player.pauses = updatedPlayer.pauses;
+					player.kills = updatedPlayer.kills;
+					player.score = updatedPlayer.kills + updatedPlayer.lives;
 				}
 			}
 

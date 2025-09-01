@@ -33,6 +33,8 @@ export default class Player {
     shotCooldown = 250;
     hp = 100;
     lives = 3;
+    kills = 0;
+    score = 0;
     speed = 5;
     maxSpeed = 2;
     acceleration = 1000 // in ms, less is more

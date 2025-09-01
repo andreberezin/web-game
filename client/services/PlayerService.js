@@ -60,6 +60,10 @@ export default class PlayerService {
 		return player.start === undefined;
 	}
 
+	getScore(player) {
+		return player.lives + player.kills;
+	}
+
 	updateElementPosition(player) {
 		player.element.style.top = `${player.pos.y}px`
 		player.element.style.left = `${player.pos.x}px`

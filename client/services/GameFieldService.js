@@ -264,7 +264,7 @@ export default class GameFieldService {
 			const nameCell = document.createElement('td');
 			nameCell.textContent = `${player.name}`;
 			const scoreCell = document.createElement('td');
-			scoreCell.textContent = `${player.lives}`;
+			scoreCell.textContent = `${player.score}`;
 			playerRow.classList.add('player-score');
 			playerRow.appendChild(nameCell);
 			playerRow.appendChild(scoreCell);
@@ -287,10 +287,10 @@ export default class GameFieldService {
 	}
 
 	getFinalScores(players) {
-		const sorted = Object.values(players).sort((a, b) => b.lives - a.lives);
+		const sorted = Object.values(players).sort((a, b) => b.score - a.score);
 		let html = '<h3>Final Scores:</h3>';
 		sorted.forEach((player, i) => {
-			html += `<div style="margin: 5px 0; ${i === 0 ? 'font-weight: bold; color: gold;' : ''}">${i + 1}. ${player.name}: ${player.lives} lives</div>`;
+			html += `<div style="margin: 5px 0; ${i === 0 ? 'font-weight: bold; color: gold;' : ''}">${i + 1}. ${player.name}: ${player.score} lives</div>`;
 		});
 		return html;
 	}

@@ -218,7 +218,8 @@ export default class PlayerInputService {
                         player.shootingAngle,
                         game,
                         player.size.width,
-                        player.damageMultiplier
+                        player.damageMultiplier,
+                        player.id
                     );
                 }
                 //this.#bulletService.createBulletAt(player.pos.x, player.pos.y, player.direction, game, player.size.width, player.damageMultiplier);

@@ -13,7 +13,7 @@ export default class BulletService {
 		this.#gameService = gameService;
 	}
 
-	createBulletAt(x, y, angle, game, playerWidth, damageMultiplier) {
+	createBulletAt(x, y, angle, game, playerWidth, damageMultiplier, shooterId) {
 		// TODO: add UUID generation instead of math.random
 		const id = Math.floor(Math.random() * 10000);
 		const offset = 24;
@@ -26,7 +26,7 @@ export default class BulletService {
 			y: Math.sin(angle)
 		};
 
-		game.state.bullets[id] = new Bullet(id, bulletX, bulletY, directionVector, damageMultiplier, angle);
+		game.state.bullets[id] = new Bullet(id, bulletX, bulletY, directionVector, damageMultiplier, angle, shooterId);
 	}
 
 	updateBullets(game) {
