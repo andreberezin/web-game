@@ -192,14 +192,14 @@ export default class SocketHandler {
 				}
 			}
 
-			const livesDisplay = document.getElementById('lives-display');
-			if (livesDisplay && currentGameState.players) {
-				let html = '<strong>Lives:</strong><br>';
-				Object.values(currentGameState.players).forEach(player => {
-					html += `${player.name}: ${player.lives} ♥<br>`;
-				});
-				livesDisplay.innerHTML = html;
-			}
+			// const livesDisplay = document.getElementById('lives-display');
+			// if (livesDisplay && currentGameState.players) {
+			// 	let html = '<strong>Lives:</strong><br>';
+			// 	Object.values(currentGameState.players).forEach(player => {
+			// 		html += `${player.name}: ${player.lives} ♥<br>`;
+			// 	});
+			// 	livesDisplay.innerHTML = html;
+			// }
 
 			for (const bulletID in updatedGameState.bullets) {
 				const bullet = updatedGameState.bullets[bulletID];

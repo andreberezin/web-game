@@ -79,7 +79,7 @@ export default class GameService {
 
 	startGame() {
 		this.#gameFieldService.hideLobby();
-		this.#gameInterfaceService.createLivesDisplay();
+		// this.#gameInterfaceService.createLivesDisplay();
 	}
 
 	pauseGame() {
