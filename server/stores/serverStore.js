@@ -1,12 +1,12 @@
 export default class serverStore {
-	#TICK_RATE = 1000/60;
+	#TICK_RATE = 1000 / 60;
 	#GAME_BOUNDS = {
 		MIN_X: 0,
 		MAX_X: 1920,
 		MIN_Y: 0,
-		MAX_Y: 1080,
-	}
-	#games = null
+		MAX_Y: 1080
+	};
+	#games = null;
 	#timeWhenLastPowerupWasCreated = 0;
 
 	constructor() {

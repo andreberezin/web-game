@@ -32,24 +32,17 @@ function App() {
 
     // temporary to render the game without the menu
     useEffect(() => {
-        console.log("SHOW MENU: ", SHOW_MENU);
-
         if (SHOW_MENU === "FALSE") {
             const socket = clientManager.socketHandler.socket;
 
             socket.on('connect', () => {
-                console.log("Socket connected with ID:", socket.id);
-
                 // Listen once for available games
                 socket.once('updateAvailableGames', (gamesList) => {
                     if (gamesList.length > 0) {
                         // Join the first available game
                         const firstGameId = gamesList[0].id
-                        console.log("Joining game:", firstGameId);
                         socket.emit('joinGame', firstGameId, socket.id);
                     } else {
-                        // Create a new game
-                        console.log("Creating new game with ID:", socket.id);
                         socket.emit('createGame', socket.id, socket.id, gameSettings.current);
                     }
                 });
@@ -79,9 +72,7 @@ function App() {
     useEffect(() => {
         clientManager.onGameEnd = () => {
             setTimeout(() => {
-                // setIsGameStarted(false);
                 setView('main')
-                console.log("Rerendering menu");
                 const socket = clientManager.socketHandler.socket;
                 socket.emit('fetchAvailableGames');
             }, 100)
@@ -118,7 +109,7 @@ function App() {
 
         return (
             <>
-                {view !== 'game' && ( // !isGameStarted
+                {view !== 'game' && (
                     <Menu clientManager={clientManager} setError={setError} setView={setView} view={view}></Menu>
                 )}
                 {error && <Error error={error} setError={setError} />}

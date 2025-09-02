@@ -24,8 +24,6 @@ export default class PlayerInputService {
 		if (this.#hasListeners) return;
 		this.#hasListeners = true;
 
-		//console.log("Adding event listeners");
-
 		this.#keydownHandler = (event) => this.handleKeyPress(event);
 		this.#keyupHandler = (event) => this.handleKeyPress(event);
 		this.#mouseClickHandler = (event) => this.handleMouseClicking(event);

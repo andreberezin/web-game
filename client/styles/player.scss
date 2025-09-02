@@ -9,7 +9,6 @@ $player-colors: (
   .player[number='#{$id}'] {
 	.player-inner {
 	  .player-body {
-		//--player-color: #{$color};
 		background-color: #{$color};
 	  }
 	}
@@ -18,7 +17,6 @@ $player-colors: (
 
 .player {
   position: absolute;
-  //background-color: var(--player-color);
   background-color: transparent;
   aspect-ratio: 1/1;
 	z-index: 15;
@@ -31,7 +29,6 @@ $player-colors: (
 	.player-body {
 	  width: 100%;
 	  height: 100%;
-	  //background-color: var(--player-color);
 	}
 
 	.player-name {

@@ -7,7 +7,6 @@ export default class SocketHandler {
 	#socket;
 	#listeners = {}
 	#externalListeners = {}
-
 	#playerService;
 	#playerInterfaceService;
 	#gameInterface
@@ -80,27 +79,18 @@ export default class SocketHandler {
 		})
 
 		socket.on('updateAvailableGames', (gamesList) => {
-			// todo this does nothing currently. Possibly go back to having a list of available games with minimal information and 1 object with current game data rather than having a single Map with all the data for all games
-			// this.#clientStore.games = new Map(
-			// 	gamesList.map(game => [game.id, { settings: game.settings, state: game.state }])
-			// );
-
 			if (this.#listeners["updateAvailableGames"]) {
 				this.#listeners["updateAvailableGames"](gamesList);
 			}
 		})
 
 		this.on('createGameSuccess', (gameId) => {
-			console.log("Game created: ", gameId);
-
 			if (!this.#clientStore.myId) {
 				this.#clientStore.myId = gameId;
 			}
 		})
 
 		this.on('joinGameSuccess', (gameId, state, settings, myId) => {
-			console.log("Game:", gameId, "joined by player: ", myId);
-
 			if (this.#externalListeners["joinGameSuccess"]) {
 				this.#externalListeners["joinGameSuccess"]();
 			}
@@ -122,29 +112,13 @@ export default class SocketHandler {
 
 		// todo refactor this monstrum
 		this.on('updateGameState', (gameId, updatedGameState) => {
-
 			const game = this.#clientStore.games.get(gameId)
-
-			if (!game) {
-				console.warn(`No game found with ID ${gameId}`);
-				return;
-			}
+			if (!game) return;
 
 			const currentGameState = game.state;
 
-			// handle time remaining
 			if (currentGameState && updatedGameState) {
 				currentGameState.timeRemaining = updatedGameState.timeRemaining;
-
-				// // handle timer end
-				// if (currentGameState.timeRemaining <= 0 && currentGameState.status === "started") {
-				// 	// todo goes here 5 times
-				// 	socket.emit('gameStatusChange', gameId, "finished")
-				// 	return;
-				// }
-
-			} else {
-				console.error("Cannot update time remaining")
 			}
 
 			if (currentGameState.status === "paused") {
@@ -167,7 +141,6 @@ export default class SocketHandler {
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
 					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
-					//console.log("Creating player model for:", updatedGameState.players[playerID]);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}
@@ -197,15 +170,6 @@ export default class SocketHandler {
 				}
 			}
 
-			// const livesDisplay = document.getElementById('lives-display');
-			// if (livesDisplay && currentGameState.players) {
-			// 	let html = '<strong>Lives:</strong><br>';
-			// 	Object.values(currentGameState.players).forEach(player => {
-			// 		html += `${player.name}: ${player.lives} ♥<br>`;
-			// 	});
-			// 	livesDisplay.innerHTML = html;
-			// }
-
 			for (const bulletID in updatedGameState.bullets) {
 				const bullet = updatedGameState.bullets[bulletID];
 
@@ -213,7 +177,6 @@ export default class SocketHandler {
 					currentGameState.bullets[bulletID] = new Bullet(bulletID, bullet.pos.x, bullet.pos.y, bullet.direction);
 					this.#bulletService.createBulletModel(bullet, bulletID);
 				}  else {
-					// console.log(updatedGameState.bullets[bulletID].position);
 					currentGameState.bullets[bulletID].pos = bullet.pos;
 				}
 			}
@@ -236,7 +199,6 @@ export default class SocketHandler {
 					currentGameState.powerups[powerupID] = new Powerup(powerupID, powerup.pos.x, powerup.pos.y, powerup.typeOfPowerup);
 					this.#powerupService.createPowerupModel(powerup, powerupID);
 				}  else {
-					// console.log(updatedGameState.powerups[powerupID].position);
 					currentGameState.powerups[powerupID].pos = powerup.pos;
 				}
 			}
@@ -275,15 +237,12 @@ export default class SocketHandler {
 		})
 
 		this.on('playerJoined', (playerId, playerName) => {
-			console.log("Player:", playerId, "joined the game");
 			const text = `${playerName} joined`;
 			this.#gameFieldService.showNotification(text);
 			this.#gameFieldService.enableStartButton();
 		})
 
 		this.on('playerLeft', (playerId) => {
-			console.log("Player:", playerId, "left the game");
-
 			const playerName = this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId].name;
 			const text = `${playerName} left`;
 			this.#gameFieldService.showNotification(text);
@@ -296,12 +255,9 @@ export default class SocketHandler {
 				this.#playerService.removePlayerElement(playerId);
 				delete this.#clientStore.games.get(this.#clientStore.gameId).state.players[playerId];
 			}
-
 		})
 
 		this.on('gameStatusChangeSuccess', (gameId, status, playerId = null) => {
-			console.log("Game status changed: ", status, "by player: ", playerId);
-
 			if (status !== "finished") {
 				this.#gameService.updateGameStatus(gameId, status, playerId);
 			}
@@ -311,7 +267,6 @@ export default class SocketHandler {
 		this.on('declareWinner', (gameId, player) => {
 			if (player === null) {
 				this.#audioService.playEnd();
-				console.log("The game is a draw!");
 				setTimeout(() => {
 					this.#gameService.updateGameStatus(gameId, "finished", null);
 				}, 50)
@@ -321,7 +276,6 @@ export default class SocketHandler {
 				} else {
 					this.#audioService.playEnd();
 				}
-				console.log("Player %s won the game!", player.name);
 				this.#gameService.updateGameStatus(gameId, "finished", player.id);
 			}
 		});
@@ -330,7 +284,6 @@ export default class SocketHandler {
 			this.#audioService.playPowerup();
 			if (this.#notificationService && data.playerId === this.#clientStore.myId) {
 				this.#notificationService.showPowerupNotification(data.powerupType);
-				console.log(`Powerup collected! Type: ${data.powerupType}`);
 			}
 		});
 

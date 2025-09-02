@@ -25,8 +25,6 @@ export default class PlayerService {
 		const playerElement = document.getElementById(playerId);
 		if (player.status.alive === false && playerElement) {
 			playerElement.hidden = true;
-			//this.removePlayerModel(playerId);
-			//this.resetAcceleration(player, timestamp);
 			return;
 		}
 

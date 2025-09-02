@@ -38,12 +38,9 @@ export default class ClientManager {
 
 	renderLoop = (timestamp) => {
 		const store = this.#clientStore;
-		// const currentGameId = store.gameId
-
 		if (store.gameId && this.#socketHandler.socket) { // && store.games.get(store.gameId).state.status !== "finished"
 			const game = store.games.get(store.gameId)
 
-			// todo we're updating some things here and some things in Sockethandler...
 			const {players, bullets, powerups} = game.state;
 			this.#gameInterfaceService.updateGameUI(game);
 
@@ -72,7 +69,6 @@ export default class ClientManager {
 				const myId = store.myId
 				if (myId && players[myId]) {
 					const me =  players[myId];
-					//this.socketHandler.socket.emit("updateMyPlayerData", me.input); // me.maxPosition me.shift
 					this.#playerInterfaceService.updatePlayerUI(me);
 				}
 			}

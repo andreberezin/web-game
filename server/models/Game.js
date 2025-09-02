@@ -2,7 +2,7 @@ export default class Game {
 	#id = null;
 	#state = {
 		isRunning: false,
-		status: 'waiting', // started, paused, finished
+		status: 'waiting',
 		timeRemaining: 0,
 		startTime: null,
 		mapOfDestroyableWalls: {},
@@ -13,15 +13,15 @@ export default class Game {
 		pause: {
 			startTime: null,
 			duration: 10000,
-			timeRemaining: 0,
+			timeRemaining: 0
 		}
 	};
 	#playersInLobby = 1;
 	#settings = {
 		private: false,
-		duration: 120000, // milliseconds = 1 minute
+		duration: 120000,
 		maxPlayers: 4,
-		mapType: "empty"
+		mapType: 'empty'
 	};
 	#map = [
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -50,9 +50,8 @@ export default class Game {
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
 		1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+		1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	];
-	#playerColors = []
 
 	constructor(id, settings = {}) {
 		this.#id = id;
@@ -97,10 +96,6 @@ export default class Game {
 
 	set settings(updatedSettings) {
 		this.#settings = updatedSettings;
-	}
-
-	updateSettings(updatedSettings) {
-		this.#settings = {...this.#settings, ...updatedSettings};
 	}
 
 	get map() {

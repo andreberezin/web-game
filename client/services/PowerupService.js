@@ -1,6 +1,4 @@
 export class PowerupService {
-	// todo move powerup related methods from GameService to here
-
 	#clientStore
 	#gameFieldService
 
@@ -36,10 +34,6 @@ export class PowerupService {
 		powerupElement.style.backgroundSize = 'contain';
 		powerupElement.style.backgroundRepeat = 'no-repeat';
 		powerupElement.style.backgroundPosition = 'center';
-
-		// for (const property in powerup.styles) {
-		// 	powerupElement.style[property] = powerup.styles[property]
-		// }
 
 		powerup.element = powerupElement;
 		return powerupElement;

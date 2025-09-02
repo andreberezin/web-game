@@ -9,12 +9,9 @@ import {Instructions} from './Instructions.jsx';
 import {InstructionsButton} from './InstructionsButton.jsx';
 import {CreateGameButton} from './CreateGameButton.jsx';
 
+// todo add logic to save game id to browser storage to automatically join correct game when refreshing
 export function Menu({clientManager, setError, setView, view}) {
 	const [gameId, setGameId] = useState(null);
-
-
-	// todo add logic to save game id to browser storage to automatically join correct game when refreshing
-
 	const [games, setGames] = useState({});
 
 	useEffect(() => {
@@ -24,8 +21,6 @@ export function Menu({clientManager, setError, setView, view}) {
 
 			setGames(gamesObj);
 		});
-
-		console.log("games: ", games);
 
 		return () => {
 			clientManager.socketHandler.on("updateAvailableGames", null);
@@ -38,7 +33,7 @@ export function Menu({clientManager, setError, setView, view}) {
 			<div id={"menu"}>
 				<div id={"title"}>Cube Wars</div>
 
-				{view === 'main' && // !isCreateGame && !isGameStarted && !isCreatePlayer && !isInstructions &&
+				{view === 'main' &&
 					<>
 						<InstructionsButton
 							setView={setView}

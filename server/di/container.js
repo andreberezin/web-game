@@ -8,7 +8,7 @@ import serverStore from '../stores/serverStore.js';
 import BulletService from '../services/BulletService.js';
 import PowerupService from '../services/PowerupService.js';
 
-const container = createContainer()
+const container = createContainer();
 
 container.register({
 	playerInputService: asClass(PlayerInputService).singleton(),
@@ -18,7 +18,7 @@ container.register({
 	powerupService: asClass(PowerupService).singleton(),
 	socketHandler: asClass(SocketHandler).singleton(),
 	gamesManager: asClass(GamesManager).singleton(),
-	serverStore: asClass(serverStore).singleton(),
-})
+	serverStore: asClass(serverStore).singleton()
+});
 
 export default container;

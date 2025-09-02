@@ -5,15 +5,6 @@ export default class clientStore {
 	#myId = null;
 	#gameId = null;
 	#games = new Map();
-	// #currentGame = {
-	// 	id: null,
-	// 	state: {
-	// 		players: {},
-	// 		interfaces: {},
-	// 		bullets: {},
-	// 	},
-	// 	settings: {},
-	// }
 
 	get uiState() {
 		return this.#uiState;
@@ -56,20 +47,6 @@ export default class clientStore {
 
 	updateGames(games) {
 		for (const [key, value] of games) {
-			this.#games.set(key, value);
-		}
-	}
-
-	getCurrentGame(id) {
-		return this.#games.get(id);
-	}
-
-	setCurrentGame(game) {
-		this.#games.set(id, game);
-	}
-
-	updateCurrentGame(game) {
-		for (const [key, value] of game) {
 			this.#games.set(key, value);
 		}
 	}

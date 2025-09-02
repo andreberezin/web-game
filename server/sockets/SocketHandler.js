@@ -2,10 +2,10 @@ import Player from '../models/Player.js';
 import container from '../di/container.js';
 
 export default class SocketHandler {
-	#io
-	#gamesManager
-	#gameService
-	#serverStore
+	#io;
+	#gamesManager;
+	#gameService;
+	#serverStore;
 
 	constructor({io, serverStore}) {
 		this.#io = io;
@@ -29,20 +29,18 @@ export default class SocketHandler {
 	}
 
 	createSocketConnection() {
-		console.log("Connecting servers...");
+		console.log('Connecting servers...');
 
-		this.#io.of("/").adapter.on("delete-room", (room) => {
+		this.#io.of('/').adapter.on('delete-room', (room) => {
 			console.log(`Room ${room} was deleted`);
 		});
 
 		this.#io.on('connection', (socket) => {
-			console.log("Connected servers");
+			console.log('Connected servers');
 
-			socket.on("fetchAvailableGames", () => {
-				console.log("Fetching available games");
-
+			socket.on('fetchAvailableGames', () => {
 				socket.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
-			})
+			});
 
 			socket.on('createGame', (hostId, playerName, settings) => {
 				try {
@@ -50,14 +48,14 @@ export default class SocketHandler {
 
 					const gameId = hostId;
 
-					socket.emit("createGameSuccess", gameId);
+					socket.emit('createGameSuccess', gameId);
 
 					this.joinGame(socket, gameId, hostId, playerName, {x: 100, y: 100});
 				} catch (error) {
 					console.log(error.message);
 					socket.emit('error', error.message);
 				}
-			})
+			});
 
 			socket.on('joinGame', (gameId, playerName) => {
 				const playerId = socket.id;
@@ -67,13 +65,13 @@ export default class SocketHandler {
 					playerPos = {x: 1700, y: 900};
 				} else if (game.playersInLobby === 2) {
 					playerPos = {x: 100, y: 900};
-				} else if (game.playersInLobby === 3){
+				} else if (game.playersInLobby === 3) {
 					playerPos = {x: 1700, y: 100};
 				}
 				game.playersInLobby += 1;
 
 				this.joinGame(socket, gameId, playerId, playerName, playerPos);
-			})
+			});
 
 			socket.on('disconnect', () => {
 				const playerId = socket.id;
@@ -88,10 +86,10 @@ export default class SocketHandler {
 				if (players[playerId]) {
 					console.log('Disconnecting player: ', playerId);
 					delete players[playerId];
-					socket.to(gameId).emit("playerLeft", playerId);
+					socket.to(gameId).emit('playerLeft', playerId);
 				}
 				if (Object.keys(players).length === 0) {
-					console.log("Deleting game: ", gameId);
+					console.log('Deleting game: ', gameId);
 					this.#serverStore.games.delete(gameId);
 				}
 
@@ -99,7 +97,7 @@ export default class SocketHandler {
 					this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 				}
 			});
-		})
+		});
 	}
 
 	// todo refactor this monstrum as well
@@ -111,16 +109,16 @@ export default class SocketHandler {
 
 		try {
 			this.#gameService.addPlayerToGame(gameId, playerId, player);
-			socket.emit("joinGameSuccess", gameId, this.#serverStore.games.get(gameId).state,
+			socket.emit('joinGameSuccess', gameId, this.#serverStore.games.get(gameId).state,
 				this.#serverStore.games.get(gameId).settings, playerId);
 
 
-			socket.to(gameId).emit("playerJoined", playerId, playerName);
+			socket.to(gameId).emit('playerJoined', playerId, playerName);
 
-			console.log("Player: ", playerId, " joined game: ", gameId);
+			console.log('Player: ', playerId, ' joined game: ', gameId);
 		} catch (error) {
 			console.error(error.message);
-			socket.emit("error", error.message);
+			socket.emit('error', error.message);
 		}
 
 		const game = this.#serverStore.games.get(gameId);
@@ -133,24 +131,24 @@ export default class SocketHandler {
 			const player = gameState.players[playerId];
 
 			if (!player) {
-				console.error("Player not found: ", playerId);
+				console.error('Player not found: ', playerId);
 				return;
 			}
-			const input = player.input
-			if(key === "w") {
-				key = "ArrowUp";
-			} else if(key === "s") {
-				key = "ArrowDown";
-			} else if(key === "a") {
-				key = "ArrowLeft";
-			} else if(key === "d") {
-				key = "ArrowRight";
+			const input = player.input;
+			if (key === 'w') {
+				key = 'ArrowUp';
+			} else if (key === 's') {
+				key = 'ArrowDown';
+			} else if (key === 'a') {
+				key = 'ArrowLeft';
+			} else if (key === 'd') {
+				key = 'ArrowRight';
 			}
 
 			if (type === 'mouseclick') {
 				player.shootingAngle = shootingAngle;
 
-				if (key === " ") {
+				if (key === ' ') {
 					input.space = true;
 
 					setTimeout(() => {
@@ -161,8 +159,8 @@ export default class SocketHandler {
 				return;
 			}
 
-			type === "keydown" ? input[key] = true : input[key] = false;
-		})
+			type === 'keydown' ? input[key] = true : input[key] = false;
+		});
 
 		socket.on('gameStatusChange', (gameId, status, playerId = null) => {
 			if (!this.#serverStore.games.has(gameId)) return;
@@ -177,20 +175,11 @@ export default class SocketHandler {
 			this.#io.to(gameId).emit('gameStatusChangeSuccess', gameId, game.state.status, playerId);
 			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 
-			// separate update, per socket
-			if (status === "finished") {
+			if (status === 'finished') {
 				this.removeListeners(socket);
 				this.leaveSocketRoom(socket, gameId);
-
-				// const room = this.#io.sockets.adapter.rooms.get(gameId);
-				// if (room) {
-				// 	for (const socketId of room) {
-				// 		const socket = this.#io.sockets.sockets.get(socketId);
-				// 		if (socket) socket.leave(gameId);
-				// 	}
-				// }
 			}
-		})
+		});
 
 		socket.on('leaveGame', (gameId, playerId) => {
 			const game = this.#serverStore.games.get(gameId);
@@ -202,19 +191,17 @@ export default class SocketHandler {
 				return;
 			}
 
-
-			this.#io.to(gameId).emit("playerLeft", playerId);
+			this.#io.to(gameId).emit('playerLeft', playerId);
 
 			this.leaveSocketRoom(socket, gameId);
 			this.removeListeners(socket);
 
-			// delete game if no players left
 			if (Object.keys(game.state.players).length === 0) {
 				this.#serverStore.games.delete(gameId);
 				console.log(`Game ${gameId} deleted because no players left`);
 				this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
 			}
-		})
+		});
 
 		if (!game.settings.private) {
 			this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
@@ -222,12 +209,12 @@ export default class SocketHandler {
 	}
 
 	leaveSocketRoom(socket, gameId) {
-		console.log("leaving socket room");
+		console.log('leaving socket room');
 		socket.leave(gameId);
 	}
 
 	removeListeners(socket) {
-		console.log("removing listeners");
+		console.log('removing listeners');
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
 		socket.removeAllListeners('leaveGame');

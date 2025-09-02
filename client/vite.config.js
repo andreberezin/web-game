@@ -38,12 +38,10 @@ export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd());
 
   const NGROK_LINK = env.VITE_NGROK_LINK;
-  // const HOSTNAME = env.VITE_HOSTNAME || 'localhost';
   const EXPRESS_PORT = env.VITE_EXPRESS_PORT || 3000;
   const VITE_PORT = env.VITE_PORT || 5173;
   const USE_NGROK = process.env.VITE_USE_NGROK === 'true';
 
-  // const local = `http://${HOSTNAME}:${EXPRESS_PORT}`;
   const local = `http://localhost:${EXPRESS_PORT}`;
   const serverTarget = USE_NGROK ? NGROK_LINK : local;
 

@@ -1,8 +1,8 @@
 import Powerup from '../models/Powerup.js';
 
 export default class PowerupService {
-	#serverStore
-	#gameService
+	#serverStore;
+	#gameService;
 
 	constructor({serverStore}) {
 		this.#serverStore = serverStore;
@@ -20,7 +20,7 @@ export default class PowerupService {
 		const typeOfPowerup = Math.floor(Math.random() * 2);
 		let foundCoordinatesNotInsideWalls = false;
 		while (foundCoordinatesNotInsideWalls === false) {
-			if (this.#gameService.wouldCollideWithWalls(x, y, 20, game, "powerup")) {
+			if (this.#gameService.wouldCollideWithWalls(x, y, 20, game, 'powerup')) {
 				x = Math.floor(Math.random() * 1919);
 				y = Math.floor(Math.random() * 1079);
 			} else {
@@ -34,7 +34,6 @@ export default class PowerupService {
 		if (player.damageBoostEndTime && currentTime >= player.damageBoostEndTime) {
 			player.damageMultiplier = 1;
 			player.damageBoostEndTime = null;
-			console.log("Damage multiplier reset for player: ", player.damageMultiplier);
 		}
 	}
 
@@ -44,16 +43,15 @@ export default class PowerupService {
 		const powerupsToDelete = [];
 		const powerups = game.state.powerups;
 
-		//console.log(currentTime - timeWhenLastPowerupWasCreated);
 		if (currentAmountOfPowerups <= 5 && ((currentTime - timeWhenLastPowerupWasCreated) > 5000 || timeWhenLastPowerupWasCreated === 0)) {
 			this.createPowerup(game, currentTime);
 			this.#serverStore.timeWhenLastPowerupWasCreated = currentTime;
 		}
 
-		for(const powerupID in game.state.powerups) {
+		for (const powerupID in game.state.powerups) {
 			const powerup = game.state.powerups[powerupID];
 
-			if((currentTime - powerup.timeOfCreation) > 25000) {
+			if ((currentTime - powerup.timeOfCreation) > 25000) {
 				powerupsToDelete.push(powerupID);
 			}
 		}

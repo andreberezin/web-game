@@ -14,10 +14,8 @@ export function Error({error, setError}) {
 				el.classList.add("shown");
 			});
 
-			// Hide after 2.5s
 			const timer = setTimeout(() => {
 				el.classList.remove("shown"); // start slide-out
-				// after animation ends (0.5s), clear error text
 				setTimeout(() => setError(null), 500);
 			}, 2500);
 

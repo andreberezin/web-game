@@ -20,7 +20,7 @@ export default class BulletService {
 		const playerCenterX = x + playerWidth / 2;
 		const playerCenterY = y + playerWidth / 2;
 		const bulletX = playerCenterX + Math.cos(angle) * offset;
-		const bulletY = playerCenterY + Math.sin(angle) * offset
+		const bulletY = playerCenterY + Math.sin(angle) * offset;
 		const directionVector = {
 			x: Math.cos(angle),
 			y: Math.sin(angle)
@@ -34,11 +34,8 @@ export default class BulletService {
 		const bulletsToDelete = [];
 		const currentTime = Date.now();
 
-		// use time for frame rate independence for smooth animations
 		const deltaTime = (currentTime - this.#lastUpdateTime) / 1000;
 		this.#lastUpdateTime = currentTime;
-
-		// guard if fps drops too low
 		const cappedDeltaTime = Math.min(deltaTime, 0.016);
 
 		Object.entries(bullets).forEach(([bulletId, bullet]) => {
@@ -49,7 +46,7 @@ export default class BulletService {
 			const movementDistance = bullet.velocityPerSecond * cappedDeltaTime;
 			const newX = bullet.pos.x + movementDistance * bullet.direction.x;
 			const newY = bullet.pos.y + movementDistance * bullet.direction.y;
-			const didBulletHit = this.#gameService.raycastToWalls(startX, startY, newX, newY, bulletSize, game)
+			const didBulletHit = this.#gameService.raycastToWalls(startX, startY, newX, newY, bulletSize, game);
 
 			if (didBulletHit || this.isOutOfBounds({x: newX, y: newY})) {
 				const closestPosition = this.findClosestPositionToWall(bullet, newX, newY, bulletSize, game);
@@ -72,7 +69,7 @@ export default class BulletService {
 		const totalDistance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
 
 		if (totalDistance === 0) {
-			return { x: startX, y: startY };
+			return {x: startX, y: startY};
 		}
 
 		let minDistance = 0;
@@ -85,7 +82,7 @@ export default class BulletService {
 			const testX = startX + deltaX * progress;
 			const testY = startY + deltaY * progress;
 
-			if (this.#gameService.wouldCollideWithWalls(testX, testY, bulletSize, game, "bullet")) {
+			if (this.#gameService.wouldCollideWithWalls(testX, testY, bulletSize, game, 'bullet')) {
 				maxDistance = testDistance;
 			} else {
 				minDistance = testDistance;
@@ -111,7 +108,7 @@ export default class BulletService {
 	}
 
 	isOutOfBounds(pos) {
-		const { MIN_X, MAX_X, MIN_Y, MAX_Y } = this.#serverStore.GAME_BOUNDS;
+		const {MIN_X, MAX_X, MIN_Y, MAX_Y} = this.#serverStore.GAME_BOUNDS;
 		return pos.y < MIN_Y || pos.y > MAX_Y || pos.x < MIN_X || pos.x > MAX_X;
 	}
 }
