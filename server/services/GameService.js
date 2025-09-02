@@ -107,7 +107,7 @@ export default class GameService {
                             playersWithMostScore.push(player);
                             mostScore = player.score;
                         } else if (player.score === mostScore) {
-                            playersWithMostScore.push(player);x
+                            playersWithMostScore.push(player);
                         }
                     }
                     let playerWhoWon;
@@ -156,11 +156,39 @@ export default class GameService {
         this.handleGameTimer(game);
     }
 
+    // finishGame(gameId) {
+    //     const game = this.#serverStore.games.get(gameId);
+    //     setTimeout(() => {
+    //         this.#gamesManager.deleteGame(gameId);
+    //     }, game.state.pause.duration)
+    // }
+
     finishGame(gameId) {
         const game = this.#serverStore.games.get(gameId);
+        if (!game) return;
+
         setTimeout(() => {
+            // delete game state
             this.#gamesManager.deleteGame(gameId);
-        }, game.state.pause.duration)
+
+            // force all sockets to leave the room
+            const room = this.#io.sockets.adapter.rooms.get(gameId);
+            if (room) {
+                for (const socketId of room) {
+                    const socket = this.#io.sockets.sockets.get(socketId);
+                    if (socket) {
+                        // detach game listeners + leave room
+                        socket.removeAllListeners('updateMyPlayerInput');
+                        socket.removeAllListeners('gameStatusChange');
+                        socket.removeAllListeners('leaveGame');
+                        socket.leave(gameId);
+                        socket.gameId = null;
+                    }
+                }
+            }
+
+            console.log(`Game ${gameId} fully cleaned up`);
+        }, game.state.pause.duration); // keep your delay
     }
 
     checkForWinner(game) {
@@ -241,16 +269,19 @@ export default class GameService {
 
     // todo there's a delay between game status change and timer starting. Possibly call this logic in socketHandler instead straight after changing the game status?
     handleGameTimer(game) {
-        function gameCountdown() {
+        const gameCountdown = () => {
             const state = game.state;
 
             const elapsed = Date.now() - state.startTime;
             state.timeRemaining = Math.max(0, game.settings.duration - elapsed);
             //console.log("Time remaining:", game.state.timeRemaining);
 
+            if (state.timeRemaining <= 0) {
+                this.updateGameStatus(game.id, "finished", null, this.#io)
+            }
+
             if (state.timeRemaining > 0 && state.status === "started") {
                 setTimeout(gameCountdown, 10)
-
             } else {
                 // todo logs randomly
                 console.log("Timer has stopped: ", state.timeRemaining / 1000);
@@ -280,6 +311,7 @@ export default class GameService {
                         console.log(`${player.name} hit`);
                         player.hp = player.hp - 20 * bullet.damageMultiplier;
                         if (player.hp <= 0) {
+                            this.#io.emit('playerDeath', { gameId: game.id, playerId: player.id, killerId: bullet.shooterId });
                             player.handleDeath();
                             player.diedAt(currentTime);
                             deadPlayers[player.id] = player;
