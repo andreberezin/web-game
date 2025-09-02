@@ -250,25 +250,40 @@ export default class GameFieldService {
 		scoreboard.style.display = 'flex'
 	}
 
+	updateScoreboardScores(gameId) {
+		const game = this.#clientStore.games.get(gameId);
+		const scoresBody = document.getElementById('scores-body');
+
+		for (let playerId in game.state.players) {
+
+			const element = document.getElementById(`player-score-${playerId}`)
+			if (!element) {
+				const playerRow = document.createElement('tr');
+				const nameCell = document.createElement('td');
+				nameCell.id = `namecell-${playerId}`;
+				const scoreCell = document.createElement('td');
+				scoreCell.id = `scorecell-${playerId}`;
+				playerRow.classList.add('player-score');
+				playerRow.id = `player-score-${playerId}`;
+				playerRow.appendChild(nameCell);
+				playerRow.appendChild(scoreCell);
+				scoresBody.appendChild(playerRow);
+			}
+
+			const player = game.state.players[playerId];
+
+			const nameCell = document.getElementById(`namecell-${playerId}`);
+			const scoreCell = document.getElementById(`scorecell-${playerId}`);
+			nameCell.textContent = `${player.name}`;
+			scoreCell.textContent = `${player.score}`;
+		}
+	}
+
 	updateWinnerAndScores(winnerId, gameId) {
 		const game = this.#clientStore.games.get(gameId);
 		const winner = game.state.players[winnerId];
 
 		const winnerElement = document.getElementById('winner');
-		const scoresBody = document.getElementById('scores-body');
-
-		for (let playerId in game.state.players) {
-			const player = game.state.players[playerId];
-			const playerRow = document.createElement('tr');
-			const nameCell = document.createElement('td');
-			nameCell.textContent = `${player.name}`;
-			const scoreCell = document.createElement('td');
-			scoreCell.textContent = `${player.score}`;
-			playerRow.classList.add('player-score');
-			playerRow.appendChild(nameCell);
-			playerRow.appendChild(scoreCell);
-			scoresBody.appendChild(playerRow);
- 		}
 
 		if (winnerId === null) {
 			winnerElement.innerHTML = (`The game is a draw!`);
