@@ -27,21 +27,28 @@ A real-time multiplayer web browser game built without Canvas API, supporting 2-
 
 ```
 web-game/
-├── client/                 # React frontend
-│   ├── components/         # React components
+├── client/                # React frontend
+│   ├── components/        # React components
 │   │   └── menu/          # Menu components (lobby, instructions, etc.)
 │   ├── core/              # Core client logic
+│   ├── di/                # Dependency injection logic
 │   ├── models/            # Client-side game models
+│   ├── public/            # Images and sounds
 │   ├── services/          # Client game services
 │   ├── sockets/           # Socket.IO client handler
+│   ├── stores/            # In-memory data storage logic
 │   ├── styles/            # SCSS stylesheets
+│   ├── utils/             # Utility functions
 │   └── package.json       # Client dependencies
 ├── server/                # Node.js backend
+│   ├── core/              # Core backend logic
 │   ├── di/                # Dependency injection container
 │   ├── models/            # Server-side game models
 │   ├── services/          # Server game logic services
 │   ├── sockets/           # Socket.IO server handler
+│   ├── stores/            # In-memory data storage logic
 │   ├── test/              # Unit tests
+│   ├── utils/             # Utility functions
 │   └── package.json       # Server dependencies
 ├── package.json           # Root package.json with scripts
 └── README.md             # This file
@@ -81,11 +88,6 @@ web-game/
 **Development with host access** (for local network testing):
 ```bash
 npm run dev:host
-```
-
-**Debug mode** (with Node.js inspector):
-```bash
-npm run dev:debug
 ```
 
 **Individual servers:**
@@ -151,7 +153,7 @@ npm run client
 ## 🔧 Configuration
 
 ### Environment Variables
-Create a `.env` file in the server directory:
+`.env` files in the root, server and client directory include ports:
 
 ```env
 EXPRESS_PORT=3000
@@ -162,19 +164,9 @@ VITE_PORT=5173
 Game settings can be configured when creating a game:
 - **Max Players**: 2-4 players
 - **Game Duration**: 1-2 minutes (configurable)
-- **Map Type**: Currently supports "empty" and "simple" maps
 - **Private/Public**: Toggle game visibility
 
 ## 🧪 Testing
-
-Run the test suite:
-```bash
-# Run all tests
-npm test
-
-# Run server tests specifically
-cd server && npm test
-```
 
 The project includes integration tests for game logic, particularly timer and winner determination functionality.
 
@@ -193,6 +185,7 @@ The project includes ngrok integration for public internet play:
 npm run dev:ngrok
 ```
 Requires ngrok configuration and appropriate environment variables.
+[Getting startd with ngrok.](https://ngrok.com/docs/getting-started/)
 
 ## 📋 Development Scripts
 
@@ -206,34 +199,6 @@ Requires ngrok configuration and appropriate environment variables.
 | `npm run client` | Start only client |
 | `npm run lint` | Run ESLint |
 | `npm test` | Run test suite |
-
-## 🐛 Troubleshooting
-
-### Common Issues
-
-**Port already in use:**
-- Kill processes using ports 3000 or 5173
-- Or modify port numbers in environment variables
-
-**Socket connection failed:**
-- Ensure server is running before client
-- Check firewall settings
-- Verify CORS configuration
-
-**Game not loading:**
-- Check browser console for errors
-- Ensure JavaScript is enabled
-- Clear browser cache
-
-**Performance issues:**
-- Close other browser tabs
-- Check CPU usage
-- Ensure adequate RAM available
-
-### Browser Compatibility
-- Modern browsers supporting ES6+ modules
-- WebSocket support required
-- No Canvas API dependencies
 
 ## 👥 Game Rules & Features
 
@@ -262,23 +227,11 @@ Potential features for future development:
 - More power-up varieties
 - Player customization options
 - Tournament/bracket system
+- More game modes
 - Spectator mode
+- Voice chat support
 - Mobile device support
 - Enhanced visual effects
-
----
-
-## 📄 License
-
-This project is licensed under the ISC License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please ensure:
-- Code follows existing style guidelines
-- Tests pass before submitting
-- New features include appropriate tests
-- Documentation is updated as needed
 
 ---
 
