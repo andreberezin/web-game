@@ -204,6 +204,7 @@ export default class GameService {
         }
     }
 
+    // todo refactor this function into smaller parts
     restartGame(gameId) {
         const game = this.#serverStore.games.get(gameId);
         if (!game) return;
