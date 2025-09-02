@@ -2,6 +2,7 @@ div#instructions {
   #instructions-text {
 	height: inherit;
 	width: inherit;
+	overflow: scroll;
 	p {
 	  margin: 1.5rem 0.5rem 1.5rem 0.5rem
 	}

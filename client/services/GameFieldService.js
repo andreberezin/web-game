@@ -259,6 +259,7 @@ export default class GameFieldService {
 
 	showScoreboard(playerId, gameId) {
 		const scoreboard = document.getElementById('scoreboard');
+		if (!scoreboard) return;
 
 		this.updateWinnerAndScores(playerId, gameId);
 
@@ -414,6 +415,7 @@ export default class GameFieldService {
 
 	enableStartButton() {
 		const startButton = document.getElementById('start-button');
+		if (!startButton) return;
 
 		const store = this.#clientStore;
 		const game = store.games.get(store.gameId);
