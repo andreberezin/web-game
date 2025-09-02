@@ -85,7 +85,7 @@ export default class BulletService {
 			const testX = startX + deltaX * progress;
 			const testY = startY + deltaY * progress;
 
-			if (this.#gameService.wouldCollideWithWalls(testX, testY, bulletSize, game)) {
+			if (this.#gameService.wouldCollideWithWalls(testX, testY, bulletSize, game, "bullet")) {
 				maxDistance = testDistance;
 			} else {
 				minDistance = testDistance;

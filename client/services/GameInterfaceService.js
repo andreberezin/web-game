@@ -78,7 +78,6 @@ export default class GameInterfaceService {
 				nameSpan.className = "score-name";
 				const player = players[playerId];
 				nameSpan.textContent = `${player.name}:`;
-				// nameSpan.textContent = player.name.substring(10) + ": ";
 
 				// Add lives span
 				const livesSpan = document.createElement("span");
@@ -106,9 +105,6 @@ export default class GameInterfaceService {
 		const gameIdElement = document.createElement("div");
 		gameIdElement.id = "game-id";
 		gameIdElement.className = "ui-item";
-
-		// const label = document.createElement("span");
-		// label.textContent = "Game ID: ";
 
 		const button = document.createElement("button");
 		button.id = "game-id-value";

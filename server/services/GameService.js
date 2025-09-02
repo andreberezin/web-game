@@ -421,7 +421,7 @@ export default class GameService {
             const checkX = startX + (endX - startX) * t;
             const checkY = startY + (endY - startY) * t;
 
-            if(this.wouldCollideWithWalls(checkX, checkY, objectSize, game)) {
+            if (this.wouldCollideWithWalls(checkX, checkY, objectSize, game, "bullet")) {
                 return true;
             }
         }
@@ -450,7 +450,7 @@ export default class GameService {
         return !!(checkX + 5 > player.pos.x && checkX < player.pos.x + 20 && checkY + 5 > player.pos.y && checkY < player.pos.y + 20);
     }
 
-    wouldCollideWithWalls(x, y, objectSize, game) {
+    wouldCollideWithWalls(x, y, objectSize, game, type) {
         if (!game || !game.map) {
             return false;
         }
@@ -471,7 +471,7 @@ export default class GameService {
 
         for (let tileY = topLeft.y; tileY <= bottomRight.y; tileY++) {
             for (let tileX = topLeft.x; tileX <= bottomRight.x; tileX++) {
-                if (this.getTileAt(game.map, tileX, tileY, TILES_X, game)) {
+                if (this.getTileAt(game.map, tileX, tileY, TILES_X, game, type)) {
                     return true;
                 }
             }
@@ -480,7 +480,7 @@ export default class GameService {
         return false;
     }
 
-    getTileAt(mapArray, tileX, tileY, tilesX, game) {
+    getTileAt(mapArray, tileX, tileY, tilesX, game, type) {
         if (tileX < 0 || tileX >= tilesX || tileY < 0) {
             return true;
         }
@@ -491,10 +491,12 @@ export default class GameService {
             return true;
         }
 
+        let destroyableWall = game.state.mapOfDestroyableWalls[index];
         if (mapArray[index] === 1) {
             return true;
-        } else if (mapArray[index] === 2) {
-            let destroyableWall = game.state.mapOfDestroyableWalls[index];
+        } else if (type === "player" && mapArray[index] === 2) {
+            return destroyableWall;
+        } else if (type === "bullet" && mapArray[index] === 2) {
             if (!destroyableWall) {
                 return false;
             }

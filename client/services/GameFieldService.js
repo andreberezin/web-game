@@ -487,7 +487,7 @@ export default class GameFieldService {
 			const y = Math.floor(i / TILES_X);
 
 			const wallDiv = document.createElement('div');
-			wallDiv.id = i;
+			wallDiv.id = `wall-${i}`;
 			wallDiv.className = 'wall-tile';
 
 			wallDiv.style.left = `${x * TILE_SIZE}px`;

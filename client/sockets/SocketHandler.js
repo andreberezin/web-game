@@ -255,7 +255,7 @@ export default class SocketHandler {
 			// Delete the destroyed wall from the client if not present in game state sent from server
 			for (const destroyableWallID in currentGameState.mapOfDestroyableWalls) {
 				if (!updatedGameState.mapOfDestroyableWalls[destroyableWallID]) {
-					const destroyableWallElement = document.getElementById(destroyableWallID);
+					const destroyableWallElement = document.getElementById(`wall-${destroyableWallID}`);
 					if (destroyableWallElement) {
 						destroyableWallElement.remove();
 					}

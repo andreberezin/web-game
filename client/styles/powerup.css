@@ -1,6 +1,6 @@
 .powerup {
 	position: absolute;
-	background-color: white;
+	background-color: transparent;
 	border-radius: 0%;
 	width: 40px;
 	aspect-ratio: 1/1;

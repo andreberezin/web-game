@@ -95,7 +95,7 @@ export default class PlayerInputService {
             testY = newPosition;
         }
 
-        if (!this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+        if (!this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game, "player")) {
             player.pos[axis] = clamp(0, newPosition, player.maxPosition[axis]);
             player.direction = direction;
             return;
@@ -126,7 +126,7 @@ export default class PlayerInputService {
                 testY = player.pos.y + (testDistance * direction);
             }
 
-            if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game)) {
+            if (this.#gameService.wouldCollideWithWalls(testX, testY, playerSize, game, "player")) {
                 maxDistance = testDistance;
             } else {
                 minDistance = testDistance;
@@ -190,7 +190,9 @@ export default class PlayerInputService {
                 if (player.lives > 0 && player.canRespawn(currentTime)) {
                     player.hp = 100;
                     player.status.alive = true;
-                    player.pos = { x: 100, y: 100 };
+                    const possibleSpawns = [{x: 100, y: 100}, {x: 100, y: 900}, {x: 1700, y: 100}, {x: 1700, y: 900}];
+                    const randomNumber = Math.floor(Math.random() * possibleSpawns.length);
+                    player.pos = possibleSpawns[randomNumber];
 
                     delete deadPlayers[playerID];
                 }

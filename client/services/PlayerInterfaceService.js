@@ -97,6 +97,10 @@ export default class PlayerInterfaceService {
 		if (!element || !elementValue) return;
 
 		if (key === "respawnTimer") {
+			if (player.lives === 0) {
+				elementValue.textContent = "You are dead!"
+				return;
+			}
 			player.status.alive ? element.style.display = "none" : element.style.display = "flex";
 			elementValue.textContent = (value / 1000).toFixed(2);
 		} else {

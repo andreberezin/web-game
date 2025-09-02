@@ -20,7 +20,7 @@ export default class PowerupService {
 		const typeOfPowerup = Math.floor(Math.random() * 2);
 		let foundCoordinatesNotInsideWalls = false;
 		while (foundCoordinatesNotInsideWalls === false) {
-			if (this.#gameService.wouldCollideWithWalls(x, y, 20, game)) {
+			if (this.#gameService.wouldCollideWithWalls(x, y, 20, game, "powerup")) {
 				x = Math.floor(Math.random() * 1919);
 				y = Math.floor(Math.random() * 1079);
 			} else {
