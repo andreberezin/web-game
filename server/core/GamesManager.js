@@ -52,7 +52,7 @@ export default class GamesManager {
 		// if (!game) {
 		// 	throw new Error(`Game with id ${gameId} not found`);
 		// }
-
+		if (!this.#serverStore.games.has(game.id) || !game) return;
 		this.#io.to(game.id).emit('updateGameState', game.id, game.state);
 	}
 
