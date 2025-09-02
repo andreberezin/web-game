@@ -92,6 +92,21 @@ export default class GameFieldService {
 		this.generateWalls();
 	}
 
+	restoreGameField() {
+		this.restoreWalls();
+	}
+
+	restoreWalls() {
+		const gameInner = document.getElementById('game-inner');
+		if (!gameInner) return;
+
+		// Remove old wall elements
+		gameInner.querySelectorAll('.wall-tile').forEach(el => el.remove());
+
+		// Re-generate walls from the original map
+		this.generateWalls();
+	}
+
 	removeGameElements() {
 		const game = document.getElementById('game');
 		if (!game) {

@@ -90,8 +90,7 @@ export default class GameService {
 
 	restartGame(player) {
 		// reset local visuals
-		// this.#gameFieldService.removeGameElements();
-		// this.#gameFieldService.createElement(this.#clientStore.games.get(this.#clientStore.gameId).settings.mapType);
+		this.#gameFieldService.restoreGameField();
 		// add game ui
 		// add player ui
 		this.#gameFieldService.hidePauseOverlay();
