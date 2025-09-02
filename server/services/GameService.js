@@ -156,13 +156,6 @@ export default class GameService {
         this.handleGameTimer(game);
     }
 
-    // finishGame(gameId) {
-    //     const game = this.#serverStore.games.get(gameId);
-    //     setTimeout(() => {
-    //         this.#gamesManager.deleteGame(gameId);
-    //     }, game.state.pause.duration)
-    // }
-
     finishGame(gameId) {
         const game = this.#serverStore.games.get(gameId);
         if (!game) return;
@@ -188,7 +181,7 @@ export default class GameService {
             }
 
             console.log(`Game ${gameId} fully cleaned up`);
-        }, game.state.pause.duration); // keep your delay
+        }, game.state.pause.duration);
     }
 
     checkForWinner(game) {
