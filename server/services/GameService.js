@@ -213,17 +213,34 @@ export default class GameService {
             game.pauseTimeout = null;
         }
 
+        // Spawn points (same as joinGame logic)
+        const spawnPoints = [
+            {x: 1700, y: 900}, // 2nd player
+            {x: 100, y: 900},  // 3rd player
+            {x: 1700, y: 100}  // 4th player
+        ];
+
         // Reset players
+        let i = 0;
         for (const playerId in game.state.players) {
             const player = game.state.players[playerId];
             player.hp = 100;
             player.lives = 3;
             player.kills = 0;
             player.score = 0;
-            player.pos = { x: 100, y: 100 }; // or random spawn
-            player.pauses = 2; // reset pause count
+
+            // Assign spawn based on order
+            if (i === 0) {
+                player.pos = { x: 100, y: 100 }; // host / first player
+            } else {
+                player.pos = spawnPoints[i - 1] || { x: 100, y: 100 }; // fallback if >4 players
+            }
+
+            player.pauses = 2;
             player.status.alive = true;
             player.damageMultiplier = 1;
+
+            i++;
         }
 
         // Reset bullets, powerups, etc.
@@ -237,7 +254,6 @@ export default class GameService {
 
         console.log(`Game ${gameId} restarted`);
     }
-
     handlePauseTimer(game, io, gameId) {
         const pauseCountdown = () => {
             const state = game.state;

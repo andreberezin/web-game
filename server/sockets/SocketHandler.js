@@ -71,7 +71,6 @@ export default class SocketHandler {
 					playerPos = {x: 1700, y: 100};
 				}
 				game.playersInLobby += 1;
-				console.log("test");
 
 				this.joinGame(socket, gameId, playerId, playerName, playerPos);
 			})
