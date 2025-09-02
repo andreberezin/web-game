@@ -9,7 +9,13 @@ export default class AudioService {
 
     preloadSounds() {
         const soundFiles = {
-            shoot: '/sounds/shoot.mp3'
+            shoot: '/sounds/shoot.mp3',
+            powerup: '/sounds/powerup.mp3',
+            win: '/sounds/win.mp3',
+            start: '/sounds/start.mp3',
+            end: '/sounds/end.mp3',
+            death: '/sounds/death.mp3',
+            kill: '/sounds/kill.mp3',
         };
 
         for (const [name, path] of Object.entries(soundFiles)) {
@@ -55,7 +61,31 @@ export default class AudioService {
         return audioClone;
     }
 
-    playShoot(options = {}) {
+    playShoot(options = {}) { //
         this.playSound('shoot', options);
+    }
+
+    playPowerup(options = {}) { //
+        this.playSound('powerup', options);
+    }
+
+    playDeath(options = {}) { //
+        this.playSound('death', options);
+    }
+
+    playKill(options = {}) { //
+        this.playSound('kill', options);
+    }
+
+    playWin(options = {}) { //
+        this.playSound('win', options);
+    }
+
+    playStart(options = {}) { //
+        this.playSound('start', options);
+    }
+
+    playEnd(options = {}) { //
+        this.playSound('end', options);
     }
 }

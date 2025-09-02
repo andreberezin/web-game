@@ -9,8 +9,9 @@ export default class GameService {
 	#playerInterfaceService;
 	#gameInterfaceService;
 	#playerInputService;
+	#audioService;
 
-	constructor({clientStore, socketHandler, gameFieldService, playerService, playerInterfaceService, gameInterfaceService, playerInputService}) {
+	constructor({clientStore, socketHandler, gameFieldService, playerService, playerInterfaceService, gameInterfaceService, playerInputService, audioService}) {
 		this.#clientStore = clientStore;
 		this.#socketHandler = socketHandler;
 		this.#gameFieldService = gameFieldService;
@@ -18,6 +19,7 @@ export default class GameService {
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterfaceService = gameInterfaceService;
 		this.#playerInputService = playerInputService;
+		this.#audioService = audioService;
 	}
 
 	setClientManager(clientManager) {
@@ -126,6 +128,7 @@ export default class GameService {
 	updateGameStatus(gameId, status, playerId) {
 		const myId = this.#clientStore.myId;
 		const game = this.#clientStore.games.get(gameId);
+		if (!game) return;
 
 		if (status !== game.state.status) {
 			switch (status) {
@@ -136,6 +139,7 @@ export default class GameService {
 				break;
 			case "started":
 				if (game.state.status === "waiting") { // so this is not triggered when status is changed from "paused" to "started"
+					this.#audioService.playStart();
 					this.startGame();
 					this.#gameFieldService.hidePauseOverlay();
 				}
@@ -159,8 +163,6 @@ export default class GameService {
 
 					this.#gameFieldService.togglePauseOverlay();
 				}
-
-
 				break;
 			case "paused":
 				this.pauseGame();

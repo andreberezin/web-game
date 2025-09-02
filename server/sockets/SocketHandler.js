@@ -166,6 +166,7 @@ export default class SocketHandler {
 		})
 
 		socket.on('gameStatusChange', (gameId, status, playerId = null) => {
+			if (!this.#serverStore.games.has(gameId)) return;
 
 			try {
 				this.#gameService.updateGameStatus(gameId, status, playerId, this.io);
@@ -181,6 +182,14 @@ export default class SocketHandler {
 			if (status === "finished") {
 				this.removeListeners(socket);
 				this.leaveSocketRoom(socket, gameId);
+
+				// const room = this.#io.sockets.adapter.rooms.get(gameId);
+				// if (room) {
+				// 	for (const socketId of room) {
+				// 		const socket = this.#io.sockets.sockets.get(socketId);
+				// 		if (socket) socket.leave(gameId);
+				// 	}
+				// }
 			}
 		})
 
@@ -205,7 +214,6 @@ export default class SocketHandler {
 				this.#serverStore.games.delete(gameId);
 				console.log(`Game ${gameId} deleted because no players left`);
 				this.#io.emit('updateAvailableGames', this.#gamesManager.getPublicGameList());
-
 			}
 		})
 
@@ -215,10 +223,12 @@ export default class SocketHandler {
 	}
 
 	leaveSocketRoom(socket, gameId) {
+		console.log("leaving socket room");
 		socket.leave(gameId);
 	}
 
 	removeListeners(socket) {
+		console.log("removing listeners");
 		socket.removeAllListeners('updateMyPlayerInput');
 		socket.removeAllListeners('gameStatusChange');
 		socket.removeAllListeners('leaveGame');
