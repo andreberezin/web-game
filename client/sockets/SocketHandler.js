@@ -19,8 +19,9 @@ export default class SocketHandler {
 	#powerupService;
 	#bulletService;
 	#notificationService;
+	#audioService;
 
-	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore, powerupService, bulletService, notificationService}) {
+	constructor({playerService, playerInterfaceService, gameInterface, gameInterfaceService, gameFieldService, clientStore, powerupService, bulletService, notificationService, audioService}) {
 		this.#playerService = playerService;
 		this.#playerInterfaceService = playerInterfaceService;
 		this.#gameInterface = gameInterface;
@@ -30,6 +31,7 @@ export default class SocketHandler {
 		this.#powerupService = powerupService;
 		this.#bulletService = bulletService;
 		this.#notificationService = notificationService;
+		this.#audioService = audioService;
 	}
 
 	get socket() {
@@ -134,12 +136,12 @@ export default class SocketHandler {
 			if (currentGameState && updatedGameState) {
 				currentGameState.timeRemaining = updatedGameState.timeRemaining;
 
-				// handle timer end
-				if (currentGameState.timeRemaining <= 0 && currentGameState.status === "started") {
-					// todo goes here 5 times
-					socket.emit('gameStatusChange', gameId, "finished")
-					return;
-				}
+				// // handle timer end
+				// if (currentGameState.timeRemaining <= 0 && currentGameState.status === "started") {
+				// 	// todo goes here 5 times
+				// 	socket.emit('gameStatusChange', gameId, "finished")
+				// 	return;
+				// }
 
 			} else {
 				console.error("Cannot update time remaining")
@@ -159,6 +161,7 @@ export default class SocketHandler {
 
 
 			this.#gameInterfaceService.updateScores(gameId);
+			this.#gameFieldService.updateScoreboardScores(gameId);
 
 			// Respawning
 			for (const playerID in updatedGameState.players) {
@@ -307,18 +310,35 @@ export default class SocketHandler {
 
 		this.on('declareWinner', (gameId, player) => {
 			if (player === null) {
+				this.#audioService.playEnd();
 				console.log("The game is a draw!");
-				this.#gameService.updateGameStatus(gameId, "finished", null);
+				setTimeout(() => {
+					this.#gameService.updateGameStatus(gameId, "finished", null);
+				}, 50)
 			} else if (player) {
+				if (player.id === this.#clientStore.myId) {
+					this.#audioService.playWin();
+				} else {
+					this.#audioService.playEnd();
+				}
 				console.log("Player %s won the game!", player.name);
 				this.#gameService.updateGameStatus(gameId, "finished", player.id);
 			}
 		});
 
 		this.on('powerupNotification', (data) => {
+			this.#audioService.playPowerup();
 			if (this.#notificationService && data.playerId === this.#clientStore.myId) {
 				this.#notificationService.showPowerupNotification(data.powerupType);
 				console.log(`Powerup collected! Type: ${data.powerupType}`);
+			}
+		});
+
+		socket.on('playerDeath', ({ gameId, playerId, killerId }) => {
+			if (killerId === this.#clientStore.myId) {
+				this.#audioService.playKill();
+			} else {
+				this.#audioService.playDeath();
 			}
 		});
 
@@ -328,13 +348,14 @@ export default class SocketHandler {
 	}
 
 	cleanupGameListeners() {
+		this.on("updateGameState", null);
 		this.on("createGameSuccess", null);
 		this.on("joinGameSuccess", null);
-		this.on("updateGameState", null);
 		this.on("playerJoined", null);
 		this.on("playerLeft", null);
 		this.on("gameStatusChangeSuccess", null);
 		this.on("declareWinner", null);
 		this.on("powerupNotification", null);
+		this.on("playerDeath", null);
 	}
 }

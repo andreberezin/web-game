@@ -284,6 +284,7 @@ export default class GameFieldService {
 		const winner = game.state.players[winnerId];
 
 		const winnerElement = document.getElementById('winner');
+		if (!winnerElement) return;
 
 		if (winnerId === null) {
 			winnerElement.innerHTML = (`The game is a draw!`);
