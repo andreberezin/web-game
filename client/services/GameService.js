@@ -31,20 +31,8 @@ export default class GameService {
 			this.#clientStore.myId = myPlayer.id;
 		}
 
-		const gameState = this.#clientStore.games.get(gameId).state;
-		let currentIndex = Object.keys(gameState.players).length
-
 		for (const playerID in players) {
-			// if (!gameState.players[playerID]) {
-			currentIndex++;
-			gameState.players[playerID] = new Player(playerID, players[playerID].name);
-			gameState.players[playerID].colorIndex = currentIndex;
 			this.#playerService.createPlayerModel(players[playerID], playerID);
-
-			// todo I don't think it's necessary to create the playerInterface object and save it for each player
-			//gameState.interfaces[playerID] = new PlayerInterface(playerID);
-
-			//}
 
 			if (playerID === myPlayer.id) {
 				this.#playerInterfaceService.createPlayerUI();

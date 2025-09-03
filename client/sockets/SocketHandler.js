@@ -140,7 +140,7 @@ export default class SocketHandler {
 			// Respawning
 			for (const playerID in updatedGameState.players) {
 				if (!currentGameState.players[playerID]) {
-					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name);
+					currentGameState.players[playerID] = new Player(playerID, updatedGameState.players[playerID].name, updatedGameState.players[playerID].colorIndex);
 					this.#playerService.createPlayerModel(updatedGameState.players[playerID], playerID);
 				}
 			}

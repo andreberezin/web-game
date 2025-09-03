@@ -82,9 +82,9 @@ export default class PlayerService {
 
 		const player = store.games.get(store.gameId).state.players[playerId];
 
-		const indexOfPlayer = player.colorIndex || 1;
+		// const indexOfPlayer = player.colorIndex || 1;
 
- 		const playerElement = this.createElement(player, indexOfPlayer, playerId);
+ 		const playerElement = this.createElement(player, playerId);
 		this.#playerInputService.addEventListeners(playerId);
 		player.element = playerElement;
 
@@ -101,7 +101,7 @@ export default class PlayerService {
 		// }
 	}
 
-	createElement(player, index, playerId) {
+	createElement(player, playerId) {
 
 		// create outer element for player with absolute positioning
 		const playerElement = document.createElement("div");
@@ -111,6 +111,11 @@ export default class PlayerService {
 		playerElement.style.left = `${player.pos.x}px`;
 		playerElement.style.width = `${player.size.width}px`;
 		playerElement.tabIndex = 0;
+
+		if (player.colorIndex) {
+			playerElement.setAttribute("data-color", String(player.colorIndex));
+		}
+
 
 		// create inner element for player with relative positioning
 		const playerInner = document.createElement("div");
@@ -122,9 +127,6 @@ export default class PlayerService {
 		const playerName = document.createElement("div");
 		playerName.classList.add("player-name");
 		playerName.innerHTML = player.name
-
-
-		playerElement.setAttribute("number", index);
 
 		if (playerId === this.#clientStore.myId) {
 			playerElement.classList.add("me");

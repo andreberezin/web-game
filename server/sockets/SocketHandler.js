@@ -6,10 +6,12 @@ export default class SocketHandler {
 	#gamesManager;
 	#gameService;
 	#serverStore;
+	#PlayerService;
 
-	constructor({io, serverStore}) {
+	constructor({io, serverStore, playerService}) {
 		this.#io = io;
 		this.#serverStore = serverStore;
+		this.#PlayerService = playerService;
 	}
 
 	get io() {
@@ -106,6 +108,7 @@ export default class SocketHandler {
 		socket.gameId = gameId;
 
 		const player = new Player(playerId, playerName, container.resolve('playerService'), spawnPos);
+		player.assignColor(this.#serverStore.games.get(gameId))
 
 		try {
 			this.#gameService.addPlayerToGame(gameId, playerId, player);

@@ -43,11 +43,21 @@ export default class Player {
         alive: true,
     };
     #pauses = 2;
+    #colorIndex
 
-	constructor(id, name) {
+	constructor(id, name, colorIndex) {
         this.#id = id;
         this.#name = name;
+        this.#colorIndex = colorIndex;
 	}
+
+    get colorIndex() {
+        return this.#colorIndex;
+    }
+
+    set colorIndex(colorIndex) {
+        this.#colorIndex = colorIndex;
+    }
 
     get id() {
         return this.#id;

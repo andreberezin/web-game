@@ -1,19 +1,18 @@
 $player-colors: (
-		'1': red,
-		'2': green,
-		'3': blue,
-		'4': yellow
+		1: red,
+		2: green,
+		3: blue,
+		4: yellow
 );
 
 @each $id, $color in $player-colors {
-  .player[number='#{$id}'] {
-	.player-inner {
-	  .player-body {
-		background-color: #{$color};
-	  }
-	}
+  .player[data-color="#{$id}"] .player-inner .player-body {
+	background-color: #{$color};
   }
 }
+
+/* Optional: visible fallback if colorIndex hasn’t arrived yet */
+.player .player-inner .player-body { background-color: gray; }
 
 .player {
   position: absolute;

@@ -44,6 +44,7 @@ export default class Player {
 	};
 	color = null;
 	pauses = 2;
+	colorIndex = null;
 
 	constructor(id, name, playerService, spawnPos) {
 		this.id = id;
@@ -54,6 +55,10 @@ export default class Player {
 
 	handleDeath() {
 		return this.playerService.handlePlayerDeath(this);
+	}
+
+	assignColor(game) {
+		this.colorIndex = this.playerService.assignColorIndex(game);
 	}
 
 	canRespawn(currentTime) {
