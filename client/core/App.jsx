@@ -79,7 +79,7 @@ function App() {
         };
     }, []);
 
-    // fullscreen ctr+f event listener
+    // fullscreen ctr+f and mute event listener
     useEffect(() => {
         async function handleKeyDown(event) {
             if (event.key === "f" && event.ctrlKey === true) {
@@ -95,6 +95,14 @@ function App() {
 
                 } catch (e) {
                     console.error(e);
+                }
+            }
+            if (event.key === "m" && event.ctrlKey === true) {
+                let muted = clientManager.audioService.muted;
+                if (muted) {
+                    clientManager.audioService.muted = false;
+                } else {
+                    clientManager.audioService.muted = true;
                 }
             }
         }
