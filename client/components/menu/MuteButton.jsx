@@ -8,7 +8,6 @@ export function MuteButton({playClick, getMute, setMute}) {
 						playClick();
 						setMute(!isMuted);
 					}}
-
 			>
 				<i className={`fas ${isMuted ? "fa-volume-xmark" : "fa-volume-high"}`}></i>
 			</button>
