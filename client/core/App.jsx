@@ -84,9 +84,9 @@ function App() {
         async function handleKeyDown(event) {
             if (event.key === "f" && event.ctrlKey === true) {
                 const page = document.documentElement;
+                clientManager.audioService.playClick();
 
                 try {
-
                     if (document.fullscreenElement !== null) {
                         await document.exitFullscreen();
                     } else {
@@ -98,6 +98,7 @@ function App() {
                 }
             }
             if (event.key === "m" && event.ctrlKey === true) {
+                clientManager.audioService.playClick();
                 let muted = clientManager.audioService.muted;
                 if (muted) {
                     clientManager.audioService.muted = false;
