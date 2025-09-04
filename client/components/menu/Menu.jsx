@@ -1,6 +1,7 @@
 import '../../styles/menu/menu.scss'
 import '../../styles/menu/backButton.scss'
 import '../../styles/menu/instructionsButtons.scss'
+import '../../styles/menu/muteButton.scss'
 import {JoinGame} from './JoinGame.jsx';
 import {useEffect, useState} from 'react';
 import {CreateGame} from './CreateGame.jsx';
@@ -8,9 +9,10 @@ import {CreatePlayer} from './CreatePlayer.jsx';
 import {Instructions} from './Instructions.jsx';
 import {InstructionsButton} from './InstructionsButton.jsx';
 import {CreateGameButton} from './CreateGameButton.jsx';
+import {MuteButton} from './MuteButton.jsx';
 
 // todo add logic to save game id to browser storage to automatically join correct game when refreshing
-export function Menu({clientManager, setError, setView, view, playClick}) {
+export function Menu({clientManager, setError, setView, view, playClick, getMute, setMute, isMuted, setIsMuted}) {
 	const [gameId, setGameId] = useState(null);
 	const [games, setGames] = useState({});
 
@@ -38,6 +40,14 @@ export function Menu({clientManager, setError, setView, view, playClick}) {
 						<InstructionsButton
 							setView={setView}
 							playClick={playClick}
+						/>
+
+						<MuteButton
+							playClick={playClick}
+							getMute={getMute}
+							setMute={setMute}
+							isMuted={isMuted}
+							setIsMuted={setIsMuted}
 						/>
 
 						<JoinGame

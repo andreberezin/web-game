@@ -22,6 +22,7 @@ function App() {
     const [view, setView] = useState('main');
     const [error, setError] = useState(null);
     const SHOW_MENU = import.meta.env.VITE_SHOW_MENU;
+    const [isMuted, setIsMuted] = useState(false);
 
     const gameSettings = useRef({
         private: false,
@@ -119,7 +120,15 @@ function App() {
         return (
             <>
                 {view !== 'game' && (
-                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view} playClick={clientManager.audioService.playClick.bind(clientManager.audioService)}></Menu>
+                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view}
+                          playClick={clientManager.audioService.playClick.bind(clientManager.audioService)}
+                          getMute={() => isMuted}
+                          setMute={(val) => {
+                              setIsMuted(val);
+                              clientManager.audioService.muted = val;
+                          }}
+                    >
+                    </Menu>
                 )}
                 {error && <Error error={error} setError={setError} />}
             </>
