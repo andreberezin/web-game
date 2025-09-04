@@ -1,5 +1,3 @@
-import {useEffect, useState} from 'react';
-
 export function MuteButton({playClick, getMute, setMute}) {
 	const isMuted = getMute();
 
