@@ -9,8 +9,9 @@ export default class ClientManager {
 	onGameEnd
 	#bulletService
 	#playerInputService
+	#audioService
 
-	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService, playerInputService}) {
+	constructor({gameService, gameInterfaceService, playerInterfaceService, playerService, socketHandler, gameFieldService, clientStore, bulletService, playerInputService, audioService}) {
 		this.#gameService = gameService;
 		this.#gameInterfaceService = gameInterfaceService
 		this.#playerInterfaceService = playerInterfaceService
@@ -20,7 +21,12 @@ export default class ClientManager {
 		this.#clientStore = clientStore;
 		this.#bulletService = bulletService;
 		this.#playerInputService = playerInputService;
+		this.#audioService = audioService;
 		this.onGameEnd = null;
+	}
+
+	get audioService() {
+		return this.#audioService;
 	}
 
 	get socketHandler() {

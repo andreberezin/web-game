@@ -7,6 +7,14 @@ export default class AudioService {
         this.preloadSounds();
     }
 
+    set muted(muted) {
+        this.#muted = muted;
+    }
+
+    get muted() {
+        return this.#muted
+    }
+
     preloadSounds() {
         const soundFiles = {
             shoot: '/sounds/shoot.mp3',
@@ -16,6 +24,7 @@ export default class AudioService {
             end: '/sounds/end.mp3',
             death: '/sounds/death.mp3',
             kill: '/sounds/kill.mp3',
+            click: '/sounds/button_click.mp3',
         };
 
         for (const [name, path] of Object.entries(soundFiles)) {
@@ -87,5 +96,9 @@ export default class AudioService {
 
     playEnd(options = {}) { //
         this.playSound('end', options);
+    }
+
+    playClick(options = {}) {
+        this.playSound('click', options);
     }
 }
