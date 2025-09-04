@@ -10,7 +10,7 @@ export function Instructions({setView}) {
 		>
 			<BackButton setView={setView} lastView={'main'}/>
 			<div id={'instructions-text'}>
-				<p>The object of the game is to kill your enemies.</p>
+				<p>The objective of the game is to kill your enemies and survive.</p>
 				<p>The game lasts until the game timer finishes or 1 player is left.</p>
 				<p>Each kill and each life left gives you 1 point.</p>
 				<p>The player with the most points or the last one alive wins the game.</p>
@@ -24,6 +24,8 @@ export function Instructions({setView}) {
 					- Shoot: left click
 					<br/>
 					- Fullscreen: CTRL + F
+					<br/>
+					- Mute: CTRL + M
 				</p>
 			</div>
 		</div>
