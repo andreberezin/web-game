@@ -1,7 +1,7 @@
 import {isGameJoinable} from '../../utils/isGameJoinable.js';
 import '../../styles/menu/joinGame.scss'
 
-export function JoinGame({setView, setGameId, gameId, games, setError}) {
+export function JoinGame({setView, setGameId, gameId, games, setError, playClick}) {
 
 	function handleGameNotJoinableError(game) {
 		if (!game) {
@@ -28,6 +28,7 @@ export function JoinGame({setView, setGameId, gameId, games, setError}) {
 							className="list-item"
 							onClick={() => {
 								if (isGameJoinable(game)) {
+									playClick();
 									setGameId(gameId);
 									setView('create-player')
 								} else {
@@ -88,6 +89,7 @@ export function JoinGame({setView, setGameId, gameId, games, setError}) {
 					disabled={!gameId}
 					onClick={() => {
 						const game = games[gameId];
+						playClick();
 						if (game && isGameJoinable(game)) {
 							setView('create-player')
 						} else {

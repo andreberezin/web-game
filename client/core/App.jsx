@@ -118,7 +118,7 @@ function App() {
         return (
             <>
                 {view !== 'game' && (
-                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view}></Menu>
+                    <Menu clientManager={clientManager} setError={setError} setView={setView} view={view} playClick={clientManager.audioService.playClick.bind(clientManager.audioService)}></Menu>
                 )}
                 {error && <Error error={error} setError={setError} />}
             </>

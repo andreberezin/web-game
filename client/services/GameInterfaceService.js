@@ -3,10 +3,12 @@ import {existingUI} from '../utils/existingUI.js';
 export default class GameInterfaceService {
 	#gameInterface
 	#clientStore
+	#audioService
 
-	constructor({gameInterface, clientStore}) {
+	constructor({gameInterface, clientStore, audioService}) {
 		this.#gameInterface = gameInterface;
 		this.#clientStore = clientStore;
+		this.#audioService = audioService;
 	}
 
 	createGameUI(gameId, game, players) {
@@ -117,6 +119,7 @@ export default class GameInterfaceService {
 			if (navigator.clipboard && navigator.clipboard.writeText) {
 				navigator.clipboard.writeText(gameId)
 					.then(() => {
+						this.#audioService.playClick();
 						button.textContent = "Copied!";
 						setTimeout(() => { button.textContent = gameId; }, 1000);
 					})
@@ -139,6 +142,7 @@ export default class GameInterfaceService {
 
 		// event listener straight on the button
 		fullscreenButton.addEventListener("click", async () => {
+			this.#audioService.playClick();
 
 			try {
 				if (document.fullscreenElement !== null) {

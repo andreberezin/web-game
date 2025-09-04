@@ -3,6 +3,7 @@ import {existingUI} from '../utils/existingUI.js';
 export default class GameFieldService {
 	#clientStore
 	#socketHandler
+	#audioService
 
 	// todo duplicate code. Maube have the tilemap layout in backend and when a game is created send the array to frontend depending on the player chosen map (currently either "empty" or "simple")
 	#map = [
@@ -41,8 +42,9 @@ export default class GameFieldService {
 		TILES_Y: 27,
 	};
 
-	constructor({clientStore}) {
+	constructor({clientStore, audioService}) {
 		this.#clientStore = clientStore;
+		this.#audioService = audioService;
 	}
 
 	setSocketHandler(handler) {
@@ -152,6 +154,7 @@ export default class GameFieldService {
 		button.id = 'resume';
 		button.textContent = 'Resume';
 		button.addEventListener('click', () => {
+			this.#audioService.playClick();
 			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "started", this.#clientStore.myId);
 		})
 
@@ -164,6 +167,7 @@ export default class GameFieldService {
 		button.textContent = 'Restart';
 
 		button.addEventListener('click', () => {
+			this.#audioService.playClick();
 			this.#socketHandler.socket.emit('gameStatusChange', this.#clientStore.gameId, "waiting", this.#clientStore.myId);
 		})
 

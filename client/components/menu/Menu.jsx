@@ -10,7 +10,7 @@ import {InstructionsButton} from './InstructionsButton.jsx';
 import {CreateGameButton} from './CreateGameButton.jsx';
 
 // todo add logic to save game id to browser storage to automatically join correct game when refreshing
-export function Menu({clientManager, setError, setView, view}) {
+export function Menu({clientManager, setError, setView, view, playClick}) {
 	const [gameId, setGameId] = useState(null);
 	const [games, setGames] = useState({});
 
@@ -37,6 +37,7 @@ export function Menu({clientManager, setError, setView, view}) {
 					<>
 						<InstructionsButton
 							setView={setView}
+							playClick={playClick}
 						/>
 
 						<JoinGame
@@ -45,9 +46,13 @@ export function Menu({clientManager, setError, setView, view}) {
 							gameId={gameId}
 							games={games}
 							setError={setError}
+							playClick={playClick}
 						/>
 
-						<CreateGameButton setView={setView}/>
+						<CreateGameButton
+							setView={setView}
+							playClick={playClick}
+						/>
 					</>
 				}
 
@@ -55,6 +60,7 @@ export function Menu({clientManager, setError, setView, view}) {
 					<CreateGame
 						clientManager={clientManager}
 						setView={setView}
+						playClick={playClick}
 					/>
 				}
 
@@ -64,12 +70,14 @@ export function Menu({clientManager, setError, setView, view}) {
 						setView={setView}
 						gameId={gameId}
 						setError={setError}
+						playClick={playClick}
 					/>
 				}
 
 				{view === 'instructions' &&
 					<Instructions
 						setView={setView}
+						playClick={playClick}
 					/>
 				}
 			</div>

@@ -2,7 +2,7 @@ import { IoChevronBackCircleOutline } from "react-icons/io5";
 import {useEffect, useState} from 'react';
 import {BackButton} from './BackButton.jsx';
 
-export function CreatePlayer({clientManager, setView, gameId, setError}) {
+export function CreatePlayer({clientManager, setView, gameId, setError, playClick}) {
 	const [name, setName] = useState(null);
 
 	useEffect(() => {
@@ -43,11 +43,12 @@ export function CreatePlayer({clientManager, setView, gameId, setError}) {
 	return (
 		<div id={"create-player"} className={"menu-item"}>
 
-			<BackButton setView={setView} lastView={'main'}/>
+			<BackButton setView={setView} lastView={'main'} playClick={playClick} />
 
 			<form
 				id={"create-player-form"}
 				onSubmit={(e) => {
+					playClick();
 					e.preventDefault();
 					joinGame(gameId, name)
 				}}

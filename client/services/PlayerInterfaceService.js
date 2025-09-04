@@ -3,10 +3,12 @@ import {existingUI} from '../utils/existingUI.js';
 export default class PlayerInterfaceService {
 	#socketHandler;
 	#clientStore
+	#audioService
 	#uiParts = ["id", "hp", "lives", "respawnTimer", "pause", "quit"]
 
-	constructor({clientStore}) {
+	constructor({clientStore, audioService}) {
 		this.#clientStore = clientStore;
+		this.#audioService = audioService;
 	}
 
 	setSocketHandler(socketHandler) {
@@ -138,6 +140,7 @@ export default class PlayerInterfaceService {
 			button.textContent = `PAUSE(${pauseCount})`;
 
 			const emit = () => {
+				this.#audioService.playClick();
 				if (store.games.get(store.gameId).state.status === "started") {
 					this.#socketHandler.socket.emit('gameStatusChange', store.gameId, "paused", myId)
 				}
@@ -150,6 +153,7 @@ export default class PlayerInterfaceService {
 			button.classList.add('enabled');
 
 			button.addEventListener('click', () => {
+				this.#audioService.playClick();
 				this.#socketHandler.socket.emit('leaveGame', store.gameId, myId);
 			})
 

@@ -1,14 +1,14 @@
 import {BackButton} from './BackButton.jsx';
 import '../../styles/menu/instructions.scss'
 
-export function Instructions({setView}) {
+export function Instructions({setView, playClick}) {
 
 	return (
 		<div
 			id={'instructions'}
 			className={"menu-item"}
 		>
-			<BackButton setView={setView} lastView={'main'}/>
+			<BackButton setView={setView} lastView={'main'} playClick={playClick} />
 			<div id={'instructions-text'}>
 				<p>The objective of the game is to kill your enemies and survive.</p>
 				<p>The game lasts until the game timer finishes or 1 player is left.</p>

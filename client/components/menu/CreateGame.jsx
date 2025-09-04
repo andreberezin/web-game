@@ -2,7 +2,7 @@ import {useRef, useState} from 'react';
 import '../../styles/menu/createGame.scss'
 import {BackButton} from './BackButton.jsx';
 
-export function CreateGame({clientManager, setView}) {
+export function CreateGame({clientManager, setView, playClick}) {
 	const gameSettings = useRef({
 		private: false,
 		maxPlayers: 4,
@@ -24,10 +24,11 @@ export function CreateGame({clientManager, setView}) {
 			id={"create-game"}
 			className={"menu-item"}
 		>
-			<BackButton setView={setView} lastView={'main'}/>
+			<BackButton setView={setView} lastView={'main'} playClick={playClick}/>
 
 			<form id={"create-game-form"}
 				onSubmit={(e) => {
+					playClick();
 					e.preventDefault();
 					startGame();}}>
 				<label>
