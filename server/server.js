@@ -10,18 +10,18 @@ const server = http.createServer(app);
 
 dotenv.config();
 const EXPRESS_PORT = process.env.EXPRESS_PORT || 3000;
-const VITE_PORT = process.env.EXPRESS_PORT || 5173;
+const VITE_PORT = process.env.VITE_PORT || 5173;
 
 const io = new Server(server, {
 	cors: {
-		origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
+		origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app', process.env.VITE_FRONTEND_URL],
 		methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 		credentials: true
 	}
 });
 
 app.use(cors({
-	origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app'],
+	origin: [`http://localhost:${VITE_PORT}`, 'https://just-panda-musical.ngrok-free.app', 'https://intimate-upright-sunfish.ngrok-free.app', process.env.VITE_FRONTEND_URL],
 	methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
 	credentials: true
 }));
@@ -30,8 +30,8 @@ app.use(express.static('public'));
 
 app.use(express.json());
 
-server.listen(EXPRESS_PORT, 'localhost', () => {
-	console.log(`🚀 Express Server running on http://localhost:${EXPRESS_PORT}`);
+server.listen(EXPRESS_PORT, '0.0.0.0', () => {
+	console.log(`🚀 Express Server running on port ${EXPRESS_PORT}`);
 });
 
 startGameServer(io);
