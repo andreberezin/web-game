@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
       },
     },
     preview: {
-      allowedHosts: ['https://web-game-y5r6.onrender.com'],
+      allowedHosts: ['web-game-y5r6.onrender.com'],
       port: process.env.PORT || 4173,
       host: true, // binds to 0.0.0.0
     },
